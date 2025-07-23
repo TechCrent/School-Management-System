@@ -22,6 +22,7 @@ const Subjects = () => {
   const [loading, setLoading] = useState(true);
   const { customToast } = useCustomToast();
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
+  const [modalForm, setModalForm] = useState<Partial<Subject>>({});
 
   useEffect(() => {
     setLoading(true);
@@ -50,12 +51,12 @@ const Subjects = () => {
   const canEdit = userRole === 'admin';
 
   const handleAdd = () => {
-    setSelectedSubject(null);
+    setModalForm({});
     setModalMode('create');
     setModalOpen(true);
   };
   const handleEdit = (subject: Subject) => {
-    setSelectedSubject(subject);
+    setModalForm({ ...subject });
     setModalMode('edit');
     setModalOpen(true);
   };
@@ -85,15 +86,16 @@ const Subjects = () => {
     setFormErrors({});
     if (modalMode === 'create') {
       setSubjects(prev => [
-        { ...data, subject_id: crypto.randomUUID() } as Subject,
+        { ...modalForm, subject_id: crypto.randomUUID() } as Subject,
         ...prev,
       ]);
       customToast({ title: 'Subject added', description: 'A new subject has been added.' });
-    } else if (modalMode === 'edit' && selectedSubject) {
-      setSubjects(prev => prev.map(s => s.subject_id === selectedSubject.subject_id ? { ...s, ...data } as Subject : s));
+    } else if (modalMode === 'edit' && modalForm.subject_id) {
+      setSubjects(prev => prev.map(s => s.subject_id === modalForm.subject_id ? { ...s, ...modalForm } as Subject : s));
       customToast({ title: 'Subject updated', description: 'Subject details have been updated.' });
     }
     setModalOpen(false);
+    setModalForm({});
     setSelectedSubject(null);
   };
 
@@ -179,32 +181,28 @@ const Subjects = () => {
           <div className="bg-white p-6 rounded-lg shadow-lg min-w-[300px] max-w-[90vw] relative">
             <button onClick={() => setModalOpen(false)} className="absolute top-2 right-2 text-gray-400 hover:text-black">&times;</button>
             <h3 className="text-xl font-bold mb-2">{modalMode === 'create' ? 'Add Subject' : 'Edit Subject'}</h3>
-            <form onSubmit={e => { e.preventDefault(); handleSave(selectedSubject || {}); }} className="flex flex-col gap-3">
-              <div>
-                <input
-                  type="text"
-                  placeholder="Subject Name"
-                  value={selectedSubject?.name || ''}
-                  onChange={e => setSelectedSubject(prev => ({ ...prev, name: e.target.value } as Subject))}
-                  className={`border rounded p-2 ${formErrors.name ? 'border-destructive' : ''}`}
-                  required
-                />
-                {formErrors.name && <p className="text-sm text-destructive mt-1">{formErrors.name}</p>}
-              </div>
-              <div>
-                <textarea
-                  placeholder="Description"
-                  value={selectedSubject?.description || ''}
-                  onChange={e => setSelectedSubject(prev => ({ ...prev, description: e.target.value } as Subject))}
-                  className={`border rounded p-2 ${formErrors.description ? 'border-destructive' : ''}`}
-                  rows={3}
-                  required
-                />
-                {formErrors.description && <p className="text-sm text-destructive mt-1">{formErrors.description}</p>}
-              </div>
+            <form onSubmit={e => { e.preventDefault(); handleSave(modalForm); }} className="flex flex-col gap-3">
+              <Input
+                type="text"
+                placeholder="Subject Name"
+                value={modalForm.name || ''}
+                onChange={e => setModalForm(prev => ({ ...prev, name: e.target.value }))}
+                className={`mb-2 ${formErrors.name ? 'border-destructive' : ''}`}
+                required
+              />
+              {formErrors.name && <p className="text-sm text-destructive mt-1">{formErrors.name}</p>}
+              <textarea
+                placeholder="Description"
+                value={modalForm.description || ''}
+                onChange={e => setModalForm(prev => ({ ...prev, description: e.target.value }))}
+                className={`border rounded p-2 mb-2 ${formErrors.description ? 'border-destructive' : ''}`}
+                rows={3}
+                required
+              />
+              {formErrors.description && <p className="text-sm text-destructive mt-1">{formErrors.description}</p>}
               <div className="flex gap-2 mt-2">
                 <Button type="submit" className="bg-primary text-white px-4 py-2 rounded">{modalMode === 'create' ? 'Add' : 'Save'}</Button>
-                <Button type="button" onClick={() => setModalOpen(false)} className="bg-muted px-4 py-2 rounded">Cancel</Button>
+                <Button type="button" onClick={() => { setModalOpen(false); setModalForm({}); }} className="bg-muted px-4 py-2 rounded">Cancel</Button>
               </div>
             </form>
           </div>

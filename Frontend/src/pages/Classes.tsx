@@ -9,6 +9,13 @@ import { Plus, Edit, Trash2, Calendar, Users } from 'lucide-react';
 import { useCustomToast } from '@/hooks/use-toast';
 import { Loading } from '@/components/ui/loading';
 import { Breadcrumbs } from '@/components/ui/breadcrumb';
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue
+} from '@/components/ui/select';
 
 const Classes = () => {
   const [classes, setClasses] = useState<Class[]>([]);
@@ -20,9 +27,10 @@ const Classes = () => {
   const [selectedClass, setSelectedClass] = useState<Class | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [userRole, setUserRole] = useState('');
-  const [loading, setLoading] = useState(true);
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
   const { customToast } = useCustomToast();
+  const [loading, setLoading] = useState(true);
+  const [modalForm, setModalForm] = useState<Partial<Class>>({});
 
   useEffect(() => {
     setLoading(true);
@@ -30,7 +38,7 @@ const Classes = () => {
       setClasses([...mockClasses]);
       setUserRole(localStorage.getItem('role') || '');
       setLoading(false);
-    }, 600); // Simulate loading
+    }, 600);
   }, []);
 
   useEffect(() => {
@@ -52,12 +60,12 @@ const Classes = () => {
   const canEdit = userRole === 'admin';
 
   const handleAdd = () => {
-    setSelectedClass(null);
+    setModalForm({});
     setModalMode('create');
     setModalOpen(true);
   };
   const handleEdit = (cls: Class) => {
-    setSelectedClass(cls);
+    setModalForm({ ...cls });
     setModalMode('edit');
     setModalOpen(true);
   };
@@ -93,19 +101,21 @@ const Classes = () => {
     setFormErrors({});
     if (modalMode === 'create') {
       setClasses(prev => [
-        { ...data, class_id: crypto.randomUUID(), student_count: 0 } as Class,
+        { ...modalForm, class_id: crypto.randomUUID(), student_count: 0 } as Class,
         ...prev,
       ]);
       customToast({ title: 'Class added', description: 'A new class has been added.' });
-    } else if (modalMode === 'edit' && selectedClass) {
-      setClasses(prev => prev.map(cls => cls.class_id === selectedClass.class_id ? { ...cls, ...data } as Class : cls));
+    } else if (modalMode === 'edit' && modalForm.class_id) {
+      setClasses(prev => prev.map(cls => cls.class_id === modalForm.class_id ? { ...cls, ...modalForm } as Class : cls));
       customToast({ title: 'Class updated', description: 'Class details have been updated.' });
     }
     setModalOpen(false);
+    setModalForm({});
     setSelectedClass(null);
   };
 
   if (loading) return <Loading size="lg" text="Loading classes..." />;
+
   return (
     <div className="space-y-6">
       <Breadcrumbs items={[{ label: 'Dashboard', href: '/' }, { label: 'Classes' }]} />
@@ -198,59 +208,49 @@ const Classes = () => {
             <button onClick={() => setModalOpen(false)} className="absolute top-2 right-2 text-gray-400 hover:text-black">&times;</button>
             <h3 className="text-xl font-bold mb-2">{modalMode === 'create' ? 'Add Class' : 'Edit Class'}</h3>
             <form onSubmit={e => { e.preventDefault(); handleSave(selectedClass || {}); }} className="flex flex-col gap-3">
-              <div>
-                <input
-                  type="text"
-                  placeholder="Class Name"
-                  value={selectedClass?.name || ''}
-                  onChange={e => setSelectedClass(prev => ({ ...prev, name: e.target.value } as Class))}
-                  className={`border rounded p-2 ${formErrors.name ? 'border-destructive' : ''}`}
-                  required
-                />
-                {formErrors.name && <p className="text-sm text-destructive mt-1">{formErrors.name}</p>}
-              </div>
-              <div>
-                <select
-                  value={selectedClass?.teacher_id || ''}
-                  onChange={e => setSelectedClass(prev => ({ ...prev, teacher_id: e.target.value } as Class))}
-                  className={`border rounded p-2 ${formErrors.teacher_id ? 'border-destructive' : ''}`}
-                  required
-                >
-                  <option value="">Select Teacher</option>
+              <Input
+                type="text"
+                placeholder="Class Name"
+                value={modalForm.name || ''}
+                onChange={e => setModalForm(prev => ({ ...prev, name: e.target.value }))}
+                className={`mb-2 ${formErrors.name ? 'border-destructive' : ''}`}
+                required
+              />
+              {formErrors.name && <p className="text-sm text-destructive mt-1">{formErrors.name}</p>}
+              <Select value={modalForm.teacher_id || ''} onValueChange={val => setModalForm(prev => ({ ...prev, teacher_id: val }))}>
+                <SelectTrigger className={`mb-2 ${formErrors.teacher_id ? 'border-destructive' : ''}`}>
+                  <SelectValue placeholder="Select Teacher" />
+                </SelectTrigger>
+                <SelectContent>
                   {mockTeachers.map(t => (
-                    <option key={t.teacher_id} value={t.teacher_id}>{t.full_name}</option>
+                    <SelectItem key={t.teacher_id} value={t.teacher_id}>{t.full_name}</SelectItem>
                   ))}
-                </select>
-                {formErrors.teacher_id && <p className="text-sm text-destructive mt-1">{formErrors.teacher_id}</p>}
-              </div>
-              <div>
-                <select
-                  value={selectedClass?.subject_id || ''}
-                  onChange={e => setSelectedClass(prev => ({ ...prev, subject_id: e.target.value } as Class))}
-                  className={`border rounded p-2 ${formErrors.subject_id ? 'border-destructive' : ''}`}
-                  required
-                >
-                  <option value="">Select Subject</option>
+                </SelectContent>
+              </Select>
+              {formErrors.teacher_id && <p className="text-sm text-destructive mt-1">{formErrors.teacher_id}</p>}
+              <Select value={modalForm.subject_id || ''} onValueChange={val => setModalForm(prev => ({ ...prev, subject_id: val }))}>
+                <SelectTrigger className={`mb-2 ${formErrors.subject_id ? 'border-destructive' : ''}`}>
+                  <SelectValue placeholder="Select Subject" />
+                </SelectTrigger>
+                <SelectContent>
                   {mockSubjects.map(s => (
-                    <option key={s.subject_id} value={s.subject_id}>{s.name}</option>
+                    <SelectItem key={s.subject_id} value={s.subject_id}>{s.name}</SelectItem>
                   ))}
-                </select>
-                {formErrors.subject_id && <p className="text-sm text-destructive mt-1">{formErrors.subject_id}</p>}
-              </div>
-              <div>
-                <input
-                  type="text"
-                  placeholder="Schedule"
-                  value={selectedClass?.schedule || ''}
-                  onChange={e => setSelectedClass(prev => ({ ...prev, schedule: e.target.value } as Class))}
-                  className={`border rounded p-2 ${formErrors.schedule ? 'border-destructive' : ''}`}
-                  required
-                />
-                {formErrors.schedule && <p className="text-sm text-destructive mt-1">{formErrors.schedule}</p>}
-              </div>
+                </SelectContent>
+              </Select>
+              {formErrors.subject_id && <p className="text-sm text-destructive mt-1">{formErrors.subject_id}</p>}
+              <Input
+                type="text"
+                placeholder="Schedule"
+                value={modalForm.schedule || ''}
+                onChange={e => setModalForm(prev => ({ ...prev, schedule: e.target.value }))}
+                className={`mb-2 ${formErrors.schedule ? 'border-destructive' : ''}`}
+                required
+              />
+              {formErrors.schedule && <p className="text-sm text-destructive mt-1">{formErrors.schedule}</p>}
               <div className="flex gap-2 mt-2">
                 <Button type="submit" className="bg-primary text-white px-4 py-2 rounded">{modalMode === 'create' ? 'Add' : 'Save'}</Button>
-                <Button type="button" onClick={() => setModalOpen(false)} className="bg-muted px-4 py-2 rounded">Cancel</Button>
+                <Button type="button" onClick={() => { setModalOpen(false); setModalForm({}); }} className="bg-muted px-4 py-2 rounded">Cancel</Button>
               </div>
             </form>
           </div>

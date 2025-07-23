@@ -4,6 +4,7 @@ import subjects from '../data/subjects.json';
 import classes from '../data/classes.json';
 import homework from '../data/homework.json';
 import users from '../data/users.json';
+import { mockGradesByStudent } from '../data/mockData';
 
 function simulateLatency(result, ms = 300) {
   return new Promise((resolve) => setTimeout(() => resolve(result), ms));
@@ -31,6 +32,31 @@ export async function getStudents() {
 export async function getStudentById(id) {
   const student = students.find(s => s.student_id === id);
   return simulateLatency(student ? success(student) : fail('Student not found'));
+}
+
+const studentsData = [...students];
+
+export async function addStudent(newStudent) {
+  studentsData.push(newStudent);
+  return simulateLatency(success(newStudent));
+}
+
+export async function updateStudent(updatedStudent) {
+  const idx = studentsData.findIndex(s => s.student_id === updatedStudent.student_id);
+  if (idx !== -1) {
+    studentsData[idx] = { ...studentsData[idx], ...updatedStudent };
+    return simulateLatency(success(studentsData[idx]));
+  }
+  return simulateLatency(fail('Student not found'));
+}
+
+export async function deleteStudent(studentId) {
+  const idx = studentsData.findIndex(s => s.student_id === studentId);
+  if (idx !== -1) {
+    const deleted = studentsData.splice(idx, 1)[0];
+    return simulateLatency(success(deleted));
+  }
+  return simulateLatency(fail('Student not found'));
 }
 
 // Teachers
@@ -91,6 +117,11 @@ export async function login(email, password) {
     return simulateLatency(success({ token: 'mock-token', user: userData, role: user.role }));
   }
   return simulateLatency(fail('Invalid credentials'));
+}
+
+export async function getGradesByStudentId(studentId) {
+  const grades = mockGradesByStudent[studentId] || [];
+  return simulateLatency(success(grades));
 }
 
 // Add more CRUD as needed for demo (add, update, delete) for students, teachers, homework, etc. 

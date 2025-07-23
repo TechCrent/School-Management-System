@@ -15,6 +15,7 @@ import {
 import { mockStudents, mockTeachers, mockHomework, mockClasses, Student, Class } from '../data/mockData';
 import { formatDateWithTimezone } from '@/lib/utils';
 import { useNotification } from '@/components/layout/NotificationContext';
+import { Loading } from '@/components/ui/loading';
 
 interface DashboardStats {
   totalStudents: number;
@@ -35,6 +36,7 @@ export const Dashboard = () => {
     pendingHomework: 0,
     completedHomework: 0
   });
+  const [loading, setLoading] = useState(true);
 
   const [userRole, setUserRole] = useState<string>('');
   const [userName, setUserName] = useState<string>('');
@@ -51,39 +53,44 @@ export const Dashboard = () => {
     : [];
 
   useEffect(() => {
-    // Get user info from localStorage
-    const role = localStorage.getItem('role') || '';
-    const userInfo = localStorage.getItem('user');
-    const user = userInfo ? JSON.parse(userInfo) : null;
-    
-    setUserRole(role);
-    setUserName(user?.full_name || 'User');
-    setUserId(user?.student_id || user?.id || '');
-    setUserProfile(user);
+    setLoading(true);
+    // Simulate async fetch
+    setTimeout(() => {
+      // Get user info from localStorage
+      const role = localStorage.getItem('role') || '';
+      const userInfo = localStorage.getItem('user');
+      const user = userInfo ? JSON.parse(userInfo) : null;
+      
+      setUserRole(role);
+      setUserName(user?.full_name || 'User');
+      setUserId(user?.student_id || user?.id || '');
+      setUserProfile(user);
 
-    // Calculate stats from mock data
-    const pendingHW = mockHomework.filter(hw => hw.status === 'pending').length;
-    const completedHW = mockHomework.filter(hw => hw.status === 'submitted' || hw.status === 'graded').length;
+      // Calculate stats from mock data
+      const pendingHW = mockHomework.filter(hw => hw.status === 'pending').length;
+      const completedHW = mockHomework.filter(hw => hw.status === 'submitted' || hw.status === 'graded').length;
 
-    setStats({
-      totalStudents: mockStudents.length,
-      totalTeachers: mockTeachers.length,
-      totalHomework: mockHomework.length,
-      totalClasses: mockClasses.length,
-      pendingHomework: pendingHW,
-      completedHomework: completedHW
-    });
-    // Add mock notifications for students
-    if (role === 'student') {
-      addNotification({
-        title: 'New Homework Assigned',
-        description: 'Algebra Practice is due soon!'
+      setStats({
+        totalStudents: mockStudents.length,
+        totalTeachers: mockTeachers.length,
+        totalHomework: mockHomework.length,
+        totalClasses: mockClasses.length,
+        pendingHomework: pendingHW,
+        completedHomework: completedHW
       });
-      addNotification({
-        title: 'Class Rescheduled',
-        description: 'Your English class has a new time.'
-      });
-    }
+      // Add mock notifications for students
+      if (role === 'student') {
+        addNotification({
+          title: 'New Homework Assigned',
+          description: 'Algebra Practice is due soon!'
+        });
+        addNotification({
+          title: 'Class Rescheduled',
+          description: 'Your English class has a new time.'
+        });
+      }
+      setLoading(false);
+    }, 600);
   }, []);
 
   const getGreeting = () => {
@@ -286,6 +293,8 @@ export const Dashboard = () => {
   // Get timezone from settings in localStorage
   const settings = JSON.parse(localStorage.getItem('app_settings') || '{}');
   const timezone = settings?.appearance?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+  if (loading) return <Loading size="lg" text="Loading dashboard..." />;
 
   return (
     <div className="space-y-6">

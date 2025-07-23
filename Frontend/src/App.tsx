@@ -26,6 +26,8 @@ import ParentNotifications from "./pages/ParentNotifications";
 import TeacherProfile from "./pages/TeacherProfile";
 import ParentProfile from "./pages/ParentProfile";
 import AdminDashboard from "./pages/AdminDashboard";
+import Subjects from "./pages/Subjects";
+import Teachers from "./pages/Teachers";
 
 const queryClient = new QueryClient();
 
@@ -62,20 +64,14 @@ const App = () => (
               <Route path="/teachers" element={
                 <ProtectedRoute allowedRoles={['admin', 'teacher']}>
                   <Layout>
-                    <div className="text-center py-12">
-                      <h1 className="text-2xl font-bold mb-4">Teachers Page</h1>
-                      <p className="text-muted-foreground">Coming soon...</p>
-                    </div>
+                    <Teachers />
                   </Layout>
                 </ProtectedRoute>
               } />
               <Route path="/report-cards" element={
                 <ProtectedRoute allowedRoles={['admin', 'teacher']}>
                   <Layout>
-                    <div className="text-center py-12">
-                      <h1 className="text-2xl font-bold mb-4">Report Cards</h1>
-                      <p className="text-muted-foreground">Coming soon...</p>
-                    </div>
+                    <ReportCard />
                   </Layout>
                 </ProtectedRoute>
               } />
@@ -102,13 +98,14 @@ const App = () => (
               <Route path="/classes" element={
                 <ProtectedRoute allowedRoles={['admin', 'teacher', 'student', 'parent']}>
                   <Layout>
-                    {/* Render student classes page for students, placeholder for others */}
-                    {localStorage.getItem('role') === 'student' ? <ClassesPage /> : (
-                      <div className="text-center py-12">
-                        <h1 className="text-2xl font-bold mb-4">Classes</h1>
-                        <p className="text-muted-foreground">Coming soon...</p>
-                      </div>
-                    )}
+                    <ClassesPage />
+                  </Layout>
+                </ProtectedRoute>
+              } />
+              <Route path="/subjects" element={
+                <ProtectedRoute allowedRoles={['admin', 'teacher', 'student', 'parent']}>
+                  <Layout>
+                    <Subjects />
                   </Layout>
                 </ProtectedRoute>
               } />

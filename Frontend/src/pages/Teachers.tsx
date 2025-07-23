@@ -20,9 +20,10 @@ const Teachers = () => {
   const [selectedTeacher, setSelectedTeacher] = useState<Teacher | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [userRole, setUserRole] = useState('');
-  const [loading, setLoading] = useState(true);
   const { customToast } = useCustomToast();
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
+  const [loading, setLoading] = useState(true);
+  const [modalForm, setModalForm] = useState<Partial<Teacher>>({});
 
   useEffect(() => {
     setLoading(true);
@@ -30,7 +31,7 @@ const Teachers = () => {
       setTeachers([...mockTeachers]);
       setUserRole(localStorage.getItem('role') || '');
       setLoading(false);
-    }, 600); // Simulate loading
+    }, 600);
   }, []);
 
   useEffect(() => {
@@ -52,12 +53,12 @@ const Teachers = () => {
   const canEdit = userRole === 'admin';
 
   const handleAdd = () => {
-    setSelectedTeacher(null);
+    setModalForm({});
     setModalMode('create');
     setModalOpen(true);
   };
   const handleEdit = (teacher: Teacher) => {
-    setSelectedTeacher(teacher);
+    setModalForm({ ...teacher });
     setModalMode('edit');
     setModalOpen(true);
   };
@@ -92,19 +93,21 @@ const Teachers = () => {
     setFormErrors({});
     if (modalMode === 'create') {
       setTeachers(prev => [
-        { ...data, teacher_id: crypto.randomUUID() } as Teacher,
+        { ...modalForm, teacher_id: crypto.randomUUID() } as Teacher,
         ...prev,
       ]);
       customToast({ title: 'Teacher added', description: 'A new teacher has been added.' });
-    } else if (modalMode === 'edit' && selectedTeacher) {
-      setTeachers(prev => prev.map(t => t.teacher_id === selectedTeacher.teacher_id ? { ...t, ...data } as Teacher : t));
+    } else if (modalMode === 'edit' && modalForm.teacher_id) {
+      setTeachers(prev => prev.map(t => t.teacher_id === modalForm.teacher_id ? { ...t, ...modalForm } as Teacher : t));
       customToast({ title: 'Teacher updated', description: 'Teacher details have been updated.' });
     }
     setModalOpen(false);
+    setModalForm({});
     setSelectedTeacher(null);
   };
 
   if (loading) return <Loading size="lg" text="Loading teachers..." />;
+
   return (
     <div className="space-y-6">
       <Breadcrumbs items={[{ label: 'Dashboard', href: '/' }, { label: 'Teachers' }]} />
@@ -198,49 +201,43 @@ const Teachers = () => {
             <button onClick={() => setModalOpen(false)} className="absolute top-2 right-2 text-gray-400 hover:text-black">&times;</button>
             <h3 className="text-xl font-bold mb-2">{modalMode === 'create' ? 'Add Teacher' : 'Edit Teacher'}</h3>
             <form onSubmit={e => { e.preventDefault(); handleSave(selectedTeacher || {}); }} className="flex flex-col gap-3">
-              <div>
-                <input
-                  type="text"
-                  placeholder="Full Name"
-                  value={selectedTeacher?.full_name || ''}
-                  onChange={e => setSelectedTeacher(prev => ({ ...prev, full_name: e.target.value } as Teacher))}
-                  className={`border rounded p-2 ${formErrors.full_name ? 'border-destructive' : ''}`}
-                  required
-                />
-                {formErrors.full_name && <p className="text-sm text-destructive mt-1">{formErrors.full_name}</p>}
-              </div>
-              <div>
-                <input
-                  type="email"
-                  placeholder="Email"
-                  value={selectedTeacher?.email || ''}
-                  onChange={e => setSelectedTeacher(prev => ({ ...prev, email: e.target.value } as Teacher))}
-                  className={`border rounded p-2 ${formErrors.email ? 'border-destructive' : ''}`}
-                  required
-                />
-                {formErrors.email && <p className="text-sm text-destructive mt-1">{formErrors.email}</p>}
-              </div>
-              <div>
-                <input
-                  type="text"
-                  placeholder="Subject Name"
-                  value={selectedTeacher?.subject_name || ''}
-                  onChange={e => setSelectedTeacher(prev => ({ ...prev, subject_name: e.target.value } as Teacher))}
-                  className={`border rounded p-2 ${formErrors.subject_name ? 'border-destructive' : ''}`}
-                  required
-                />
-                {formErrors.subject_name && <p className="text-sm text-destructive mt-1">{formErrors.subject_name}</p>}
-              </div>
-              <input
+              <Input
+                type="text"
+                placeholder="Full Name"
+                value={modalForm.full_name || ''}
+                onChange={e => setModalForm(prev => ({ ...prev, full_name: e.target.value }))}
+                className={`mb-2 ${formErrors.full_name ? 'border-destructive' : ''}`}
+                required
+              />
+              {formErrors.full_name && <p className="text-sm text-destructive mt-1">{formErrors.full_name}</p>}
+              <Input
+                type="email"
+                placeholder="Email"
+                value={modalForm.email || ''}
+                onChange={e => setModalForm(prev => ({ ...prev, email: e.target.value }))}
+                className={`mb-2 ${formErrors.email ? 'border-destructive' : ''}`}
+                required
+              />
+              {formErrors.email && <p className="text-sm text-destructive mt-1">{formErrors.email}</p>}
+              <Input
+                type="text"
+                placeholder="Subject Name"
+                value={modalForm.subject_name || ''}
+                onChange={e => setModalForm(prev => ({ ...prev, subject_name: e.target.value }))}
+                className={`mb-2 ${formErrors.subject_name ? 'border-destructive' : ''}`}
+                required
+              />
+              {formErrors.subject_name && <p className="text-sm text-destructive mt-1">{formErrors.subject_name}</p>}
+              <Input
                 type="tel"
                 placeholder="Phone"
-                value={selectedTeacher?.phone || ''}
-                onChange={e => setSelectedTeacher(prev => ({ ...prev, phone: e.target.value } as Teacher))}
-                className="border rounded p-2"
+                value={modalForm.phone || ''}
+                onChange={e => setModalForm(prev => ({ ...prev, phone: e.target.value }))}
+                className="mb-2"
               />
               <div className="flex gap-2 mt-2">
                 <Button type="submit" className="bg-primary text-white px-4 py-2 rounded">{modalMode === 'create' ? 'Add' : 'Save'}</Button>
-                <Button type="button" onClick={() => setModalOpen(false)} className="bg-muted px-4 py-2 rounded">Cancel</Button>
+                <Button type="button" onClick={() => { setModalOpen(false); setModalForm({}); }} className="bg-muted px-4 py-2 rounded">Cancel</Button>
               </div>
             </form>
           </div>

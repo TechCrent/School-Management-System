@@ -1,5 +1,13 @@
 import { useEffect, useState } from 'react';
 import { mockSubjects, mockStudents, Student } from '../data/mockData';
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue
+} from '@/components/ui/select';
+import { getGradesByStudentId } from '@/api/edulite';
 
 // Mock grades data for demonstration
 const mockGrades = [
@@ -13,17 +21,57 @@ const mockGrades = [
 const ReportCard = () => {
   const [student, setStudent] = useState<Student | null>(null);
   const [grades, setGrades] = useState<typeof mockGrades>([]);
+  const [selectedStudentId, setSelectedStudentId] = useState<string>('');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem('user') || '{}') as Student;
+    setLoading(true);
+    const role = localStorage.getItem('role') || '';
+    let user = JSON.parse(localStorage.getItem('user') || '{}') as Student;
+    let studentId = user?.student_id;
+    if (role === 'admin' || role === 'teacher') {
+      user = mockStudents[0];
+      setSelectedStudentId(user?.student_id || '');
+      studentId = user?.student_id;
+    }
     setStudent(user);
-    // In a real app, fetch grades for this student
-    setGrades(mockGrades);
+    getGradesByStudentId(studentId).then(res => {
+      setGrades(res.data || []);
+      setLoading(false);
+    });
   }, []);
 
+  useEffect(() => {
+    if (selectedStudentId) {
+      const user = mockStudents.find(s => s.student_id === selectedStudentId) || null;
+      setStudent(user);
+      setLoading(true);
+      getGradesByStudentId(selectedStudentId).then(res => {
+        setGrades(res.data || []);
+        setLoading(false);
+      });
+    }
+  }, [selectedStudentId]);
+
+  if (loading) return <div>Loading report card...</div>;
   return (
     <div>
       <h2 className="text-2xl font-bold mb-4">My Report Card</h2>
+      {(localStorage.getItem('role') === 'admin' || localStorage.getItem('role') === 'teacher') && (
+        <div className="mb-4">
+          <label className="font-semibold mr-2">Select Student:</label>
+          <Select value={selectedStudentId} onValueChange={setSelectedStudentId}>
+            <SelectTrigger className="w-64">
+              <SelectValue placeholder="Select Student" />
+            </SelectTrigger>
+            <SelectContent>
+              {mockStudents.map(s => (
+                <SelectItem key={s.student_id} value={s.student_id}>{s.full_name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
       {student ? (
         <>
           <div className="mb-4">Name: <span className="font-semibold">{student.full_name}</span></div>

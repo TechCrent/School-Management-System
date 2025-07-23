@@ -285,3 +285,41 @@ export const mockAuth = {
     return null;
   }
 };
+
+export const mockGradesByStudent: Record<string, Array<{ subject_id: string, grade: string, comment: string }>> = {
+  '123e4567-e89b-12d3-a456-426614174000': [
+    { subject_id: 'sub_1', grade: 'A', comment: 'Excellent work!' },
+    { subject_id: 'sub_2', grade: 'B+', comment: 'Good effort, keep improving.' },
+    { subject_id: 'sub_3', grade: 'A-', comment: 'Great participation.' },
+    { subject_id: 'sub_4', grade: 'B', comment: 'Solid understanding.' },
+    { subject_id: 'sub_5', grade: 'A', comment: 'Very creative.' },
+  ],
+  '123e4567-e89b-12d3-a456-426614174001': [
+    { subject_id: 'sub_1', grade: 'B', comment: 'Good, but can improve.' },
+    { subject_id: 'sub_2', grade: 'A', comment: 'Outstanding!' },
+    { subject_id: 'sub_3', grade: 'B+', comment: 'Nice effort.' },
+    { subject_id: 'sub_4', grade: 'A-', comment: 'Great improvement.' },
+    { subject_id: 'sub_5', grade: 'B', comment: 'Keep practicing.' },
+  ],
+  '123e4567-e89b-12d3-a456-426614174002': [
+    { subject_id: 'sub_1', grade: 'C+', comment: 'Needs more focus.' },
+    { subject_id: 'sub_2', grade: 'B', comment: 'Good participation.' },
+    { subject_id: 'sub_3', grade: 'B-', comment: 'Can do better.' },
+    { subject_id: 'sub_4', grade: 'A', comment: 'Excellent!' },
+    { subject_id: 'sub_5', grade: 'A-', comment: 'Very creative.' },
+  ],
+  '123e4567-e89b-12d3-a456-426614174003': [
+    { subject_id: 'sub_1', grade: 'A-', comment: 'Great job.' },
+    { subject_id: 'sub_2', grade: 'A', comment: 'Outstanding!' },
+    { subject_id: 'sub_3', grade: 'B+', comment: 'Good effort.' },
+    { subject_id: 'sub_4', grade: 'B', comment: 'Solid.' },
+    { subject_id: 'sub_5', grade: 'B+', comment: 'Keep it up.' },
+  ],
+  '123e4567-e89b-12d3-a456-426614174004': [
+    { subject_id: 'sub_1', grade: 'B+', comment: 'Nice work.' },
+    { subject_id: 'sub_2', grade: 'B', comment: 'Good.' },
+    { subject_id: 'sub_3', grade: 'A', comment: 'Excellent.' },
+    { subject_id: 'sub_4', grade: 'A-', comment: 'Very good.' },
+    { subject_id: 'sub_5', grade: 'B', comment: 'Practice more.' },
+  ],
+};

@@ -3,7 +3,6 @@ import { mockHomework, mockClasses, Student, Homework, Class } from '../data/moc
 
 const HomeworkPage = () => {
   const [homework, setHomework] = useState<Homework[]>([]);
-  const [loading, setLoading] = useState(true);
   const [studentClass, setStudentClass] = useState<Class | null>(null);
   const [statusMap, setStatusMap] = useState<Record<string, string>>({});
   const [selectedHomework, setSelectedHomework] = useState<Homework | null>(null);
@@ -32,7 +31,6 @@ const HomeworkPage = () => {
       setStatusMap(map);
       setSubmittedMap(subMap);
     }
-    setLoading(false);
   }, [user.class_id]);
 
   const handleSubmit = (hwId: string) => {
@@ -53,8 +51,6 @@ const HomeworkPage = () => {
   function getFeedback(hw: Homework): string | undefined {
     return (hw as Homework & { feedback?: string }).feedback;
   }
-
-  if (loading) return <div>Loading...</div>;
 
   return (
     <div>

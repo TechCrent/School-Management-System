@@ -1,6 +1,6 @@
 [
   {
-    "teacher_id": "789e0123-e89b-12d3-a456-426614174001",
+    "teacher_id": "t-1",
     "full_name": "Jane Smith",
     "email": "jane.smith@schoolapp.com",
     "subject_id": "sub_1",
@@ -8,5 +8,4 @@
     "assigned_classes": ["class_1"],
     "phone": "+1-555-0101"
   }
-  // ... 4 more entries ...
 ] 

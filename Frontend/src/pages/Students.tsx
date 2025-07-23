@@ -65,17 +65,8 @@ export const Students = () => {
   const studentsPerPage = 10;
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [loading, setLoading] = useState(true);
 
-  // Fetch students
-  useEffect(() => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-    }, 600); // Simulate loading
-  }, []);
   const students = mockStudents;
-  const isLoading = loading;
   const isError = false;
 
   // Mutations
@@ -374,7 +365,6 @@ export const Students = () => {
     }
   };
 
-  if (isLoading) return <Loading size="lg" text="Loading students..." />;
   if (isError) return <div className="text-center text-destructive">Failed to load students.</div>;
 
   return (

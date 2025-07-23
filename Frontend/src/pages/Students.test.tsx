@@ -1,22 +1,32 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { describe, it, expect, beforeAll, vi } from 'vitest';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { Students } from './Students';
+import '../i18n';
+import { NotificationProvider } from '../components/layout/NotificationContext';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { MemoryRouter } from 'react-router-dom';
 
-// Mock localStorage and mockStudents
+// Set the role to admin for the test environment
 beforeAll(() => {
-  Object.defineProperty(window, 'localStorage', {
-    value: {
-      getItem: () => 'admin',
-      setItem: () => {},
-      removeItem: () => {},
-    },
-    writable: true,
-  });
+  window.localStorage.setItem('role', 'admin');
 });
 
 describe('Students Page', () => {
   it('renders search input and filters students', async () => {
-    render(<Students />);
+    const queryClient = new QueryClient();
+    render(
+      <MemoryRouter>
+        <QueryClientProvider client={queryClient}>
+          <NotificationProvider>
+            <Students />
+          </NotificationProvider>
+        </QueryClientProvider>
+      </MemoryRouter>
+    );
+    await waitFor(() => {
+      expect(screen.getByPlaceholderText(/search students by name/i)).toBeInTheDocument();
+    });
     const searchInput = screen.getByPlaceholderText(/search students by name/i);
     expect(searchInput).toBeInTheDocument();
 
