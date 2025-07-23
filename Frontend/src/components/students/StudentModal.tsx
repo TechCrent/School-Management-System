@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react';
 import {
   Dialog,
@@ -29,11 +30,16 @@ interface StudentFormData {
   grade: string;
   date_of_birth: string;
   parent1_email: string;
+  parent1_name: string;
+  parent1_contact: string;
   parent2_email: string;
+  parent2_name: string;
+  parent2_contact: string;
   status: 'active' | 'inactive';
 }
 
 export const StudentModal = ({ isOpen, onClose, onSave, student, mode }: StudentModalProps) => {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -44,7 +50,11 @@ export const StudentModal = ({ isOpen, onClose, onSave, student, mode }: Student
       grade: 'Grade 8A',
       date_of_birth: '',
       parent1_email: '',
+      parent1_name: '',
+      parent1_contact: '',
       parent2_email: '',
+      parent2_name: '',
+      parent2_contact: '',
       status: 'active',
     },
   });
@@ -56,7 +66,11 @@ export const StudentModal = ({ isOpen, onClose, onSave, student, mode }: Student
       setValue('grade', student.grade);
       setValue('date_of_birth', student.date_of_birth);
       setValue('parent1_email', student.parent1_email || '');
+      setValue('parent1_name', student.parent1_name || '');
+      setValue('parent1_contact', student.parent1_contact || '');
       setValue('parent2_email', student.parent2_email || '');
+      setValue('parent2_name', student.parent2_name || '');
+      setValue('parent2_contact', student.parent2_contact || '');
       setValue('status', student.status);
     } else if (mode === 'create') {
       reset();
@@ -202,6 +216,34 @@ export const StudentModal = ({ isOpen, onClose, onSave, student, mode }: Student
             </div>
 
             <div className="space-y-2">
+              <Label htmlFor="parent1_name">{t('Parent 1 Name')}</Label>
+              <Input
+                id="parent1_name"
+                {...register('parent1_name', { minLength: { value: 2, message: t('Name must be at least 2 characters') } })}
+                placeholder={t('Enter parent 1 name')}
+                disabled={isReadOnly}
+                className={errors.parent1_name ? 'border-destructive' : ''}
+              />
+              {errors.parent1_name && (
+                <p className="text-sm text-destructive">{errors.parent1_name.message}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="parent1_contact">{t('Parent 1 Contact')}</Label>
+              <Input
+                id="parent1_contact"
+                {...register('parent1_contact', { minLength: { value: 5, message: t('Contact must be at least 5 characters') } })}
+                placeholder={t('Enter parent 1 contact')}
+                disabled={isReadOnly}
+                className={errors.parent1_contact ? 'border-destructive' : ''}
+              />
+              {errors.parent1_contact && (
+                <p className="text-sm text-destructive">{errors.parent1_contact.message}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
               <Label htmlFor="parent2_email">Parent 2 Email</Label>
               <Input
                 id="parent2_email"
@@ -218,6 +260,34 @@ export const StudentModal = ({ isOpen, onClose, onSave, student, mode }: Student
               />
               {errors.parent2_email && (
                 <p className="text-sm text-destructive">{errors.parent2_email.message}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="parent2_name">{t('Parent 2 Name')}</Label>
+              <Input
+                id="parent2_name"
+                {...register('parent2_name', { minLength: { value: 2, message: t('Name must be at least 2 characters') } })}
+                placeholder={t('Enter parent 2 name')}
+                disabled={isReadOnly}
+                className={errors.parent2_name ? 'border-destructive' : ''}
+              />
+              {errors.parent2_name && (
+                <p className="text-sm text-destructive">{errors.parent2_name.message}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="parent2_contact">{t('Parent 2 Contact')}</Label>
+              <Input
+                id="parent2_contact"
+                {...register('parent2_contact', { minLength: { value: 5, message: t('Contact must be at least 5 characters') } })}
+                placeholder={t('Enter parent 2 contact')}
+                disabled={isReadOnly}
+                className={errors.parent2_contact ? 'border-destructive' : ''}
+              />
+              {errors.parent2_contact && (
+                <p className="text-sm text-destructive">{errors.parent2_contact.message}</p>
               )}
             </div>
           </div>

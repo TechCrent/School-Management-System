@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
@@ -24,6 +25,7 @@ interface DashboardStats {
 }
 
 export const Dashboard = () => {
+  const { t } = useTranslation();
   const [stats, setStats] = useState<DashboardStats>({
     totalStudents: 0,
     totalTeachers: 0,
@@ -61,9 +63,9 @@ export const Dashboard = () => {
 
   const getGreeting = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return 'Good Morning';
-    if (hour < 18) return 'Good Afternoon';
-    return 'Good Evening';
+    if (hour < 12) return t('Good Morning');
+    if (hour < 18) return t('Good Afternoon');
+    return t('Good Evening');
   };
 
   const getRoleSpecificContent = () => {
@@ -74,52 +76,52 @@ export const Dashboard = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <Card className="shadow-card hover:shadow-glow transition-all duration-300">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Total Students</CardTitle>
+                  <CardTitle className="text-sm font-medium">{t('Total Students')}</CardTitle>
                   <Users className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold text-primary">{stats.totalStudents}</div>
                   <p className="text-xs text-muted-foreground">
-                    Active students in system
+                    {t('Active students in system')}
                   </p>
                 </CardContent>
               </Card>
 
               <Card className="shadow-card hover:shadow-glow transition-all duration-300">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Total Teachers</CardTitle>
+                  <CardTitle className="text-sm font-medium">{t('Total Teachers')}</CardTitle>
                   <GraduationCap className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold text-secondary">{stats.totalTeachers}</div>
                   <p className="text-xs text-muted-foreground">
-                    Active teaching staff
+                    {t('Active teaching staff')}
                   </p>
                 </CardContent>
               </Card>
 
               <Card className="shadow-card hover:shadow-glow transition-all duration-300">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Active Classes</CardTitle>
+                  <CardTitle className="text-sm font-medium">{t('Active Classes')}</CardTitle>
                   <Calendar className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold text-accent">{stats.totalClasses}</div>
                   <p className="text-xs text-muted-foreground">
-                    Scheduled classes
+                    {t('Scheduled classes')}
                   </p>
                 </CardContent>
               </Card>
 
               <Card className="shadow-card hover:shadow-glow transition-all duration-300">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Homework Tasks</CardTitle>
+                  <CardTitle className="text-sm font-medium">{t('Homework Tasks')}</CardTitle>
                   <BookOpen className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">{stats.totalHomework}</div>
                   <p className="text-xs text-muted-foreground">
-                    Total assignments
+                    {t('Total assignments')}
                   </p>
                 </CardContent>
               </Card>
@@ -216,7 +218,7 @@ export const Dashboard = () => {
               {getGreeting()}, {userName}!
             </h1>
             <p className="text-muted-foreground mt-2">
-              Welcome to your EduLite dashboard
+              {t('Welcome to your EduLite dashboard')}
             </p>
           </div>
           <Badge variant="secondary" className="px-3 py-1">
@@ -287,7 +289,7 @@ export const Dashboard = () => {
               {mockClasses.length === 0 && (
                 <div className="text-center py-6 text-muted-foreground">
                   <AlertCircle className="h-8 w-8 mx-auto mb-2" />
-                  <p>No classes scheduled for today</p>
+                  <p>{t('No classes scheduled for today')}</p>
                 </div>
               )}
             </div>

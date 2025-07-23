@@ -30,20 +30,23 @@ import {
   Mail,
   Calendar,
   Users,
-  Eye
+  Eye,
+  BookOpen
 } from 'lucide-react';
 import { Student } from '../data/mockData';
 import { StudentModal } from '../components/students/StudentModal';
-import { useToast } from '@/hooks/use-toast';
+import { useCustomToast } from '@/hooks/use-toast';
 import { Loading } from '@/components/ui/loading';
 import { formatDateWithTimezone } from '@/lib/utils';
 import { notify } from '@/lib/utils';
 import { getStudents, addStudent, updateStudent, deleteStudent } from '@/api/edulite';
 import { USE_MOCK } from '../config';
 import { mockStudents } from '../data/mockData';
+import { useTranslation } from 'react-i18next';
 
 export const Students = () => {
-  const { toast } = useToast();
+  const { t } = useTranslation();
+  const { customToast } = useCustomToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [userRole, setUserRole] = useState('');
@@ -219,16 +222,16 @@ export const Students = () => {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-            Students
+            {t('Students')}
           </h1>
           <p className="text-muted-foreground mt-2">
-            Manage student information and records
+            {t('Manage student information and records')}
           </p>
         </div>
         {canEdit && (
           <Button onClick={handleAdd} className="shadow-glow hover:shadow-glow/50">
             <Plus className="h-4 w-4 mr-2" />
-            Add Student
+            {t('Add Student')}
           </Button>
         )}
       </div>
@@ -237,39 +240,39 @@ export const Students = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card className="shadow-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Students</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('Total Students')}</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-primary">{students.length}</div>
             <p className="text-xs text-muted-foreground">
-              Active students
+              {t('Registered students')}
             </p>
           </CardContent>
         </Card>
 
         <Card className="shadow-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Average Age</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('Average Age')}</CardTitle>
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-secondary">{averageAge}</div>
             <p className="text-xs text-muted-foreground">
-              Years old
+              {t('years')}
             </p>
           </CardContent>
         </Card>
 
         <Card className="shadow-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Classes</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">{t('Active Classes')}</CardTitle>
+            <BookOpen className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-accent">{activeClasses}</div>
             <p className="text-xs text-muted-foreground">
-              {activeClasses === 1 ? 'Class' : 'Classes'}
+              {t('Unique classes with students')}
             </p>
           </CardContent>
         </Card>
@@ -278,9 +281,9 @@ export const Students = () => {
       {/* Search and Filters */}
       <Card className="shadow-card">
         <CardHeader>
-          <CardTitle>Student Directory</CardTitle>
+          <CardTitle>{t('Student Directory')}</CardTitle>
           <CardDescription>
-            Search and manage student information
+            {t('Search and manage student information')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -288,7 +291,7 @@ export const Students = () => {
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
-                placeholder="Search students by name, email, or grade..."
+                placeholder={t('Search students by name, email, or grade...')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10 transition-all duration-200 focus:shadow-glow"
@@ -301,12 +304,12 @@ export const Students = () => {
             <Table>
               <TableHeader>
                 <TableRow className="bg-muted/50">
-                  <TableHead>Student</TableHead>
-                  <TableHead>Grade</TableHead>
-                  <TableHead>Age</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  <TableHead>{t('Student')}</TableHead>
+                  <TableHead>{t('Grade')}</TableHead>
+                  <TableHead>{t('Age')}</TableHead>
+                  <TableHead>{t('Email')}</TableHead>
+                  <TableHead>{t('Status')}</TableHead>
+                  <TableHead className="text-right">{t('Actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -347,7 +350,7 @@ export const Students = () => {
                           size="sm"
                           onClick={() => handleView(student)}
                           className="h-8 w-8 p-0"
-                          title="View Details"
+                          title={t('View Details')}
                         >
                           <Eye className="h-4 w-4" />
                         </Button>
@@ -358,7 +361,7 @@ export const Students = () => {
                               size="sm"
                               onClick={() => handleEdit(student)}
                               className="h-8 w-8 p-0"
-                              title="Edit Student"
+                              title={t('Edit Student')}
                             >
                               <Edit className="h-4 w-4" />
                             </Button>
@@ -367,7 +370,7 @@ export const Students = () => {
                               size="sm"
                               onClick={() => handleDelete(student.student_id)}
                               className="h-8 w-8 p-0 text-destructive hover:text-destructive"
-                              title="Delete Student"
+                              title={t('Delete Student')}
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>
@@ -383,7 +386,7 @@ export const Students = () => {
             {filteredStudents.length === 0 && (
               <div className="text-center py-8 text-muted-foreground">
                 <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>No students found matching your search.</p>
+                <p>{t('No students found matching your search.')}</p>
               </div>
             )}
           </div>
@@ -392,7 +395,7 @@ export const Students = () => {
           {totalPages > 1 && (
             <div className="flex justify-between items-center mt-6">
               <p className="text-sm text-muted-foreground">
-                Showing {startIndex + 1} to {Math.min(startIndex + studentsPerPage, filteredStudents.length)} of {filteredStudents.length} students
+                {t('Showing')} {startIndex + 1} {t('to')} {Math.min(startIndex + studentsPerPage, filteredStudents.length)} {t('of')} {filteredStudents.length} {t('students')}
               </p>
               <div className="flex gap-2">
                 <Button
@@ -401,7 +404,7 @@ export const Students = () => {
                   onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                   disabled={currentPage === 1}
                 >
-                  Previous
+                  {t('Previous')}
                 </Button>
                 <div className="flex gap-1">
                   {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
@@ -425,7 +428,7 @@ export const Students = () => {
                   onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                   disabled={currentPage === totalPages}
                 >
-                  Next
+                  {t('Next')}
                 </Button>
               </div>
             </div>
@@ -446,19 +449,19 @@ export const Students = () => {
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Student</AlertDialogTitle>
+            <AlertDialogTitle>{t('Delete Student')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete this student? This action cannot be undone.
+              {t('Are you sure you want to delete this student? This action cannot be undone.')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t('Cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDelete}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               disabled={deleteMutation.status === 'pending'}
             >
-              {deleteMutation.status === 'pending' ? 'Deleting...' : 'Delete'}
+              {deleteMutation.status === 'pending' ? t('Deleting...') : t('Delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

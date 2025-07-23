@@ -12,7 +12,11 @@ export interface Student {
   class_id: string;
   email: string;
   parent1_email: string;
+  parent1_name: string;
+  parent1_contact: string;
   parent2_email: string;
+  parent2_name: string;
+  parent2_contact: string;
   grade: string;
   status: 'active' | 'inactive';
 }
@@ -85,7 +89,11 @@ export const mockStudents: Student[] = [
     class_id: "class_1",
     email: "john.doe@example.com",
     parent1_email: "mom.doe@example.com",
+    parent1_name: "Jane Doe",
+    parent1_contact: "+1-555-1000",
     parent2_email: "dad.doe@example.com",
+    parent2_name: "Mike Doe",
+    parent2_contact: "+1-555-1001",
     grade: "8A",
     status: "active"
   },
@@ -96,7 +104,11 @@ export const mockStudents: Student[] = [
     class_id: "class_1",
     email: "emma.wilson@example.com",
     parent1_email: "sarah.wilson@example.com",
+    parent1_name: "Sarah Wilson",
+    parent1_contact: "+1-555-1002",
     parent2_email: "mike.wilson@example.com",
+    parent2_name: "Mike Wilson",
+    parent2_contact: "+1-555-1003",
     grade: "8A",
     status: "active"
   },
@@ -107,7 +119,11 @@ export const mockStudents: Student[] = [
     class_id: "class_1",
     email: "michael.johnson@example.com",
     parent1_email: "lisa.johnson@example.com",
+    parent1_name: "Lisa Johnson",
+    parent1_contact: "+1-555-1004",
     parent2_email: "david.johnson@example.com",
+    parent2_name: "David Johnson",
+    parent2_contact: "+1-555-1005",
     grade: "8A",
     status: "active"
   },
@@ -118,7 +134,11 @@ export const mockStudents: Student[] = [
     class_id: "class_1",
     email: "sophia.brown@example.com",
     parent1_email: "anna.brown@example.com",
+    parent1_name: "Anna Brown",
+    parent1_contact: "+1-555-1006",
     parent2_email: "robert.brown@example.com",
+    parent2_name: "Robert Brown",
+    parent2_contact: "+1-555-1007",
     grade: "8A",
     status: "active"
   },
@@ -129,7 +149,11 @@ export const mockStudents: Student[] = [
     class_id: "class_1",
     email: "william.davis@example.com",
     parent1_email: "jennifer.davis@example.com",
+    parent1_name: "Jennifer Davis",
+    parent1_contact: "+1-555-1008",
     parent2_email: "thomas.davis@example.com",
+    parent2_name: "Thomas Davis",
+    parent2_contact: "+1-555-1009",
     grade: "8A",
     status: "active"
   }

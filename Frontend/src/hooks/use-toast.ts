@@ -5,6 +5,8 @@ import type {
   ToastProps,
 } from "@/components/ui/toast"
 
+import { useNotification } from '@/components/layout/NotificationContext';
+
 const TOAST_LIMIT = 1
 const TOAST_REMOVE_DELAY = 5000
 
@@ -197,6 +199,25 @@ function useToast() {
     toast,
     dismiss: (toastId?: string) => dispatch({ type: "DISMISS_TOAST", toastId }),
   }
+}
+
+/**
+ * Custom hook to show a toast and add a notification
+ */
+export function useCustomToast() {
+  const notification = useNotification();
+
+  function customToast({ title, description, ...props }: Toast) {
+    // Show toast as usual
+    const result = toast({ title, description, ...props });
+    // Add to notification context
+    if (title) {
+      notification.addNotification({ title: String(title), description: description ? String(description) : undefined });
+    }
+    return result;
+  }
+
+  return { ...useToast(), customToast };
 }
 
 export { useToast, toast }

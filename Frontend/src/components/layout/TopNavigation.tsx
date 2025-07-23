@@ -17,21 +17,27 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { useToast } from '@/hooks/use-toast';
+import { useCustomToast } from '@/hooks/use-toast';
+import { Drawer, DrawerTrigger, DrawerContent } from '@/components/ui/drawer';
+import { NotificationDrawer } from './NotificationDrawer';
+import { useNotification } from './NotificationContext';
 
 export const TopNavigation = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const { customToast } = useCustomToast();
   const [user] = useState(() => {
     const userData = localStorage.getItem('user');
     return userData ? JSON.parse(userData) : null;
   });
+  const [notificationOpen, setNotificationOpen] = useState(false);
+  const { notifications } = useNotification();
+  const unreadCount = notifications.filter(n => !n.read).length;
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('role');
     localStorage.removeItem('user');
-    toast({
+    customToast({
       title: "Logged out successfully",
       description: "You have been securely logged out.",
     });
@@ -58,13 +64,22 @@ export const TopNavigation = () => {
 
         <div className="flex items-center space-x-4">
           {/* Notifications */}
-          <Button variant="ghost" size="sm" className="relative">
-            <Bell className="h-5 w-5" />
-            <span className="absolute -top-1 -right-1 h-3 w-3 bg-destructive rounded-full text-[10px] flex items-center justify-center text-destructive-foreground">
-              3
-            </span>
-            <span className="sr-only">Notifications</span>
-          </Button>
+          <Drawer open={notificationOpen} onOpenChange={setNotificationOpen}>
+            <DrawerTrigger asChild>
+              <Button variant="ghost" size="sm" className="relative">
+                <Bell className="h-5 w-5" />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-1 h-3 w-3 bg-destructive rounded-full text-[10px] flex items-center justify-center text-destructive-foreground">
+                    {unreadCount}
+                  </span>
+                )}
+                <span className="sr-only">Notifications</span>
+              </Button>
+            </DrawerTrigger>
+            <DrawerContent>
+              <NotificationDrawer />
+            </DrawerContent>
+          </Drawer>
 
           {/* User Menu */}
           <DropdownMenu>

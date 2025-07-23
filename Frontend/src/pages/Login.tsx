@@ -10,8 +10,10 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Eye, EyeOff } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export const Login = () => {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -56,42 +58,44 @@ export const Login = () => {
             <div className="flex justify-center mb-4">
               <EduLiteLogo size={60} />
             </div>
-            <CardTitle className="text-2xl">Welcome Back</CardTitle>
+            <CardTitle className="text-2xl">{t('Welcome Back')}</CardTitle>
             <CardDescription>
-              Sign in to your EduLite account
+              {t('Sign in to your EduLite account')}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">{t('Email')}</Label>
                 <Input
                   id="email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@schoolapp.com"
+                  placeholder={t('admin@schoolapp.com')}
                   required
                   className="transition-all duration-200 focus:shadow-glow"
                 />
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">{t('Password')}</Label>
                 <div className="relative">
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Enter your password"
+                    placeholder={t('Enter your password')}
                     required
                     className="pr-10 transition-all duration-200 focus:shadow-glow"
                   />
                   <button
                     type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 text-muted-foreground"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    tabIndex={-1}
+                    aria-label={showPassword ? t('Hide password') : t('Show password')}
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
@@ -100,7 +104,7 @@ export const Login = () => {
 
               {error && (
                 <Alert variant="destructive">
-                  <AlertDescription>{error}</AlertDescription>
+                  <AlertDescription>{t(error)}</AlertDescription>
                 </Alert>
               )}
 
@@ -109,15 +113,20 @@ export const Login = () => {
                 className="w-full shadow-glow hover:shadow-glow/50" 
                 disabled={isLoading}
               >
-                {isLoading ? 'Signing in...' : 'Sign In'}
+                {isLoading ? t('Signing in...') : t('Sign In')}
               </Button>
             </form>
+            <div className="mt-4 text-center">
+              <a href="/forgot-password" className="text-primary hover:underline text-sm">
+                {t('Forgot Password?')}
+              </a>
+            </div>
 
             <div className="mt-6 p-4 bg-muted rounded-lg">
-              <p className="text-sm text-muted-foreground mb-2">Demo Credentials:</p>
+              <p className="text-sm text-muted-foreground mb-2">{t('Demo Credentials:')}</p>
               <div className="text-xs space-y-1">
-                <div><strong>Admin:</strong> admin@schoolapp.com / Admin$1234</div>
-                <div><strong>Teacher:</strong> jane.smith@schoolapp.com / Teacher$123</div>
+                <div><strong>{t('Admin:')}</strong> {t('admin@schoolapp.com')} / {t('Admin$1234')}</div>
+                <div><strong>{t('Teacher:')}</strong> {t('jane.smith@schoolapp.com')} / {t('Teacher$123')}</div>
               </div>
             </div>
           </CardContent>

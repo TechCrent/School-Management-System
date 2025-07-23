@@ -10,6 +10,8 @@ import { useToast } from '@/hooks/use-toast';
 import { User, Mail, Calendar, Shield, Save } from 'lucide-react';
 import { notify } from '@/lib/utils';
 import { USE_MOCK } from '../config';
+import { useCustomToast } from '@/hooks/use-toast';
+import { useTranslation } from 'react-i18next';
 
 interface ProfileFormData {
   full_name: string;
@@ -30,7 +32,8 @@ function getPrivacySettings() {
 }
 
 export const Profile = () => {
-  const { toast } = useToast();
+  const { t } = useTranslation();
+  const { customToast } = useCustomToast();
   const [isLoading, setIsLoading] = useState(false);
   const [user, setUser] = useState(() => {
     const userData = localStorage.getItem('user');
@@ -99,18 +102,18 @@ export const Profile = () => {
         localStorage.setItem('user', JSON.stringify(updatedUser));
         setUser(updatedUser);
 
-        notify('push', {
+        customToast({
           title: 'Profile updated',
           description: 'Your profile information has been updated successfully.',
         });
 
         if (passwordChanged) {
-          notify('push', {
+          customToast({
             title: 'Password changed',
             description: 'Your password has been updated.',
           });
         } else if (passwordError) {
-          notify('push', {
+          customToast({
             title: 'Password change failed',
             description: passwordError,
             variant: 'destructive',
@@ -124,7 +127,7 @@ export const Profile = () => {
         throw new Error('Production profile update not implemented yet.');
       }
     } catch (error) {
-      notify('push', {
+      customToast({
         title: 'Error',
         description: 'Failed to update profile. Please try again.',
         variant: 'destructive',
@@ -148,18 +151,18 @@ export const Profile = () => {
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-          Profile
+          {t('Profile')}
         </h1>
         <p className="text-muted-foreground mt-2">
-          Manage your account settings and preferences
+          {t('Manage your account settings and preferences')}
         </p>
       </div>
 
       {/* Privacy: Profile visibility */}
       {!privacy.profileVisible ? (
         <div className="text-center py-12">
-          <h2 className="text-2xl font-bold mb-4">Profile is private</h2>
-          <p className="text-muted-foreground">This user has hidden their profile.</p>
+          <h2 className="text-2xl font-bold mb-4">{t('Profile is private')}</h2>
+          <p className="text-muted-foreground">{t('This user has hidden their profile.')}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -171,26 +174,26 @@ export const Profile = () => {
                   {user?.full_name ? getInitials(user.full_name) : 'U'}
                 </AvatarFallback>
               </Avatar>
-              <CardTitle>{user?.full_name || 'User'}</CardTitle>
+              <CardTitle>{user?.full_name || t('User')}</CardTitle>
               <CardDescription className="flex items-center justify-center gap-2">
                 <Shield className="h-4 w-4" />
-                <span className="capitalize">{localStorage.getItem('role') || 'user'}</span>
+                <span className="capitalize">{localStorage.getItem('role') || t('user')}</span>
               </CardDescription>
             </CardHeader>
             <CardContent>
               {privacy.showEmail && (
                 <div className="flex items-center gap-3 text-sm">
                   <Mail className="h-4 w-4 text-muted-foreground" />
-                  <span>{user?.email || 'No email'}</span>
+                  <span>{user?.email || t('No email')}</span>
                 </div>
               )}
               <div className="flex items-center gap-3 text-sm">
                 <Calendar className="h-4 w-4 text-muted-foreground" />
-                <span>Member since 2024</span>
+                <span>{t('Member since 2024')}</span>
               </div>
               <div className="flex items-center gap-3 text-sm">
                 <User className="h-4 w-4 text-muted-foreground" />
-                <span>ID: {user?.user_id?.slice(0, 8) || 'N/A'}...</span>
+                <span>{t('ID')}: {user?.user_id?.slice(0, 8) || 'N/A'}...</span>
               </div>
             </CardContent>
           </Card>
@@ -198,26 +201,26 @@ export const Profile = () => {
           {/* Profile Form */}
           <Card className="lg:col-span-2 shadow-card">
             <CardHeader>
-              <CardTitle>Account Information</CardTitle>
+              <CardTitle>{t('Account Information')}</CardTitle>
               <CardDescription>
-                Update your personal information and security settings
+                {t('Update your personal information and security settings')}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                 {/* Personal Information */}
                 <div className="space-y-4">
-                  <h3 className="text-lg font-semibold">Personal Information</h3>
+                  <h3 className="text-lg font-semibold">{t('Personal Information')}</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="full_name">Full Name *</Label>
+                      <Label htmlFor="full_name">{t('Full Name *')}</Label>
                       <Input
                         id="full_name"
                         {...register('full_name', { 
                           required: 'Full name is required',
                           minLength: { value: 2, message: 'Name must be at least 2 characters' }
                         })}
-                        placeholder="Enter your full name"
+                        placeholder={t('Enter your full name')}
                         className={errors.full_name ? 'border-destructive' : ''}
                       />
                       {errors.full_name && (
@@ -225,7 +228,7 @@ export const Profile = () => {
                       )}
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="email">Email *</Label>
+                      <Label htmlFor="email">{t('Email *')}</Label>
                       <Input
                         id="email"
                         type="email"
@@ -236,7 +239,7 @@ export const Profile = () => {
                             message: 'Invalid email address'
                           }
                         })}
-                        placeholder="Enter your email"
+                        placeholder={t('Enter your email')}
                         className={errors.email ? 'border-destructive' : ''}
                       />
                       {errors.email && (
@@ -250,31 +253,31 @@ export const Profile = () => {
 
                 {/* Security Settings */}
                 <div className="space-y-4">
-                  <h3 className="text-lg font-semibold">Security Settings</h3>
+                  <h3 className="text-lg font-semibold">{t('Security Settings')}</h3>
                   <p className="text-sm text-muted-foreground">
-                    Leave password fields empty if you don't want to change your password
+                    {t('Leave password fields empty if you don\'t want to change your password')}
                   </p>
                   
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="current_password">Current Password</Label>
+                      <Label htmlFor="current_password">{t('Current Password')}</Label>
                       <Input
                         id="current_password"
                         type="password"
                         {...register('current_password')}
-                        placeholder="Enter current password"
+                        placeholder={t('Enter current password')}
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="new_password">New Password</Label>
+                      <Label htmlFor="new_password">{t('New Password')}</Label>
                       <Input
                         id="new_password"
                         type="password"
                         {...register('new_password', {
                           minLength: watchedPasswords[0] ? { value: 6, message: 'Password must be at least 6 characters' } : undefined
                         })}
-                        placeholder="Enter new password"
+                        placeholder={t('Enter new password')}
                         className={errors.new_password ? 'border-destructive' : ''}
                       />
                       {errors.new_password && (
@@ -283,7 +286,7 @@ export const Profile = () => {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="confirm_password">Confirm Password</Label>
+                      <Label htmlFor="confirm_password">{t('Confirm Password')}</Label>
                       <Input
                         id="confirm_password"
                         type="password"
@@ -291,7 +294,7 @@ export const Profile = () => {
                           validate: value => 
                             !watchedPasswords[0] || value === watchedPasswords[0] || 'Passwords do not match'
                         })}
-                        placeholder="Confirm new password"
+                        placeholder={t('Confirm new password')}
                         className={errors.confirm_password ? 'border-destructive' : ''}
                       />
                       {errors.confirm_password && (
@@ -306,7 +309,7 @@ export const Profile = () => {
                     {isLoading ? 'Saving...' : (
                       <>
                         <Save className="h-4 w-4 mr-2" />
-                        Save Changes
+                        {t('Save Changes')}
                       </>
                     )}
                   </Button>
