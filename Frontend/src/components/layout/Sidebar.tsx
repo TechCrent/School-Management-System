@@ -11,9 +11,11 @@ import {
   User, 
   LogOut,
   Menu,
-  X
+  X,
+  LifeBuoy
 } from "lucide-react";
 import { EduLiteLogo } from "../ui/logo";
+import { useTranslation } from 'react-i18next';
 
 const navigationItems = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
@@ -24,12 +26,16 @@ const navigationItems = [
   { title: "Classes", url: "/classes", icon: Calendar },
   { title: "Creativity Board", url: "/creativity-board", icon: Palette },
   { title: "Profile", url: "/profile", icon: User },
+  { title: "Help & Support", url: "/help", icon: LifeBuoy },
+  { title: "Activity Log", url: "/activity-log", icon: FileText, adminOnly: true },
 ];
 
 export const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const { t } = useTranslation();
+  const userRole = localStorage.getItem('role');
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -65,7 +71,7 @@ export const Sidebar = () => {
 
           {/* Navigation */}
           <nav className="flex-1 p-4 space-y-2">
-            {navigationItems.map((item) => (
+            {navigationItems.filter(item => !item.adminOnly || userRole === 'admin').map((item) => (
               <NavLink
                 key={item.title}
                 to={item.url}
@@ -79,7 +85,7 @@ export const Sidebar = () => {
                 `}
               >
                 <item.icon className="h-5 w-5 flex-shrink-0" />
-                {!isCollapsed && <span className="font-medium">{item.title}</span>}
+                {!isCollapsed && <span className="font-medium">{t(item.title)}</span>}
               </NavLink>
             ))}
           </nav>

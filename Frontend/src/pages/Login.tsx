@@ -75,6 +75,7 @@ export const Login = () => {
                   placeholder={t('admin@schoolapp.com')}
                   required
                   className="transition-all duration-200 focus:shadow-glow"
+                  aria-describedby={error ? 'login-error' : undefined}
                 />
               </div>
               
@@ -89,6 +90,7 @@ export const Login = () => {
                     placeholder={t('Enter your password')}
                     required
                     className="pr-10 transition-all duration-200 focus:shadow-glow"
+                    aria-describedby={error ? 'login-error' : undefined}
                   />
                   <button
                     type="button"
@@ -104,7 +106,7 @@ export const Login = () => {
 
               {error && (
                 <Alert variant="destructive">
-                  <AlertDescription>{t(error)}</AlertDescription>
+                  <AlertDescription id="login-error">{t(error)}</AlertDescription>
                 </Alert>
               )}
 

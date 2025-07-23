@@ -1,24 +1,24 @@
-import { Navigate, useLocation } from 'react-router-dom';
-import { ReactNode } from 'react';
+import { useLocation, Navigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { NotAuthorized } from './NotAuthorized';
 
 interface ProtectedRouteProps {
-  children: ReactNode;
-  requiredRole?: string[];
+  children: React.ReactNode;
+  allowedRoles?: string[];
 }
 
-export const ProtectedRoute = ({ children, requiredRole }: ProtectedRouteProps) => {
+export const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
   const location = useLocation();
+  const { t } = useTranslation();
   const token = localStorage.getItem('token');
   const userRole = localStorage.getItem('role');
 
-  // Check if user is authenticated
   if (!token) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // Check if user has required role
-  if (requiredRole && !requiredRole.includes(userRole || '')) {
-    return <Navigate to="/" replace />;
+  if (allowedRoles && !allowedRoles.includes(userRole || '')) {
+    return <NotAuthorized />;
   }
 
   return <>{children}</>;

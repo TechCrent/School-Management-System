@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -39,6 +39,8 @@ export const Profile = () => {
     const userData = localStorage.getItem('user');
     return userData ? JSON.parse(userData) : null;
   });
+  const [profilePic, setProfilePic] = useState(() => localStorage.getItem('profile_pic') || '');
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const privacy = getPrivacySettings();
 
   const { register, handleSubmit, watch, reset, formState: { errors } } = useForm<ProfileFormData>({
@@ -146,6 +148,26 @@ export const Profile = () => {
       .slice(0, 2);
   };
 
+  const handleProfilePicChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setProfilePic(reader.result as string);
+        localStorage.setItem('profile_pic', reader.result as string);
+        customToast({ title: t('Profile picture updated') });
+      };
+      reader.readAsDataURL(file);
+    } else {
+      customToast({ title: t('Only image files are allowed'), variant: 'destructive' });
+    }
+  };
+  const handleRemoveProfilePic = () => {
+    setProfilePic('');
+    localStorage.removeItem('profile_pic');
+    customToast({ title: t('Profile picture removed') });
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -157,7 +179,6 @@ export const Profile = () => {
           {t('Manage your account settings and preferences')}
         </p>
       </div>
-
       {/* Privacy: Profile visibility */}
       {!privacy.profileVisible ? (
         <div className="text-center py-12">
@@ -165,15 +186,52 @@ export const Profile = () => {
           <p className="text-muted-foreground">{t('This user has hidden their profile.')}</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <>
           {/* Profile Summary */}
           <Card className="shadow-card">
             <CardHeader className="text-center">
-              <Avatar className="h-24 w-24 mx-auto mb-4">
-                <AvatarFallback className="bg-primary text-primary-foreground text-xl">
-                  {user?.full_name ? getInitials(user.full_name) : 'U'}
-                </AvatarFallback>
-              </Avatar>
+              <div className="relative w-fit mx-auto mb-4">
+                <Avatar className="h-24 w-24 mx-auto">
+                  {profilePic ? (
+                    <img
+                      src={profilePic}
+                      alt={t('Profile picture')}
+                      className="h-24 w-24 object-cover rounded-full"
+                    />
+                  ) : (
+                    <AvatarFallback className="bg-primary text-primary-foreground text-xl">
+                      {user?.full_name ? getInitials(user.full_name) : 'U'}
+                    </AvatarFallback>
+                  )}
+                </Avatar>
+                <input
+                  type="file"
+                  accept="image/*"
+                  ref={fileInputRef}
+                  style={{ display: 'none' }}
+                  onChange={handleProfilePicChange}
+                />
+              </div>
+              <div className="flex justify-center gap-2 mt-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => fileInputRef.current?.click()}
+                  size="sm"
+                >
+                  {t('Upload Profile Picture')}
+                </Button>
+                {profilePic && (
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    onClick={handleRemoveProfilePic}
+                    size="sm"
+                  >
+                    {t('Remove Picture')}
+                  </Button>
+                )}
+              </div>
               <CardTitle>{user?.full_name || t('User')}</CardTitle>
               <CardDescription className="flex items-center justify-center gap-2">
                 <Shield className="h-4 w-4" />
@@ -222,9 +280,10 @@ export const Profile = () => {
                         })}
                         placeholder={t('Enter your full name')}
                         className={errors.full_name ? 'border-destructive' : ''}
+                        aria-describedby={errors.full_name ? 'full_name-error' : undefined}
                       />
                       {errors.full_name && (
-                        <p className="text-sm text-destructive">{errors.full_name.message}</p>
+                        <p className="text-sm text-destructive" id="full_name-error">{errors.full_name.message}</p>
                       )}
                     </div>
                     <div className="space-y-2">
@@ -241,9 +300,10 @@ export const Profile = () => {
                         })}
                         placeholder={t('Enter your email')}
                         className={errors.email ? 'border-destructive' : ''}
+                        aria-describedby={errors.email ? 'email-error' : undefined}
                       />
                       {errors.email && (
-                        <p className="text-sm text-destructive">{errors.email.message}</p>
+                        <p className="text-sm text-destructive" id="email-error">{errors.email.message}</p>
                       )}
                     </div>
                   </div>
@@ -266,7 +326,11 @@ export const Profile = () => {
                         type="password"
                         {...register('current_password')}
                         placeholder={t('Enter current password')}
+                        aria-describedby={errors.current_password ? 'current_password-error' : undefined}
                       />
+                      {errors.current_password && (
+                        <p className="text-sm text-destructive" id="current_password-error">{errors.current_password.message}</p>
+                      )}
                     </div>
 
                     <div className="space-y-2">
@@ -279,9 +343,10 @@ export const Profile = () => {
                         })}
                         placeholder={t('Enter new password')}
                         className={errors.new_password ? 'border-destructive' : ''}
+                        aria-describedby={errors.new_password ? 'new_password-error' : undefined}
                       />
                       {errors.new_password && (
-                        <p className="text-sm text-destructive">{errors.new_password.message}</p>
+                        <p className="text-sm text-destructive" id="new_password-error">{errors.new_password.message}</p>
                       )}
                     </div>
 
@@ -296,9 +361,10 @@ export const Profile = () => {
                         })}
                         placeholder={t('Confirm new password')}
                         className={errors.confirm_password ? 'border-destructive' : ''}
+                        aria-describedby={errors.confirm_password ? 'confirm_password-error' : undefined}
                       />
                       {errors.confirm_password && (
-                        <p className="text-sm text-destructive">{errors.confirm_password.message}</p>
+                        <p className="text-sm text-destructive" id="confirm_password-error">{errors.confirm_password.message}</p>
                       )}
                     </div>
                   </div>
@@ -317,7 +383,7 @@ export const Profile = () => {
               </form>
             </CardContent>
           </Card>
-        </div>
+        </>
       )}
     </div>
   );

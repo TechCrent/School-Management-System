@@ -135,9 +135,10 @@ export const StudentModal = ({ isOpen, onClose, onSave, student, mode }: Student
                 placeholder="Enter full name"
                 disabled={isReadOnly}
                 className={errors.full_name ? 'border-destructive' : ''}
+                aria-describedby={errors.full_name ? 'full_name-error' : undefined}
               />
               {errors.full_name && (
-                <p className="text-sm text-destructive">{errors.full_name.message}</p>
+                <p className="text-sm text-destructive" id="full_name-error">{errors.full_name.message}</p>
               )}
             </div>
 
@@ -156,9 +157,10 @@ export const StudentModal = ({ isOpen, onClose, onSave, student, mode }: Student
                 placeholder="student@example.com"
                 disabled={isReadOnly}
                 className={errors.email ? 'border-destructive' : ''}
+                aria-describedby={errors.email ? 'email-error' : undefined}
               />
               {errors.email && (
-                <p className="text-sm text-destructive">{errors.email.message}</p>
+                <p className="text-sm text-destructive" id="email-error">{errors.email.message}</p>
               )}
             </div>
 
@@ -189,9 +191,10 @@ export const StudentModal = ({ isOpen, onClose, onSave, student, mode }: Student
                 {...register('date_of_birth', { required: 'Date of birth is required' })}
                 disabled={isReadOnly}
                 className={errors.date_of_birth ? 'border-destructive' : ''}
+                aria-describedby={errors.date_of_birth ? 'date_of_birth-error' : undefined}
               />
               {errors.date_of_birth && (
-                <p className="text-sm text-destructive">{errors.date_of_birth.message}</p>
+                <p className="text-sm text-destructive" id="date_of_birth-error">{errors.date_of_birth.message}</p>
               )}
             </div>
 
@@ -209,9 +212,10 @@ export const StudentModal = ({ isOpen, onClose, onSave, student, mode }: Student
                 placeholder="parent1@example.com"
                 disabled={isReadOnly}
                 className={errors.parent1_email ? 'border-destructive' : ''}
+                aria-describedby={errors.parent1_email ? 'parent1_email-error' : undefined}
               />
               {errors.parent1_email && (
-                <p className="text-sm text-destructive">{errors.parent1_email.message}</p>
+                <p className="text-sm text-destructive" id="parent1_email-error">{errors.parent1_email.message}</p>
               )}
             </div>
 
@@ -223,9 +227,10 @@ export const StudentModal = ({ isOpen, onClose, onSave, student, mode }: Student
                 placeholder={t('Enter parent 1 name')}
                 disabled={isReadOnly}
                 className={errors.parent1_name ? 'border-destructive' : ''}
+                aria-describedby={errors.parent1_name ? 'parent1_name-error' : undefined}
               />
               {errors.parent1_name && (
-                <p className="text-sm text-destructive">{errors.parent1_name.message}</p>
+                <p className="text-sm text-destructive" id="parent1_name-error">{errors.parent1_name.message}</p>
               )}
             </div>
 
@@ -237,9 +242,10 @@ export const StudentModal = ({ isOpen, onClose, onSave, student, mode }: Student
                 placeholder={t('Enter parent 1 contact')}
                 disabled={isReadOnly}
                 className={errors.parent1_contact ? 'border-destructive' : ''}
+                aria-describedby={errors.parent1_contact ? 'parent1_contact-error' : undefined}
               />
               {errors.parent1_contact && (
-                <p className="text-sm text-destructive">{errors.parent1_contact.message}</p>
+                <p className="text-sm text-destructive" id="parent1_contact-error">{errors.parent1_contact.message}</p>
               )}
             </div>
 
@@ -257,9 +263,10 @@ export const StudentModal = ({ isOpen, onClose, onSave, student, mode }: Student
                 placeholder="parent2@example.com"
                 disabled={isReadOnly}
                 className={errors.parent2_email ? 'border-destructive' : ''}
+                aria-describedby={errors.parent2_email ? 'parent2_email-error' : undefined}
               />
               {errors.parent2_email && (
-                <p className="text-sm text-destructive">{errors.parent2_email.message}</p>
+                <p className="text-sm text-destructive" id="parent2_email-error">{errors.parent2_email.message}</p>
               )}
             </div>
 
@@ -271,9 +278,10 @@ export const StudentModal = ({ isOpen, onClose, onSave, student, mode }: Student
                 placeholder={t('Enter parent 2 name')}
                 disabled={isReadOnly}
                 className={errors.parent2_name ? 'border-destructive' : ''}
+                aria-describedby={errors.parent2_name ? 'parent2_name-error' : undefined}
               />
               {errors.parent2_name && (
-                <p className="text-sm text-destructive">{errors.parent2_name.message}</p>
+                <p className="text-sm text-destructive" id="parent2_name-error">{errors.parent2_name.message}</p>
               )}
             </div>
 
@@ -285,9 +293,10 @@ export const StudentModal = ({ isOpen, onClose, onSave, student, mode }: Student
                 placeholder={t('Enter parent 2 contact')}
                 disabled={isReadOnly}
                 className={errors.parent2_contact ? 'border-destructive' : ''}
+                aria-describedby={errors.parent2_contact ? 'parent2_contact-error' : undefined}
               />
               {errors.parent2_contact && (
-                <p className="text-sm text-destructive">{errors.parent2_contact.message}</p>
+                <p className="text-sm text-destructive" id="parent2_contact-error">{errors.parent2_contact.message}</p>
               )}
             </div>
           </div>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -43,6 +43,7 @@ import { getStudents, addStudent, updateStudent, deleteStudent } from '@/api/edu
 import { USE_MOCK } from '../config';
 import { mockStudents } from '../data/mockData';
 import { useTranslation } from 'react-i18next';
+import Papa from 'papaparse';
 
 export const Students = () => {
   const { t } = useTranslation();
@@ -55,8 +56,12 @@ export const Students = () => {
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [studentToDelete, setStudentToDelete] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
+  const [recentlyDeleted, setRecentlyDeleted] = useState<Student[]>([]);
   const studentsPerPage = 10;
   const queryClient = useQueryClient();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Fetch students
   const studentsQuery = useQuery({
@@ -149,8 +154,24 @@ export const Students = () => {
     setModalOpen(true);
   };
 
-  const handleDelete = (studentId: string) => {
-    setStudentToDelete(studentId);
+  const handleDelete = (id: string) => {
+    const student = students.find(s => s.student_id === id);
+    if (!student) return;
+    if (USE_MOCK) {
+      const idx = mockStudents.findIndex(s => s.student_id === id);
+      if (idx !== -1) mockStudents.splice(idx, 1);
+      setRecentlyDeleted([student]);
+      customToast({
+        title: t('Student deleted'),
+        description: t('Undo?'),
+        action: (
+          <Button variant="outline" size="sm" onClick={() => handleUndo([student])}>{t('Undo')}</Button>
+        ),
+      });
+      queryClient.invalidateQueries({ queryKey: ['students'] });
+      return;
+    }
+    setStudentToDelete(id);
     setDeleteDialogOpen(true);
   };
 
@@ -213,11 +234,172 @@ export const Students = () => {
   const settings = JSON.parse(localStorage.getItem('app_settings') || '{}');
   const timezone = settings?.appearance?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone;
 
+  // Bulk select logic
+  const allSelected = selectedIds.length > 0 && selectedIds.length === currentStudents.length;
+  const isIndeterminate = selectedIds.length > 0 && selectedIds.length < currentStudents.length;
+  const handleSelectAll = () => {
+    if (allSelected) setSelectedIds([]);
+    else setSelectedIds(currentStudents.map(s => s.student_id));
+  };
+  const handleSelectOne = (id: string) => {
+    setSelectedIds(ids => ids.includes(id) ? ids.filter(i => i !== id) : [...ids, id]);
+  };
+  // Bulk delete
+  const handleBulkDelete = () => {
+    setBulkDeleteDialogOpen(false);
+    const deleted = students.filter(s => selectedIds.includes(s.student_id));
+    if (USE_MOCK) {
+      selectedIds.forEach(id => {
+        const idx = mockStudents.findIndex(s => s.student_id === id);
+        if (idx !== -1) mockStudents.splice(idx, 1);
+      });
+      setRecentlyDeleted(deleted);
+      setSelectedIds([]);
+      customToast({
+        title: t('Selected students deleted'),
+        description: t('Undo?'),
+        action: (
+          <Button variant="outline" size="sm" onClick={() => handleUndo(deleted)}>{t('Undo')}</Button>
+        ),
+      });
+      queryClient.invalidateQueries({ queryKey: ['students'] });
+      return;
+    }
+    // TODO: Implement real API bulk delete
+    setSelectedIds([]);
+    customToast({ title: t('Selected students deleted') });
+    queryClient.invalidateQueries({ queryKey: ['students'] });
+  };
+  // Bulk export
+  const handleBulkExport = () => {
+    const selected = students.filter(s => selectedIds.includes(s.student_id));
+    const blob = new Blob([JSON.stringify(selected, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'students-export.json';
+    a.click();
+    URL.revokeObjectURL(url);
+    customToast({ title: t('Selected students exported') });
+  };
+
+  // Import logic
+  const handleImportClick = () => fileInputRef.current?.click();
+  const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const ext = file.name.split('.').pop()?.toLowerCase();
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        let imported: any[] = [];
+        if (ext === 'json') {
+          imported = JSON.parse(reader.result as string);
+        } else if (ext === 'csv') {
+          const parsed = Papa.parse(reader.result as string, { header: true });
+          imported = parsed.data;
+        } else {
+          customToast({ title: t('Only JSON or CSV files are allowed'), variant: 'destructive' });
+          return;
+        }
+        // Validate and add to mockStudents
+        let added = 0;
+        imported.forEach((s) => {
+          if (!s.email || mockStudents.some(ms => ms.email === s.email)) return;
+          mockStudents.push({
+            student_id: s.student_id || crypto.randomUUID(),
+            full_name: s.full_name || '',
+            date_of_birth: s.date_of_birth || '',
+            class_id: s.class_id || 'class_1',
+            email: s.email || '',
+            parent1_email: s.parent1_email || '',
+            parent1_name: s.parent1_name || '',
+            parent1_contact: s.parent1_contact || '',
+            parent2_email: s.parent2_email || '',
+            parent2_name: s.parent2_name || '',
+            parent2_contact: s.parent2_contact || '',
+            grade: s.grade || '',
+            status: s.status || 'active',
+          });
+          added++;
+        });
+        customToast({ title: t('Imported students'), description: t('{{count}} students imported', { count: added }) });
+        queryClient.invalidateQueries({ queryKey: ['students'] });
+      } catch {
+        customToast({ title: t('Import failed'), variant: 'destructive' });
+      }
+    };
+    if (ext === 'csv') reader.readAsText(file);
+    else reader.readAsText(file);
+  };
+  // Export as CSV
+  const handleExportCSV = (studentsToExport: Student[], filename: string) => {
+    const csv = Papa.unparse(studentsToExport);
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+    customToast({ title: t('Exported as CSV') });
+  };
+
+  const handleUndo = (studentsToRestore: Student[]) => {
+    if (USE_MOCK) {
+      studentsToRestore.forEach(s => {
+        if (!mockStudents.some(ms => ms.student_id === s.student_id)) {
+          mockStudents.push(s);
+        }
+      });
+      setRecentlyDeleted([]);
+      customToast({ title: t('Undo successful') });
+      queryClient.invalidateQueries({ queryKey: ['students'] });
+    }
+  };
+
   if (isLoading) return <Loading size="lg" text="Loading students..." />;
   if (isError) return <div className="text-center text-destructive">Failed to load students.</div>;
 
   return (
     <div className="space-y-6">
+      {/* Import/Export Bar */}
+      <div className="flex items-center gap-4 mb-2">
+        <Button variant="outline" size="sm" onClick={handleImportClick}>
+          {t('Import Students')}
+        </Button>
+        <input
+          type="file"
+          accept=".json,.csv"
+          ref={fileInputRef}
+          style={{ display: 'none' }}
+          onChange={handleImport}
+        />
+        <Button variant="outline" size="sm" onClick={() => handleBulkExport()}>
+          {t('Export All (JSON)')}
+        </Button>
+        <Button variant="outline" size="sm" onClick={() => handleExportCSV(students, 'students-export.csv')}>
+          {t('Export All (CSV)')}
+        </Button>
+      </div>
+      {/* Bulk Actions Bar */}
+      {selectedIds.length > 0 && (
+        <div className="flex items-center gap-4 p-4 bg-muted rounded-lg mb-2">
+          <span>{t('Selected')}: {selectedIds.length}</span>
+          <Button variant="destructive" size="sm" onClick={() => setBulkDeleteDialogOpen(true)}>
+            {t('Delete Selected')}
+          </Button>
+          <Button variant="outline" size="sm" onClick={handleBulkExport}>
+            {t('Export Selected (JSON)')}
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => handleExportCSV(students.filter(s => selectedIds.includes(s.student_id)), 'students-selected.csv')}>
+            {t('Export Selected (CSV)')}
+          </Button>
+          <Button variant="ghost" size="sm" onClick={() => setSelectedIds([])}>
+            {t('Clear Selection')}
+          </Button>
+        </div>
+      )}
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
@@ -304,6 +486,18 @@ export const Students = () => {
             <Table>
               <TableHeader>
                 <TableRow className="bg-muted/50">
+                  <TableHead>
+                    <input
+                      type="checkbox"
+                      checked={allSelected}
+                      ref={el => { if (el) el.indeterminate = isIndeterminate; }}
+                      aria-label={t('Select all students')}
+                      aria-checked={isIndeterminate ? 'mixed' : allSelected}
+                      tabIndex={0}
+                      onChange={handleSelectAll}
+                      className="focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    />
+                  </TableHead>
                   <TableHead>{t('Student')}</TableHead>
                   <TableHead>{t('Grade')}</TableHead>
                   <TableHead>{t('Age')}</TableHead>
@@ -315,6 +509,16 @@ export const Students = () => {
               <TableBody>
                 {currentStudents.map((student) => (
                   <TableRow key={student.student_id} className="hover:bg-muted/50 transition-colors">
+                    <TableCell>
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.includes(student.student_id)}
+                        aria-label={t('Select student {{name}}', { name: student.full_name })}
+                        tabIndex={0}
+                        onChange={() => handleSelectOne(student.student_id)}
+                        className="focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                      />
+                    </TableCell>
                     <TableCell>
                       <div>
                         <div className="font-medium">{student.full_name}</div>
@@ -462,6 +666,24 @@ export const Students = () => {
               disabled={deleteMutation.status === 'pending'}
             >
               {deleteMutation.status === 'pending' ? t('Deleting...') : t('Delete')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Bulk Delete Confirmation Dialog */}
+      <AlertDialog open={bulkDeleteDialogOpen} onOpenChange={setBulkDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('Delete Selected Students')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('Are you sure you want to delete the selected students? This action cannot be undone.')}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t('Cancel')}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleBulkDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              {t('Delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

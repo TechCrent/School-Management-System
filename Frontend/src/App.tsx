@@ -15,6 +15,8 @@ import NotFound from "./pages/NotFound";
 import { NotificationProvider } from './components/layout/NotificationContext';
 import { ForgotPassword } from './pages/ForgotPassword';
 import { ResetPassword } from './pages/ResetPassword';
+import { Help } from './pages/Help';
+import { ActivityLog } from './pages/ActivityLog';
 
 const queryClient = new QueryClient();
 
@@ -31,21 +33,21 @@ const App = () => (
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/" element={
-                <ProtectedRoute>
+                <ProtectedRoute allowedRoles={['admin', 'teacher', 'student', 'parent']}>
                   <Layout>
                     <Dashboard />
                   </Layout>
                 </ProtectedRoute>
               } />
               <Route path="/students" element={
-                <ProtectedRoute>
+                <ProtectedRoute allowedRoles={['admin']}>
                   <Layout>
                     <Students />
                   </Layout>
                 </ProtectedRoute>
               } />
               <Route path="/teachers" element={
-                <ProtectedRoute>
+                <ProtectedRoute allowedRoles={['admin', 'teacher']}>
                   <Layout>
                     <div className="text-center py-12">
                       <h1 className="text-2xl font-bold mb-4">Teachers Page</h1>
@@ -55,7 +57,7 @@ const App = () => (
                 </ProtectedRoute>
               } />
               <Route path="/report-cards" element={
-                <ProtectedRoute>
+                <ProtectedRoute allowedRoles={['admin', 'teacher']}>
                   <Layout>
                     <div className="text-center py-12">
                       <h1 className="text-2xl font-bold mb-4">Report Cards</h1>
@@ -65,7 +67,7 @@ const App = () => (
                 </ProtectedRoute>
               } />
               <Route path="/homework" element={
-                <ProtectedRoute>
+                <ProtectedRoute allowedRoles={['admin', 'teacher', 'student']}>
                   <Layout>
                     <div className="text-center py-12">
                       <h1 className="text-2xl font-bold mb-4">Homework</h1>
@@ -75,7 +77,7 @@ const App = () => (
                 </ProtectedRoute>
               } />
               <Route path="/classes" element={
-                <ProtectedRoute>
+                <ProtectedRoute allowedRoles={['admin', 'teacher', 'student']}>
                   <Layout>
                     <div className="text-center py-12">
                       <h1 className="text-2xl font-bold mb-4">Classes</h1>
@@ -85,7 +87,7 @@ const App = () => (
                 </ProtectedRoute>
               } />
               <Route path="/creativity-board" element={
-                <ProtectedRoute>
+                <ProtectedRoute allowedRoles={['admin', 'teacher', 'student']}>
                   <Layout>
                     <div className="text-center py-12">
                       <h1 className="text-2xl font-bold mb-4">Creativity Board</h1>
@@ -95,17 +97,23 @@ const App = () => (
                 </ProtectedRoute>
               } />
               <Route path="/profile" element={
-                <ProtectedRoute>
+                <ProtectedRoute allowedRoles={['admin', 'teacher', 'student', 'parent']}>
                   <Layout>
                     <Profile />
                   </Layout>
                 </ProtectedRoute>
               } />
               <Route path="/settings" element={
-                <ProtectedRoute>
+                <ProtectedRoute allowedRoles={['admin', 'teacher', 'student', 'parent']}>
                   <Layout>
                     <Settings />
                   </Layout>
+                </ProtectedRoute>
+              } />
+              <Route path="/help" element={<Help />} />
+              <Route path="/activity-log" element={
+                <ProtectedRoute allowedRoles={['admin']}>
+                  <ActivityLog />
                 </ProtectedRoute>
               } />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
