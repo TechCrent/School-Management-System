@@ -44,11 +44,14 @@ import { USE_MOCK } from '../config';
 import { mockStudents } from '../data/mockData';
 import { useTranslation } from 'react-i18next';
 import Papa from 'papaparse';
+import { Breadcrumbs } from '@/components/ui/breadcrumb';
 
 export const Students = () => {
   const { t } = useTranslation();
   const { customToast } = useCustomToast();
   const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [userRole, setUserRole] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
@@ -62,18 +65,18 @@ export const Students = () => {
   const studentsPerPage = 10;
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [loading, setLoading] = useState(true);
 
   // Fetch students
-  const studentsQuery = useQuery({
-    queryKey: ['students'],
-    queryFn: async () => {
-      if (USE_MOCK) return mockStudents;
-      return getStudents();
-    },
-  });
-  const students = studentsQuery.data || [];
-  const isLoading = studentsQuery.isLoading;
-  const isError = studentsQuery.isError;
+  useEffect(() => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 600); // Simulate loading
+  }, []);
+  const students = mockStudents;
+  const isLoading = loading;
+  const isError = false;
 
   // Mutations
   const addMutation = useMutation({
@@ -124,10 +127,20 @@ export const Students = () => {
     setUserRole(localStorage.getItem('role') || '');
   }, []);
 
+  useEffect(() => {
+    if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
+    debounceTimeout.current = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+    }, 300);
+    return () => {
+      if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
+    };
+  }, [searchTerm]);
+
   const filteredStudents = students.filter(student =>
-    student.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    student.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    student.grade.toLowerCase().includes(searchTerm.toLowerCase())
+    student.full_name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+    student.email.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+    student.grade.toLowerCase().includes(debouncedSearch.toLowerCase())
   );
 
   const totalPages = Math.ceil(filteredStudents.length / studentsPerPage);
@@ -183,6 +196,7 @@ export const Students = () => {
         title: 'Student deleted',
         description: 'The student has been successfully removed.',
       });
+      customToast({ title: 'Student deleted', description: 'The student has been removed.' });
     } catch (error) {
       notify('homework', {
         title: 'Error',
@@ -199,8 +213,10 @@ export const Students = () => {
     try {
       if (modalMode === 'create') {
         await addMutation.mutateAsync(studentData);
+        customToast({ title: 'Student added', description: 'A new student has been added.' });
       } else if (modalMode === 'edit' && selectedStudent) {
         await updateMutation.mutateAsync({ id: selectedStudent.student_id, student: studentData });
+        customToast({ title: 'Student updated', description: 'Student details have been updated.' });
       }
     } catch (error) {
       notify('homework', {
@@ -363,6 +379,7 @@ export const Students = () => {
 
   return (
     <div className="space-y-6">
+      <Breadcrumbs items={[{ label: 'Dashboard', href: '/' }, { label: 'Students' }]} />
       {/* Import/Export Bar */}
       <div className="flex items-center gap-4 mb-2">
         <Button variant="outline" size="sm" onClick={handleImportClick}>
@@ -477,6 +494,7 @@ export const Students = () => {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10 transition-all duration-200 focus:shadow-glow"
+                aria-label="Search students"
               />
             </div>
           </div>

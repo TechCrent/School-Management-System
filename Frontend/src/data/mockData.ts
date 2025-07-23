@@ -240,7 +240,7 @@ export const mockClasses: Class[] = [
 ];
 
 // Mock Homework
-export const mockHomework: Homework[] = [
+export const mockHomework: (Homework & { feedback?: string })[] = [
   {
     homework_id: "123e4567-e89b-12d3-a456-426614174004",
     title: "Algebra Practice",
@@ -249,7 +249,8 @@ export const mockHomework: Homework[] = [
     teacher_id: "789e0123-e89b-12d3-a456-426614174001",
     due_date: "2025-08-01",
     created_at: "2025-07-20",
-    status: "pending"
+    status: "graded",
+    feedback: "Great job! You solved all exercises correctly. Keep it up!"
   },
   {
     homework_id: "123e4567-e89b-12d3-a456-426614174005",
@@ -259,7 +260,8 @@ export const mockHomework: Homework[] = [
     teacher_id: "789e0123-e89b-12d3-a456-426614174002",
     due_date: "2025-07-30",
     created_at: "2025-07-18",
-    status: "pending"
+    status: "pending",
+    feedback: ""
   }
 ];
 

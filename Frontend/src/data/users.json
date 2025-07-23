@@ -1,0 +1,6 @@
+[
+  { "id": "admin-001", "email": "admin@schoolapp.com", "full_name": "School Administrator", "role": "admin", "password": "Admin$1234" },
+  { "id": "teacher-001", "email": "jane.smith@schoolapp.com", "full_name": "Jane Smith", "role": "teacher", "password": "Teacher$123" },
+  { "id": "student-001", "email": "student1@example.com", "full_name": "Student One", "role": "student", "password": "Student$1234" },
+  { "id": "parent-001", "email": "parent1@example.com", "full_name": "Parent One", "role": "parent", "password": "Parent$1234" }
+] 

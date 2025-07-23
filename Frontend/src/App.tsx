@@ -17,6 +17,15 @@ import { ForgotPassword } from './pages/ForgotPassword';
 import { ResetPassword } from './pages/ResetPassword';
 import { Help } from './pages/Help';
 import { ActivityLog } from './pages/ActivityLog';
+import HomeworkPage from "./pages/Homework";
+import ClassesPage from "./pages/Classes";
+import ReportCard from "./pages/ReportCard";
+import ParentDashboard from "./pages/ParentDashboard";
+import ParentChildren from "./pages/ParentChildren";
+import ParentNotifications from "./pages/ParentNotifications";
+import TeacherProfile from "./pages/TeacherProfile";
+import ParentProfile from "./pages/ParentProfile";
+import AdminDashboard from "./pages/AdminDashboard";
 
 const queryClient = new QueryClient();
 
@@ -35,7 +44,11 @@ const App = () => (
               <Route path="/" element={
                 <ProtectedRoute allowedRoles={['admin', 'teacher', 'student', 'parent']}>
                   <Layout>
-                    <Dashboard />
+                    {localStorage.getItem('role') === 'admin' ? <AdminDashboard /> :
+                     localStorage.getItem('role') === 'teacher' ? <Dashboard /> :
+                     localStorage.getItem('role') === 'student' ? <Dashboard /> :
+                     localStorage.getItem('role') === 'parent' ? <ParentDashboard /> :
+                     <Dashboard />}
                   </Layout>
                 </ProtectedRoute>
               } />
@@ -66,28 +79,41 @@ const App = () => (
                   </Layout>
                 </ProtectedRoute>
               } />
-              <Route path="/homework" element={
-                <ProtectedRoute allowedRoles={['admin', 'teacher', 'student']}>
+              <Route path="/report-card" element={
+                <ProtectedRoute allowedRoles={['student']}>
                   <Layout>
-                    <div className="text-center py-12">
-                      <h1 className="text-2xl font-bold mb-4">Homework</h1>
-                      <p className="text-muted-foreground">Coming soon...</p>
-                    </div>
+                    <ReportCard />
+                  </Layout>
+                </ProtectedRoute>
+              } />
+              <Route path="/homework" element={
+                <ProtectedRoute allowedRoles={['admin', 'teacher', 'student', 'parent']}>
+                  <Layout>
+                    {/* Render student homework page for students, placeholder for others */}
+                    {localStorage.getItem('role') === 'student' ? <HomeworkPage /> : (
+                      <div className="text-center py-12">
+                        <h1 className="text-2xl font-bold mb-4">Homework</h1>
+                        <p className="text-muted-foreground">Coming soon...</p>
+                      </div>
+                    )}
                   </Layout>
                 </ProtectedRoute>
               } />
               <Route path="/classes" element={
-                <ProtectedRoute allowedRoles={['admin', 'teacher', 'student']}>
+                <ProtectedRoute allowedRoles={['admin', 'teacher', 'student', 'parent']}>
                   <Layout>
-                    <div className="text-center py-12">
-                      <h1 className="text-2xl font-bold mb-4">Classes</h1>
-                      <p className="text-muted-foreground">Coming soon...</p>
-                    </div>
+                    {/* Render student classes page for students, placeholder for others */}
+                    {localStorage.getItem('role') === 'student' ? <ClassesPage /> : (
+                      <div className="text-center py-12">
+                        <h1 className="text-2xl font-bold mb-4">Classes</h1>
+                        <p className="text-muted-foreground">Coming soon...</p>
+                      </div>
+                    )}
                   </Layout>
                 </ProtectedRoute>
               } />
               <Route path="/creativity-board" element={
-                <ProtectedRoute allowedRoles={['admin', 'teacher', 'student']}>
+                <ProtectedRoute allowedRoles={['admin', 'teacher', 'student', 'parent']}>
                   <Layout>
                     <div className="text-center py-12">
                       <h1 className="text-2xl font-bold mb-4">Creativity Board</h1>
@@ -99,7 +125,10 @@ const App = () => (
               <Route path="/profile" element={
                 <ProtectedRoute allowedRoles={['admin', 'teacher', 'student', 'parent']}>
                   <Layout>
-                    <Profile />
+                    {localStorage.getItem('role') === 'teacher' ? <TeacherProfile /> :
+                     localStorage.getItem('role') === 'parent' ? <ParentProfile /> :
+                     localStorage.getItem('role') === 'student' ? <Profile /> :
+                     <Profile />}
                   </Layout>
                 </ProtectedRoute>
               } />
@@ -114,6 +143,27 @@ const App = () => (
               <Route path="/activity-log" element={
                 <ProtectedRoute allowedRoles={['admin']}>
                   <ActivityLog />
+                </ProtectedRoute>
+              } />
+              <Route path="/parent" element={
+                <ProtectedRoute allowedRoles={['parent']}>
+                  <Layout>
+                    <ParentDashboard />
+                  </Layout>
+                </ProtectedRoute>
+              } />
+              <Route path="/parent/children" element={
+                <ProtectedRoute allowedRoles={['parent']}>
+                  <Layout>
+                    <ParentChildren />
+                  </Layout>
+                </ProtectedRoute>
+              } />
+              <Route path="/parent/notifications" element={
+                <ProtectedRoute allowedRoles={['parent']}>
+                  <Layout>
+                    <ParentNotifications />
+                  </Layout>
                 </ProtectedRoute>
               } />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

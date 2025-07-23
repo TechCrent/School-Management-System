@@ -1,0 +1,7 @@
+[
+  { "subject_id": "sub_1", "name": "Mathematics", "description": "Algebra and basic mathematics" },
+  { "subject_id": "sub_2", "name": "English", "description": "Language arts and literature" },
+  { "subject_id": "sub_3", "name": "Science", "description": "Biology, chemistry, and physics basics" },
+  { "subject_id": "sub_4", "name": "History", "description": "World and local history" },
+  { "subject_id": "sub_5", "name": "Art", "description": "Creative arts and design" }
+] 

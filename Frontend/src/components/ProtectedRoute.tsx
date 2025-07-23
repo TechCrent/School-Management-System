@@ -7,6 +7,13 @@ interface ProtectedRouteProps {
   allowedRoles?: string[];
 }
 
+const roleDefaultRoute: Record<string, string> = {
+  admin: '/',
+  teacher: '/',
+  student: '/homework',
+  parent: '/homework',
+};
+
 export const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
   const location = useLocation();
   const { t } = useTranslation();
@@ -18,7 +25,9 @@ export const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) 
   }
 
   if (allowedRoles && !allowedRoles.includes(userRole || '')) {
-    return <NotAuthorized />;
+    // Redirect to role-specific default page if not allowed
+    const redirectPath = userRole && roleDefaultRoute[userRole] ? roleDefaultRoute[userRole] : '/';
+    return <Navigate to={redirectPath} replace />;
   }
 
   return <>{children}</>;

@@ -20,8 +20,10 @@ const NotificationContext = createContext<NotificationContextType | undefined>(u
 
 export const NotificationProvider = ({ children }: { children: ReactNode }) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const showNotifications = typeof window !== 'undefined' ? localStorage.getItem('showNotifications') !== 'false' : true;
 
   const addNotification = (notification: Omit<Notification, 'id' | 'timestamp' | 'read'>) => {
+    if (!showNotifications) return;
     setNotifications((prev) => [
       {
         id: crypto.randomUUID(),
@@ -47,7 +49,13 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <NotificationContext.Provider value={{ notifications, addNotification, markAsRead, markAllAsRead, clearNotifications }}>
+    <NotificationContext.Provider value={{
+      notifications: showNotifications ? notifications : [],
+      addNotification,
+      markAsRead,
+      markAllAsRead,
+      clearNotifications
+    }}>
       {children}
     </NotificationContext.Provider>
   );

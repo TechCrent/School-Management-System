@@ -30,8 +30,9 @@ export const TopNavigation = () => {
     return userData ? JSON.parse(userData) : null;
   });
   const [notificationOpen, setNotificationOpen] = useState(false);
-  const { notifications } = useNotification();
+  const { notifications, markAllAsRead } = useNotification();
   const unreadCount = notifications.filter(n => !n.read).length;
+  const showNotifications = typeof window !== 'undefined' ? localStorage.getItem('showNotifications') !== 'false' : true;
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -53,6 +54,11 @@ export const TopNavigation = () => {
       .slice(0, 2);
   };
 
+  // Mark all as read when opening the drawer
+  const handleNotificationDrawerChange = (open: boolean) => {
+    setNotificationOpen(open);
+    if (open) markAllAsRead();
+  };
   return (
     <header className="h-16 border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60 sticky top-0 z-50">
       <div className="flex h-full items-center justify-between px-6">
@@ -64,22 +70,24 @@ export const TopNavigation = () => {
 
         <div className="flex items-center space-x-4">
           {/* Notifications */}
-          <Drawer open={notificationOpen} onOpenChange={setNotificationOpen}>
-            <DrawerTrigger asChild>
-              <Button variant="ghost" size="sm" className="relative">
-                <Bell className="h-5 w-5" />
-                {unreadCount > 0 && (
-                  <span className="absolute -top-1 -right-1 h-3 w-3 bg-destructive rounded-full text-[10px] flex items-center justify-center text-destructive-foreground">
-                    {unreadCount}
-                  </span>
-                )}
-                <span className="sr-only">Notifications</span>
-              </Button>
-            </DrawerTrigger>
-            <DrawerContent>
-              <NotificationDrawer />
-            </DrawerContent>
-          </Drawer>
+          {showNotifications && (
+            <Drawer open={notificationOpen} onOpenChange={handleNotificationDrawerChange}>
+              <DrawerTrigger asChild>
+                <Button variant="ghost" size="sm" className="relative">
+                  <Bell className="h-5 w-5" />
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 h-3 w-3 bg-destructive rounded-full text-[10px] flex items-center justify-center text-destructive-foreground">
+                      {unreadCount}
+                    </span>
+                  )}
+                  <span className="sr-only">Notifications</span>
+                </Button>
+              </DrawerTrigger>
+              <DrawerContent>
+                <NotificationDrawer />
+              </DrawerContent>
+            </Drawer>
+          )}
 
           {/* User Menu */}
           <DropdownMenu>

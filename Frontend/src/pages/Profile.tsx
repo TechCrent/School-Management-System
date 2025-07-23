@@ -16,6 +16,8 @@ import { useTranslation } from 'react-i18next';
 interface ProfileFormData {
   full_name: string;
   email: string;
+  phone?: string;
+  subject_name?: string;
   current_password: string;
   new_password: string;
   confirm_password: string;
@@ -47,6 +49,8 @@ export const Profile = () => {
     defaultValues: {
       full_name: user?.full_name || '',
       email: user?.email || '',
+      phone: user?.phone || '',
+      subject_name: user?.subject_name || '',
       current_password: '',
       new_password: '',
       confirm_password: '',
@@ -60,6 +64,8 @@ export const Profile = () => {
       reset({
         full_name: user.full_name || '',
         email: user.email || '',
+        phone: user.phone || '',
+        subject_name: user.subject_name || '',
         current_password: '',
         new_password: '',
         confirm_password: '',
@@ -79,6 +85,8 @@ export const Profile = () => {
           ...user,
           full_name: data.full_name,
           email: data.email,
+          phone: data.phone,
+          subject_name: data.subject_name,
         };
 
         // Password change logic (mock)
@@ -306,6 +314,27 @@ export const Profile = () => {
                         <p className="text-sm text-destructive" id="email-error">{errors.email.message}</p>
                       )}
                     </div>
+                    {/* Teacher-specific fields */}
+                    {localStorage.getItem('role') === 'teacher' && (
+                      <>
+                        <div className="space-y-2">
+                          <Label htmlFor="phone">{t('Phone')}</Label>
+                          <Input
+                            id="phone"
+                            {...register('phone')}
+                            placeholder={t('Enter your phone number')}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="subject_name">{t('Subject')}</Label>
+                          <Input
+                            id="subject_name"
+                            {...register('subject_name')}
+                            placeholder={t('Enter your subject')}
+                          />
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
 

@@ -12,7 +12,8 @@ import {
   LogOut,
   Menu,
   X,
-  LifeBuoy
+  LifeBuoy,
+  Bell
 } from "lucide-react";
 import { EduLiteLogo } from "../ui/logo";
 import { useTranslation } from 'react-i18next';
@@ -28,6 +29,44 @@ const navigationItems = [
   { title: "Profile", url: "/profile", icon: User },
   { title: "Help & Support", url: "/help", icon: LifeBuoy },
   { title: "Activity Log", url: "/activity-log", icon: FileText, adminOnly: true },
+];
+
+const teacherNavigationItems = [
+  { title: "Dashboard", url: "/", icon: LayoutDashboard },
+  { title: "My Classes", url: "/teacher/classes", icon: Calendar },
+  { title: "My Homework", url: "/teacher/homework", icon: BookOpen },
+  { title: "My Students", url: "/teacher/students", icon: Users },
+  { title: "Profile", url: "/profile", icon: User },
+  { title: "Help & Support", url: "/help", icon: LifeBuoy },
+];
+
+const studentNavigationItems = [
+  { title: "Dashboard", url: "/", icon: LayoutDashboard },
+  { title: "Homework", url: "/homework", icon: BookOpen },
+  { title: "Classes", url: "/classes", icon: Calendar },
+  { title: "Report Card", url: "/report-card", icon: FileText },
+  { title: "Profile", url: "/profile", icon: User },
+  { title: "Help & Support", url: "/help", icon: LifeBuoy },
+];
+
+const parentNavigationItems = [
+  { title: "Dashboard", url: "/parent", icon: LayoutDashboard },
+  { title: "My Children", url: "/parent/children", icon: Users },
+  { title: "Notifications", url: "/parent/notifications", icon: Bell },
+  { title: "Profile", url: "/profile", icon: User },
+  { title: "Help & Support", url: "/help", icon: LifeBuoy },
+];
+
+const adminNavigationItems = [
+  { title: "Dashboard", url: "/", icon: LayoutDashboard },
+  { title: "Students", url: "/students", icon: Users },
+  { title: "Teachers", url: "/teachers", icon: GraduationCap },
+  { title: "Classes", url: "/classes", icon: Calendar },
+  { title: "Subjects", url: "/subjects", icon: BookOpen },
+  { title: "Report Cards", url: "/report-cards", icon: FileText },
+  { title: "Profile", url: "/profile", icon: User },
+  { title: "Help & Support", url: "/help", icon: LifeBuoy },
+  { title: "Activity Log", url: "/activity-log", icon: FileText },
 ];
 
 export const Sidebar = () => {
@@ -70,24 +109,97 @@ export const Sidebar = () => {
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 p-4 space-y-2">
-            {navigationItems.filter(item => !item.adminOnly || userRole === 'admin').map((item) => (
-              <NavLink
-                key={item.title}
-                to={item.url}
-                className={`
-                  flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200
-                  hover:bg-muted hover:shadow-glow
-                  ${isActive(item.url) 
-                    ? 'bg-primary text-primary-foreground shadow-glow' 
-                    : 'text-muted-foreground hover:text-foreground'
-                  }
-                `}
-              >
-                <item.icon className="h-5 w-5 flex-shrink-0" />
-                {!isCollapsed && <span className="font-medium">{t(item.title)}</span>}
-              </NavLink>
-            ))}
+          <nav className="flex-1 p-4 space-y-2" aria-label="Main sidebar navigation">
+            {userRole === 'teacher'
+              ? teacherNavigationItems.map((item) => (
+                  <NavLink
+                    key={item.title}
+                    to={item.url}
+                    className={`
+                      flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200
+                      hover:bg-muted hover:shadow-glow
+                      ${isActive(item.url) 
+                        ? 'bg-primary text-primary-foreground shadow-glow' 
+                        : 'text-muted-foreground hover:text-foreground'
+                      }
+                    `}
+                  >
+                    <item.icon className="h-5 w-5 flex-shrink-0" />
+                    {!isCollapsed && <span className="font-medium">{t(item.title)}</span>}
+                  </NavLink>
+                ))
+              : userRole === 'student'
+                ? studentNavigationItems.map((item) => (
+                    <NavLink
+                      key={item.title}
+                      to={item.url}
+                      className={`
+                        flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200
+                        hover:bg-muted hover:shadow-glow
+                        ${isActive(item.url) 
+                          ? 'bg-primary text-primary-foreground shadow-glow' 
+                          : 'text-muted-foreground hover:text-foreground'
+                        }
+                      `}
+                    >
+                      <item.icon className="h-5 w-5 flex-shrink-0" />
+                      {!isCollapsed && <span className="font-medium">{t(item.title)}</span>}
+                    </NavLink>
+                  ))
+                : userRole === 'parent'
+                  ? parentNavigationItems.map((item) => (
+                      <NavLink
+                        key={item.title}
+                        to={item.url}
+                        className={`
+                          flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200
+                          hover:bg-muted hover:shadow-glow
+                          ${isActive(item.url) 
+                            ? 'bg-primary text-primary-foreground shadow-glow' 
+                            : 'text-muted-foreground hover:text-foreground'
+                          }
+                        `}
+                      >
+                        <item.icon className="h-5 w-5 flex-shrink-0" />
+                        {!isCollapsed && <span className="font-medium">{t(item.title)}</span>}
+                      </NavLink>
+                    ))
+                  : userRole === 'admin'
+                    ? adminNavigationItems.map((item) => (
+                        <NavLink
+                          key={item.title}
+                          to={item.url}
+                          className={`
+                            flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200
+                            hover:bg-muted hover:shadow-glow
+                            ${isActive(item.url) 
+                              ? 'bg-primary text-primary-foreground shadow-glow' 
+                              : 'text-muted-foreground hover:text-foreground'
+                            }
+                          `}
+                        >
+                          <item.icon className="h-5 w-5 flex-shrink-0" />
+                          {!isCollapsed && <span className="font-medium">{t(item.title)}</span>}
+                        </NavLink>
+                      ))
+                    : navigationItems.filter(item => !item.adminOnly || userRole === 'admin').map((item) => (
+                    <NavLink
+                      key={item.title}
+                      to={item.url}
+                      className={`
+                        flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200
+                        hover:bg-muted hover:shadow-glow
+                        ${isActive(item.url) 
+                          ? 'bg-primary text-primary-foreground shadow-glow' 
+                          : 'text-muted-foreground hover:text-foreground'
+                        }
+                      `}
+                      aria-current={isActive(item.url) ? 'page' : undefined}
+                    >
+                      <item.icon className="h-5 w-5 flex-shrink-0" />
+                      {!isCollapsed && <span className="font-medium">{t(item.title)}</span>}
+                    </NavLink>
+                  ))}
           </nav>
 
           {/* Logout */}

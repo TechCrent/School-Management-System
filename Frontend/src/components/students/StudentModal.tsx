@@ -14,7 +14,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { Student } from '@/data/mockData';
+import { Student, mockStudents } from '@/data/mockData';
 
 interface StudentModalProps {
   isOpen: boolean;
@@ -42,6 +42,7 @@ export const StudentModal = ({ isOpen, onClose, onSave, student, mode }: Student
   const { t } = useTranslation();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [emailError, setEmailError] = useState<string | null>(null);
 
   const { register, handleSubmit, reset, setValue, watch, formState: { errors } } = useForm<StudentFormData>({
     defaultValues: {
@@ -78,6 +79,14 @@ export const StudentModal = ({ isOpen, onClose, onSave, student, mode }: Student
   }, [student, mode, setValue, reset]);
 
   const onSubmit = async (data: StudentFormData) => {
+    // Check for duplicate email (except when editing the same student)
+    const emailExists = mockStudents.some(s => s.email === data.email && s.student_id !== student?.student_id);
+    if (emailExists) {
+      setEmailError('A student with this email already exists.');
+      return;
+    } else {
+      setEmailError(null);
+    }
     setIsLoading(true);
     try {
       await onSave({
@@ -156,11 +165,14 @@ export const StudentModal = ({ isOpen, onClose, onSave, student, mode }: Student
                 })}
                 placeholder="student@example.com"
                 disabled={isReadOnly}
-                className={errors.email ? 'border-destructive' : ''}
-                aria-describedby={errors.email ? 'email-error' : undefined}
+                className={errors.email || emailError ? 'border-destructive' : ''}
+                aria-describedby={errors.email || emailError ? 'email-error' : undefined}
               />
               {errors.email && (
                 <p className="text-sm text-destructive" id="email-error">{errors.email.message}</p>
+              )}
+              {emailError && !errors.email && (
+                <p className="text-sm text-destructive" id="email-error">{emailError}</p>
               )}
             </div>
 

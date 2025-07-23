@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { EduLiteLogo } from '../components/ui/logo';
-import { mockAuth } from '../data/mockData';
 import { USE_MOCK } from '../config';
 import { login as apiLogin } from '../api/edulite';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,6 +10,12 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Eye, EyeOff } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+
+type AuthResponse = {
+  status: string;
+  data?: unknown;
+  error?: string;
+};
 
 export const Login = () => {
   const { t } = useTranslation();
@@ -27,19 +32,25 @@ export const Login = () => {
     setError('');
 
     try {
-      let authResult;
-      if (USE_MOCK) {
-        // Simulate API call delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        authResult = mockAuth.login(email, password);
-      } else {
-        authResult = await apiLogin(email, password);
-      }
-      if (authResult) {
-        localStorage.setItem('token', authResult.token);
-        localStorage.setItem('role', authResult.role);
-        localStorage.setItem('user', JSON.stringify(authResult.user));
-        navigate('/');
+      const apiResult = await apiLogin(email, password);
+      const authResult: AuthResponse = apiResult && typeof apiResult === 'object' && 'status' in apiResult
+        ? apiResult as AuthResponse
+        : { status: 'error', error: 'Invalid response from server' };
+      if (authResult && authResult.status === 'success') {
+        // @ts-expect-error: data shape is known for this usage
+        localStorage.setItem('token', authResult.data.token);
+        // @ts-expect-error: data shape is known for this usage
+        localStorage.setItem('role', authResult.data.role);
+        // @ts-expect-error: data shape is known for this usage
+        localStorage.setItem('user', JSON.stringify(authResult.data.user));
+        // Redirect based on role
+        // @ts-expect-error: data shape is known for this usage
+        const role = authResult.data.role;
+        let redirectPath = '/';
+        if (role === 'student' || role === 'parent') {
+          redirectPath = '/homework';
+        }
+        navigate(redirectPath);
       } else {
         setError('Invalid email or password');
       }
@@ -125,10 +136,12 @@ export const Login = () => {
             </div>
 
             <div className="mt-6 p-4 bg-muted rounded-lg">
-              <p className="text-sm text-muted-foreground mb-2">{t('Demo Credentials:')}</p>
+              <p className="text-sm text-muted-foreground mb-2">{t('Demo Credentials (for testing only):')}</p>
               <div className="text-xs space-y-1">
-                <div><strong>{t('Admin:')}</strong> {t('admin@schoolapp.com')} / {t('Admin$1234')}</div>
-                <div><strong>{t('Teacher:')}</strong> {t('jane.smith@schoolapp.com')} / {t('Teacher$123')}</div>
+                <div><strong>{t('Admin:')}</strong> admin@schoolapp.com / Admin$1234</div>
+                <div><strong>{t('Teacher:')}</strong> jane.smith@schoolapp.com / Teacher$123</div>
+                <div><strong>{t('Student:')}</strong> student1@example.com / Student$1234</div>
+                <div><strong>{t('Parent:')}</strong> parent1@example.com / Parent$1234</div>
               </div>
             </div>
           </CardContent>
