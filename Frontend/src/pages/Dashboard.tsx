@@ -12,7 +12,8 @@ import {
   CheckCircle,
   AlertCircle
 } from 'lucide-react';
-import { mockStudents, mockTeachers, mockHomework, mockClasses, Student, Class } from '../data/mockData';
+import { getStudents, getTeachers, getHomework, getClasses } from '../api/edulite';
+import { Student, Class } from '../data/mockData';
 import { formatDateWithTimezone } from '@/lib/utils';
 import { useNotification } from '@/components/layout/NotificationContext';
 import { Loading } from '@/components/ui/loading';
@@ -36,6 +37,10 @@ export const Dashboard = () => {
     pendingHomework: 0,
     completedHomework: 0
   });
+  const [students, setStudents] = useState<Student[]>([]);
+  const [teachers, setTeachers] = useState<any[]>([]);
+  const [homework, setHomework] = useState<any[]>([]);
+  const [classes, setClasses] = useState<Class[]>([]);
   const [loading, setLoading] = useState(true);
 
   const [userRole, setUserRole] = useState<string>('');
@@ -46,35 +51,39 @@ export const Dashboard = () => {
 
   // Compute student-specific class and homework at the top level for use in JSX and functions
   const studentClass: Class | undefined = (userRole === 'student' && userProfile)
-    ? mockClasses.find(cls => cls.class_id === userProfile.class_id)
+    ? classes.find(cls => cls.class_id === userProfile.class_id)
     : undefined;
-  const studentHomework: typeof mockHomework = (userRole === 'student' && studentClass)
-    ? mockHomework.filter(hw => hw.subject_id === studentClass.subject_id)
+  const studentHomework: any[] = (userRole === 'student' && studentClass)
+    ? homework.filter(hw => hw.subject_id === studentClass.subject_id)
     : [];
 
   useEffect(() => {
     setLoading(true);
-    // Simulate async fetch
-    setTimeout(() => {
-      // Get user info from localStorage
-      const role = localStorage.getItem('role') || '';
-      const userInfo = localStorage.getItem('user');
-      const user = userInfo ? JSON.parse(userInfo) : null;
-      
-      setUserRole(role);
-      setUserName(user?.full_name || 'User');
-      setUserId(user?.student_id || user?.id || '');
-      setUserProfile(user);
-
-      // Calculate stats from mock data
-      const pendingHW = mockHomework.filter(hw => hw.status === 'pending').length;
-      const completedHW = mockHomework.filter(hw => hw.status === 'submitted' || hw.status === 'graded').length;
-
+    // Get user info from localStorage
+    const role = localStorage.getItem('role') || '';
+    const userInfo = localStorage.getItem('user');
+    const user = userInfo ? JSON.parse(userInfo) : null;
+    setUserRole(role);
+    setUserName(user?.full_name || 'User');
+    setUserId(user?.student_id || user?.id || '');
+    setUserProfile(user);
+    Promise.all([
+      getStudents(),
+      getTeachers(),
+      getHomework(),
+      getClasses()
+    ]).then(([studentsRes, teachersRes, homeworkRes, classesRes]) => {
+      setStudents(studentsRes.data || []);
+      setTeachers(teachersRes.data || []);
+      setHomework(homeworkRes.data || []);
+      setClasses(classesRes.data || []);
+      const pendingHW = (homeworkRes.data || []).filter((hw: any) => hw.status === 'pending').length;
+      const completedHW = (homeworkRes.data || []).filter((hw: any) => hw.status === 'submitted' || hw.status === 'graded').length;
       setStats({
-        totalStudents: mockStudents.length,
-        totalTeachers: mockTeachers.length,
-        totalHomework: mockHomework.length,
-        totalClasses: mockClasses.length,
+        totalStudents: (studentsRes.data || []).length,
+        totalTeachers: (teachersRes.data || []).length,
+        totalHomework: (homeworkRes.data || []).length,
+        totalClasses: (classesRes.data || []).length,
         pendingHomework: pendingHW,
         completedHomework: completedHW
       });
@@ -90,7 +99,7 @@ export const Dashboard = () => {
         });
       }
       setLoading(false);
-    }, 600);
+    });
   }, []);
 
   const getGreeting = () => {
@@ -400,7 +409,7 @@ export const Dashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {mockHomework.slice(0, 3).map((hw) => (
+                {homework.slice(0, 3).map((hw: any) => (
                   <div key={hw.homework_id} className="flex items-center justify-between p-3 bg-muted rounded-lg">
                     <div>
                       <p className="font-medium">{hw.title}</p>
@@ -430,7 +439,7 @@ export const Dashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {mockClasses.map((cls) => (
+                {classes.map((cls: any) => (
                   <div key={cls.class_id} className="flex items-center justify-between p-3 bg-muted rounded-lg">
                     <div>
                       <p className="font-medium">{cls.name}</p>
@@ -442,7 +451,7 @@ export const Dashboard = () => {
                   </div>
                 ))}
                 
-                {mockClasses.length === 0 && (
+                {classes.length === 0 && (
                   <div className="text-center py-6 text-muted-foreground">
                     <AlertCircle className="h-8 w-8 mx-auto mb-2" />
                     <p>{t('No classes scheduled for today')}</p>

@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Eye, EyeOff } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../components/layout/AuthContext';
 
 type AuthResponse = {
   status: string;
@@ -19,40 +20,30 @@ type AuthResponse = {
 
 export const Login = () => {
   const { t } = useTranslation();
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
-
     try {
-      const apiResult = await apiLogin(email, password);
-      const authResult: AuthResponse = apiResult && typeof apiResult === 'object' && 'status' in apiResult
-        ? apiResult as AuthResponse
-        : { status: 'error', error: 'Invalid response from server' };
-      if (authResult && authResult.status === 'success') {
-        // @ts-expect-error: data shape is known for this usage
-        localStorage.setItem('token', authResult.data.token);
-        // @ts-expect-error: data shape is known for this usage
-        localStorage.setItem('role', authResult.data.role);
-        // @ts-expect-error: data shape is known for this usage
-        localStorage.setItem('user', JSON.stringify(authResult.data.user));
+      const res = await login(username, password);
+      if (res.status === 'success') {
         // Redirect based on role
-        // @ts-expect-error: data shape is known for this usage
-        const role = authResult.data.role;
+        const role = localStorage.getItem('role');
         let redirectPath = '/';
         if (role === 'student' || role === 'parent') {
           redirectPath = '/homework';
         }
         navigate(redirectPath);
       } else {
-        setError('Invalid email or password');
+        setError(res.error || 'Invalid username or password');
       }
     } catch (err) {
       setError('Login failed. Please try again.');
@@ -77,13 +68,13 @@ export const Login = () => {
           <CardContent>
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email">{t('Email')}</Label>
+                <Label htmlFor="username">{t('Username')}</Label>
                 <Input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder={t('admin@schoolapp.com')}
+                  id="username"
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder={t('admin')}
                   required
                   className="transition-all duration-200 focus:shadow-glow"
                   aria-describedby={error ? 'login-error' : undefined}

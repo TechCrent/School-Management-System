@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState, useState as useReactState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   User, 
@@ -21,6 +21,8 @@ import { useCustomToast } from '@/hooks/use-toast';
 import { Drawer, DrawerTrigger, DrawerContent } from '@/components/ui/drawer';
 import { NotificationDrawer } from './NotificationDrawer';
 import { useNotification } from './NotificationContext';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { Switch } from '@/components/ui/switch';
 
 export const TopNavigation = () => {
   const navigate = useNavigate();
@@ -33,6 +35,24 @@ export const TopNavigation = () => {
   const { notifications, markAllAsRead } = useNotification();
   const unreadCount = notifications.filter(n => !n.read).length;
   const showNotifications = typeof window !== 'undefined' ? localStorage.getItem('showNotifications') !== 'false' : true;
+  const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
+
+  // Universal mock/live toggle
+  const [isMock, setIsMock] = useReactState(() => {
+    const stored = localStorage.getItem('USE_MOCK');
+    if (stored === null) {
+      localStorage.setItem('USE_MOCK', 'true');
+      return true;
+    }
+    return stored === 'true';
+  });
+
+  useEffect(() => {
+    // Ensure default is set on first load
+    if (localStorage.getItem('USE_MOCK') === null) {
+      localStorage.setItem('USE_MOCK', 'true');
+    }
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -89,6 +109,22 @@ export const TopNavigation = () => {
             </Drawer>
           )}
 
+          {/* Mock/Live Toggle */}
+          <div className="flex items-center gap-2">
+            <Switch
+              checked={isMock}
+              onCheckedChange={(checked) => {
+                localStorage.setItem('USE_MOCK', checked ? 'true' : 'false');
+                setIsMock(checked);
+                window.location.reload();
+              }}
+              id="mock-toggle"
+            />
+            <label htmlFor="mock-toggle" className="text-xs text-muted-foreground select-none">
+              {isMock ? 'Mock Data' : 'Live Data'}
+            </label>
+          </div>
+
           {/* User Menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -128,7 +164,7 @@ export const TopNavigation = () => {
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem 
-                onClick={handleLogout}
+                onClick={() => setLogoutDialogOpen(true)}
                 className="cursor-pointer text-destructive focus:text-destructive"
               >
                 <LogOut className="mr-2 h-4 w-4" />
@@ -138,6 +174,22 @@ export const TopNavigation = () => {
           </DropdownMenu>
         </div>
       </div>
+      <AlertDialog open={logoutDialogOpen} onOpenChange={setLogoutDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Log out</AlertDialogTitle>
+            <AlertDialogDescription>
+              Do you want to log out?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleLogout} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Log out
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </header>
   );
 };

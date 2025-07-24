@@ -28,149 +28,176 @@ import ParentProfile from "./pages/ParentProfile";
 import AdminDashboard from "./pages/AdminDashboard";
 import Subjects from "./pages/Subjects";
 import Teachers from "./pages/Teachers";
+import TeacherClasses from "./pages/TeacherClasses";
+import TeacherHomework from "./pages/TeacherHomework";
+import TeacherStudents from "./pages/TeacherStudents";
+import { AuthProvider } from './components/layout/AuthContext';
 
 const queryClient = new QueryClient();
 
 const App = () => (
-  <NotificationProvider>
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <AppToaster />
-        <SonnerToaster />
-        <BrowserRouter>
-          <ErrorBoundary>
-            <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route path="/forgot-password" element={<ForgotPassword />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
-              <Route path="/" element={
-                <ProtectedRoute allowedRoles={['admin', 'teacher', 'student', 'parent']}>
-                  <Layout>
-                    {localStorage.getItem('role') === 'admin' ? <AdminDashboard /> :
-                     localStorage.getItem('role') === 'teacher' ? <Dashboard /> :
-                     localStorage.getItem('role') === 'student' ? <Dashboard /> :
-                     localStorage.getItem('role') === 'parent' ? <ParentDashboard /> :
-                     <Dashboard />}
-                  </Layout>
-                </ProtectedRoute>
-              } />
-              <Route path="/students" element={
-                <ProtectedRoute allowedRoles={['admin']}>
-                  <Layout>
-                    <Students />
-                  </Layout>
-                </ProtectedRoute>
-              } />
-              <Route path="/teachers" element={
-                <ProtectedRoute allowedRoles={['admin', 'teacher']}>
-                  <Layout>
-                    <Teachers />
-                  </Layout>
-                </ProtectedRoute>
-              } />
-              <Route path="/report-cards" element={
-                <ProtectedRoute allowedRoles={['admin', 'teacher']}>
-                  <Layout>
-                    <ReportCard />
-                  </Layout>
-                </ProtectedRoute>
-              } />
-              <Route path="/report-card" element={
-                <ProtectedRoute allowedRoles={['student']}>
-                  <Layout>
-                    <ReportCard />
-                  </Layout>
-                </ProtectedRoute>
-              } />
-              <Route path="/homework" element={
-                <ProtectedRoute allowedRoles={['admin', 'teacher', 'student', 'parent']}>
-                  <Layout>
-                    {/* Render student homework page for students, placeholder for others */}
-                    {localStorage.getItem('role') === 'student' ? <HomeworkPage /> : (
+  <AuthProvider>
+    <NotificationProvider>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <AppToaster />
+          <SonnerToaster />
+          <BrowserRouter>
+            <ErrorBoundary>
+              <Routes>
+                <Route path="/login" element={<Login />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
+                <Route path="/" element={
+                  <ProtectedRoute allowedRoles={['admin', 'teacher', 'student', 'parent']}>
+                    <Layout>
+                      {localStorage.getItem('role') === 'admin' ? <AdminDashboard /> :
+                       localStorage.getItem('role') === 'teacher' ? <Dashboard /> :
+                       localStorage.getItem('role') === 'student' ? <Dashboard /> :
+                       localStorage.getItem('role') === 'parent' ? <ParentDashboard /> :
+                       <Dashboard />}
+                    </Layout>
+                  </ProtectedRoute>
+                } />
+                <Route path="/students" element={
+                  <ProtectedRoute allowedRoles={['admin']}>
+                    <Layout>
+                      <Students />
+                    </Layout>
+                  </ProtectedRoute>
+                } />
+                <Route path="/teachers" element={
+                  <ProtectedRoute allowedRoles={['admin', 'teacher']}>
+                    <Layout>
+                      <Teachers />
+                    </Layout>
+                  </ProtectedRoute>
+                } />
+                <Route path="/report-cards" element={
+                  <ProtectedRoute allowedRoles={['admin', 'teacher']}>
+                    <Layout>
+                      <ReportCard />
+                    </Layout>
+                  </ProtectedRoute>
+                } />
+                <Route path="/report-card" element={
+                  <ProtectedRoute allowedRoles={['student']}>
+                    <Layout>
+                      <ReportCard />
+                    </Layout>
+                  </ProtectedRoute>
+                } />
+                <Route path="/homework" element={
+                  <ProtectedRoute allowedRoles={['admin', 'teacher', 'student', 'parent']}>
+                    <Layout>
+                      {/* Render student homework page for students, placeholder for others */}
+                      {localStorage.getItem('role') === 'student' ? <HomeworkPage /> : (
+                        <div className="text-center py-12">
+                          <h1 className="text-2xl font-bold mb-4">Homework</h1>
+                          <p className="text-muted-foreground">Coming soon...</p>
+                        </div>
+                      )}
+                    </Layout>
+                  </ProtectedRoute>
+                } />
+                <Route path="/classes" element={
+                  <ProtectedRoute allowedRoles={['admin', 'teacher', 'student', 'parent']}>
+                    <Layout>
+                      <ClassesPage />
+                    </Layout>
+                  </ProtectedRoute>
+                } />
+                <Route path="/subjects" element={
+                  <ProtectedRoute allowedRoles={['admin', 'teacher', 'student', 'parent']}>
+                    <Layout>
+                      <Subjects />
+                    </Layout>
+                  </ProtectedRoute>
+                } />
+                <Route path="/creativity-board" element={
+                  <ProtectedRoute allowedRoles={['admin', 'teacher', 'student', 'parent']}>
+                    <Layout>
                       <div className="text-center py-12">
-                        <h1 className="text-2xl font-bold mb-4">Homework</h1>
+                        <h1 className="text-2xl font-bold mb-4">Creativity Board</h1>
                         <p className="text-muted-foreground">Coming soon...</p>
                       </div>
-                    )}
-                  </Layout>
-                </ProtectedRoute>
-              } />
-              <Route path="/classes" element={
-                <ProtectedRoute allowedRoles={['admin', 'teacher', 'student', 'parent']}>
-                  <Layout>
-                    <ClassesPage />
-                  </Layout>
-                </ProtectedRoute>
-              } />
-              <Route path="/subjects" element={
-                <ProtectedRoute allowedRoles={['admin', 'teacher', 'student', 'parent']}>
-                  <Layout>
-                    <Subjects />
-                  </Layout>
-                </ProtectedRoute>
-              } />
-              <Route path="/creativity-board" element={
-                <ProtectedRoute allowedRoles={['admin', 'teacher', 'student', 'parent']}>
-                  <Layout>
-                    <div className="text-center py-12">
-                      <h1 className="text-2xl font-bold mb-4">Creativity Board</h1>
-                      <p className="text-muted-foreground">Coming soon...</p>
-                    </div>
-                  </Layout>
-                </ProtectedRoute>
-              } />
-              <Route path="/profile" element={
-                <ProtectedRoute allowedRoles={['admin', 'teacher', 'student', 'parent']}>
-                  <Layout>
-                    {localStorage.getItem('role') === 'teacher' ? <TeacherProfile /> :
-                     localStorage.getItem('role') === 'parent' ? <ParentProfile /> :
-                     localStorage.getItem('role') === 'student' ? <Profile /> :
-                     <Profile />}
-                  </Layout>
-                </ProtectedRoute>
-              } />
-              <Route path="/settings" element={
-                <ProtectedRoute allowedRoles={['admin', 'teacher', 'student', 'parent']}>
-                  <Layout>
-                    <Settings />
-                  </Layout>
-                </ProtectedRoute>
-              } />
-              <Route path="/help" element={<Help />} />
-              <Route path="/activity-log" element={
-                <ProtectedRoute allowedRoles={['admin']}>
-                  <ActivityLog />
-                </ProtectedRoute>
-              } />
-              <Route path="/parent" element={
-                <ProtectedRoute allowedRoles={['parent']}>
-                  <Layout>
-                    <ParentDashboard />
-                  </Layout>
-                </ProtectedRoute>
-              } />
-              <Route path="/parent/children" element={
-                <ProtectedRoute allowedRoles={['parent']}>
-                  <Layout>
-                    <ParentChildren />
-                  </Layout>
-                </ProtectedRoute>
-              } />
-              <Route path="/parent/notifications" element={
-                <ProtectedRoute allowedRoles={['parent']}>
-                  <Layout>
-                    <ParentNotifications />
-                  </Layout>
-                </ProtectedRoute>
-              } />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </ErrorBoundary>
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
-  </NotificationProvider>
+                    </Layout>
+                  </ProtectedRoute>
+                } />
+                <Route path="/profile" element={
+                  <ProtectedRoute allowedRoles={['admin', 'teacher', 'student', 'parent']}>
+                    <Layout>
+                      {localStorage.getItem('role') === 'teacher' ? <TeacherProfile /> :
+                       localStorage.getItem('role') === 'parent' ? <ParentProfile /> :
+                       localStorage.getItem('role') === 'student' ? <Profile /> :
+                       <Profile />}
+                    </Layout>
+                  </ProtectedRoute>
+                } />
+                <Route path="/settings" element={
+                  <ProtectedRoute allowedRoles={['admin', 'teacher', 'student', 'parent']}>
+                    <Layout>
+                      <Settings />
+                    </Layout>
+                  </ProtectedRoute>
+                } />
+                <Route path="/help" element={<Help />} />
+                <Route path="/activity-log" element={
+                  <ProtectedRoute allowedRoles={['admin']}>
+                    <ActivityLog />
+                  </ProtectedRoute>
+                } />
+                <Route path="/parent" element={
+                  <ProtectedRoute allowedRoles={['parent']}>
+                    <Layout>
+                      <ParentDashboard />
+                    </Layout>
+                  </ProtectedRoute>
+                } />
+                <Route path="/parent/children" element={
+                  <ProtectedRoute allowedRoles={['parent']}>
+                    <Layout>
+                      <ParentChildren />
+                    </Layout>
+                  </ProtectedRoute>
+                } />
+                <Route path="/parent/notifications" element={
+                  <ProtectedRoute allowedRoles={['parent']}>
+                    <Layout>
+                      <ParentNotifications />
+                    </Layout>
+                  </ProtectedRoute>
+                } />
+                <Route path="/teacher/classes" element={
+                  <ProtectedRoute allowedRoles={['teacher']}>
+                    <Layout>
+                      <TeacherClasses />
+                    </Layout>
+                  </ProtectedRoute>
+                } />
+                <Route path="/teacher/homework" element={
+                  <ProtectedRoute allowedRoles={['teacher']}>
+                    <Layout>
+                      <TeacherHomework />
+                    </Layout>
+                  </ProtectedRoute>
+                } />
+                <Route path="/teacher/students" element={
+                  <ProtectedRoute allowedRoles={['teacher']}>
+                    <Layout>
+                      <TeacherStudents />
+                    </Layout>
+                  </ProtectedRoute>
+                } />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </ErrorBoundary>
+          </BrowserRouter>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </NotificationProvider>
+  </AuthProvider>
 );
 
 export default App;

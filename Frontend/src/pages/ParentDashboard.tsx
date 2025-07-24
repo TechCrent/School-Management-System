@@ -1,27 +1,28 @@
 import { useEffect, useState } from 'react';
-import { mockStudents, mockHomework, mockSubjects } from '../data/mockData';
-
-// Mock parent data: parent sees these children
-const mockParentChildren = [
-  mockStudents[0],
-  mockStudents[1],
-];
+import { getStudents, getHomework, getSubjects } from '../api/edulite';
 
 const getRecentGrades = () => [
   { subject: 'Mathematics', grade: 'A' },
   { subject: 'English', grade: 'B+' },
 ];
 
-const getUpcomingHomework = (studentId: string) =>
-  mockHomework.filter(hw => hw.status === 'pending').slice(0, 2);
-
 const ParentDashboard = () => {
-  const [children, setChildren] = useState<typeof mockParentChildren>([]);
+  const [children, setChildren] = useState<any[]>([]);
+  const [homework, setHomework] = useState<any[]>([]);
 
   useEffect(() => {
     // In a real app, fetch children for the logged-in parent
-    setChildren(mockParentChildren);
+    getStudents().then(res => {
+      // For demo, just use the first two students as children
+      setChildren(res.data ? res.data.slice(0, 2) : []);
+    });
+    getHomework().then(res => {
+      setHomework(res.data || []);
+    });
   }, []);
+
+  const getUpcomingHomework = (studentId: string) =>
+    homework.filter(hw => hw.status === 'pending').slice(0, 2);
 
   return (
     <div>

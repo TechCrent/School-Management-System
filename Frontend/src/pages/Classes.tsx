@@ -1,5 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
-import { mockClasses, mockTeachers, mockSubjects, Class } from '../data/mockData';
+import { mockTeachers, mockSubjects, Class } from '../data/mockData';
+import { getClasses, addClass, updateClass, deleteClass } from '../api/edulite';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAuth } from '../components/layout/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,6 +21,8 @@ import {
 } from '@/components/ui/select';
 
 const Classes = () => {
+  const { token } = useAuth();
+  const queryClient = useQueryClient();
   const [classes, setClasses] = useState<Class[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
@@ -33,13 +38,15 @@ const Classes = () => {
   const [modalForm, setModalForm] = useState<Partial<Class>>({});
 
   useEffect(() => {
-    setLoading(true);
-    setTimeout(() => {
-      setClasses([...mockClasses]);
-      setUserRole(localStorage.getItem('role') || '');
-      setLoading(false);
-    }, 600);
+    setUserRole(localStorage.getItem('role') || '');
   }, []);
+
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['classes', debouncedSearch],
+    queryFn: () => getClasses({ search: debouncedSearch }),
+    enabled: !!token
+  });
+  const classesData = data?.data || [];
 
   useEffect(() => {
     if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
@@ -51,10 +58,8 @@ const Classes = () => {
     };
   }, [searchTerm]);
 
-  const filteredClasses = classes.filter(cls =>
-    cls.name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
-    mockTeachers.find(t => t.teacher_id === cls.teacher_id)?.full_name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
-    mockSubjects.find(s => s.subject_id === cls.subject_id)?.name.toLowerCase().includes(debouncedSearch.toLowerCase())
+  const filteredClasses = classesData.filter((cls: Class) =>
+    cls.name.toLowerCase().includes(debouncedSearch.toLowerCase())
   );
 
   const canEdit = userRole === 'admin';
@@ -69,20 +74,33 @@ const Classes = () => {
     setModalMode('edit');
     setModalOpen(true);
   };
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => deleteClass(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['classes'] })
+  });
   const handleDelete = (id: string) => {
     setDeleteId(id);
   };
-  const confirmDelete = () => {
-    setClasses(prev => prev.filter(cls => cls.class_id !== deleteId));
+  const confirmDelete = async () => {
+    if (!deleteId) return;
+    await deleteMutation.mutateAsync(deleteId);
     setDeleteId(null);
     customToast({ title: 'Class deleted', description: 'The class has been removed.' });
   };
-  const handleSave = (data: Partial<Class>) => {
+  const addMutation = useMutation({
+    mutationFn: async (cls: Partial<Class>) => addClass(cls),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['classes'] })
+  });
+  const updateMutation = useMutation({
+    mutationFn: async (cls: Partial<Class>) => updateClass(cls),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['classes'] })
+  });
+  const handleSave = async (data: Partial<Class>) => {
     // Inline validation
     const errors: { [key: string]: string } = {};
     if (!data.name || data.name.trim().length < 2) {
       errors.name = 'Class name is required (min 2 characters)';
-    } else if (classes.some(cls => cls.name === data.name && cls.class_id !== selectedClass?.class_id)) {
+    } else if (classesData.some(cls => cls.name === data.name && cls.class_id !== selectedClass?.class_id)) {
       errors.name = 'A class with this name already exists.';
     }
     if (!data.teacher_id) {
@@ -100,13 +118,10 @@ const Classes = () => {
     }
     setFormErrors({});
     if (modalMode === 'create') {
-      setClasses(prev => [
-        { ...modalForm, class_id: crypto.randomUUID(), student_count: 0 } as Class,
-        ...prev,
-      ]);
+      await addMutation.mutateAsync(data);
       customToast({ title: 'Class added', description: 'A new class has been added.' });
     } else if (modalMode === 'edit' && modalForm.class_id) {
-      setClasses(prev => prev.map(cls => cls.class_id === modalForm.class_id ? { ...cls, ...modalForm } as Class : cls));
+      await updateMutation.mutateAsync({ ...modalForm, ...data });
       customToast({ title: 'Class updated', description: 'Class details have been updated.' });
     }
     setModalOpen(false);
@@ -114,7 +129,8 @@ const Classes = () => {
     setSelectedClass(null);
   };
 
-  if (loading) return <Loading size="lg" text="Loading classes..." />;
+  if (isLoading) return <Loading size="lg" text="Loading classes..." />;
+  if (isError) return <div className="text-center text-destructive">Failed to load classes.</div>;
 
   return (
     <div className="space-y-6">

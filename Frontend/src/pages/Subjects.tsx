@@ -1,5 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
-import { mockSubjects, Subject } from '../data/mockData';
+import { Subject } from '../data/mockData';
+import { getSubjects, addSubject, updateSubject, deleteSubject } from '../api/edulite';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAuth } from '../components/layout/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,7 +13,8 @@ import { Loading } from '@/components/ui/loading';
 import { Breadcrumbs } from '@/components/ui/breadcrumb';
 
 const Subjects = () => {
-  const [subjects, setSubjects] = useState<Subject[]>([]);
+  const { token } = useAuth();
+  const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
@@ -25,13 +29,15 @@ const Subjects = () => {
   const [modalForm, setModalForm] = useState<Partial<Subject>>({});
 
   useEffect(() => {
-    setLoading(true);
-    setTimeout(() => {
-      setSubjects([...mockSubjects]);
-      setUserRole(localStorage.getItem('role') || '');
-      setLoading(false);
-    }, 600); // Simulate loading
+    setUserRole(localStorage.getItem('role') || '');
   }, []);
+
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['subjects', debouncedSearch],
+    queryFn: () => getSubjects({ search: debouncedSearch }),
+    enabled: !!token
+  });
+  const subjectsData = data?.data || [];
 
   useEffect(() => {
     if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
@@ -43,7 +49,7 @@ const Subjects = () => {
     };
   }, [searchTerm]);
 
-  const filteredSubjects = subjects.filter(s =>
+  const filteredSubjects = subjectsData.filter((s: Subject) =>
     s.name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
     s.description.toLowerCase().includes(debouncedSearch.toLowerCase())
   );
@@ -60,20 +66,33 @@ const Subjects = () => {
     setModalMode('edit');
     setModalOpen(true);
   };
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => deleteSubject(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['subjects'] })
+  });
   const handleDelete = (id: string) => {
     setDeleteId(id);
   };
-  const confirmDelete = () => {
-    setSubjects(prev => prev.filter(s => s.subject_id !== deleteId));
+  const confirmDelete = async () => {
+    if (!deleteId) return;
+    await deleteMutation.mutateAsync(deleteId);
     setDeleteId(null);
     customToast({ title: 'Subject deleted', description: 'The subject has been removed.' });
   };
-  const handleSave = (data: Partial<Subject>) => {
+  const addMutation = useMutation({
+    mutationFn: async (subject: Partial<Subject>) => addSubject(subject),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['subjects'] })
+  });
+  const updateMutation = useMutation({
+    mutationFn: async (subject: Partial<Subject>) => updateSubject(subject),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['subjects'] })
+  });
+  const handleSave = async (data: Partial<Subject>) => {
     // Inline validation
     const errors: { [key: string]: string } = {};
     if (!data.name || data.name.trim().length < 2) {
       errors.name = 'Subject name is required (min 2 characters)';
-    } else if (subjects.some(s => s.name === data.name && s.subject_id !== selectedSubject?.subject_id)) {
+    } else if (subjectsData.some(s => s.name === data.name && s.subject_id !== selectedSubject?.subject_id)) {
       errors.name = 'A subject with this name already exists.';
     }
     if (!data.description || data.description.trim().length < 2) {
@@ -85,13 +104,10 @@ const Subjects = () => {
     }
     setFormErrors({});
     if (modalMode === 'create') {
-      setSubjects(prev => [
-        { ...modalForm, subject_id: crypto.randomUUID() } as Subject,
-        ...prev,
-      ]);
+      await addMutation.mutateAsync(data);
       customToast({ title: 'Subject added', description: 'A new subject has been added.' });
     } else if (modalMode === 'edit' && modalForm.subject_id) {
-      setSubjects(prev => prev.map(s => s.subject_id === modalForm.subject_id ? { ...s, ...modalForm } as Subject : s));
+      await updateMutation.mutateAsync({ ...modalForm, ...data });
       customToast({ title: 'Subject updated', description: 'Subject details have been updated.' });
     }
     setModalOpen(false);
@@ -99,7 +115,8 @@ const Subjects = () => {
     setSelectedSubject(null);
   };
 
-  if (loading) return <Loading size="lg" text="Loading subjects..." />;
+  if (isLoading) return <Loading size="lg" text="Loading subjects..." />;
+  if (isError) return <div className="text-center text-destructive">Failed to load subjects.</div>;
   return (
     <div className="space-y-6">
       <Breadcrumbs items={[{ label: 'Dashboard', href: '/' }, { label: 'Subjects' }]} />

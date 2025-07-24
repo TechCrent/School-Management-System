@@ -1,14 +1,32 @@
-import { mockStudents, mockTeachers, mockClasses, mockSubjects, mockHomework } from '../data/mockData';
+import { useEffect, useState } from 'react';
+import { getStudents, getTeachers, getClasses, getSubjects, getHomework } from '../api/edulite';
 
 const AdminDashboard = () => {
-  const stats = [
-    { label: 'Total Students', value: mockStudents.length },
-    { label: 'Total Teachers', value: mockTeachers.length },
-    { label: 'Total Classes', value: mockClasses.length },
-    { label: 'Total Subjects', value: mockSubjects.length },
-  ];
+  const [stats, setStats] = useState([
+    { label: 'Total Students', value: 0 },
+    { label: 'Total Teachers', value: 0 },
+    { label: 'Total Classes', value: 0 },
+    { label: 'Total Subjects', value: 0 },
+  ]);
+  const [recentHomework, setRecentHomework] = useState<any[]>([]);
 
-  const recentHomework = mockHomework.slice(0, 5);
+  useEffect(() => {
+    Promise.all([
+      getStudents(),
+      getTeachers(),
+      getClasses(),
+      getSubjects(),
+      getHomework()
+    ]).then(([studentsRes, teachersRes, classesRes, subjectsRes, homeworkRes]) => {
+      setStats([
+        { label: 'Total Students', value: (studentsRes.data || []).length },
+        { label: 'Total Teachers', value: (teachersRes.data || []).length },
+        { label: 'Total Classes', value: (classesRes.data || []).length },
+        { label: 'Total Subjects', value: (subjectsRes.data || []).length },
+      ]);
+      setRecentHomework((homeworkRes.data || []).slice(0, 5));
+    });
+  }, []);
 
   return (
     <div>

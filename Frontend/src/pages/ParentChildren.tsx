@@ -1,31 +1,39 @@
-import { useState } from 'react';
-import { mockStudents, mockHomework, mockClasses, mockSubjects } from '../data/mockData';
-
-// Mock parent data: parent sees these children
-const mockParentChildren = [
-  mockStudents[0],
-  mockStudents[1],
-];
+import { useState, useEffect } from 'react';
+import { getStudents, getHomework, getClasses } from '../api/edulite';
 
 const getRecentGrades = () => [
   { subject: 'Mathematics', grade: 'A' },
   { subject: 'English', grade: 'B+' },
 ];
 
-const getUpcomingHomework = (studentId: string) =>
-  mockHomework.filter(hw => hw.status === 'pending').slice(0, 2);
-
-const getClassInfo = (classId: string) =>
-  mockClasses.find(cls => cls.class_id === classId);
-
 const ParentChildren = () => {
-  const [selectedChild, setSelectedChild] = useState<typeof mockParentChildren[0] | null>(null);
+  const [children, setChildren] = useState<any[]>([]);
+  const [homework, setHomework] = useState<any[]>([]);
+  const [classes, setClasses] = useState<any[]>([]);
+  const [selectedChild, setSelectedChild] = useState<any | null>(null);
+
+  useEffect(() => {
+    getStudents().then(res => {
+      setChildren(res.data ? res.data.slice(0, 2) : []);
+    });
+    getHomework().then(res => {
+      setHomework(res.data || []);
+    });
+    getClasses().then(res => {
+      setClasses(res.data || []);
+    });
+  }, []);
+
+  const getUpcomingHomework = (studentId: string) =>
+    homework.filter(hw => hw.status === 'pending').slice(0, 2);
+  const getClassInfo = (classId: string) =>
+    classes.find((cls: any) => cls.class_id === classId);
 
   return (
     <div>
       <h2 className="text-2xl font-bold mb-4">My Children</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {mockParentChildren.map(child => (
+        {children.map(child => (
           <div
             key={child.student_id}
             className="p-4 border rounded-lg shadow-card bg-white cursor-pointer hover:shadow-glow"

@@ -1,5 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
-import { mockTeachers, Teacher } from '../data/mockData';
+import { Teacher } from '../data/mockData';
+import { getTeachers, addTeacher, updateTeacher, deleteTeacher } from '../api/edulite';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAuth } from '../components/layout/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,7 +14,8 @@ import { useCustomToast } from '@/hooks/use-toast';
 import { Breadcrumbs } from '@/components/ui/breadcrumb';
 
 const Teachers = () => {
-  const [teachers, setTeachers] = useState<Teacher[]>([]);
+  const { token } = useAuth();
+  const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
@@ -26,12 +30,7 @@ const Teachers = () => {
   const [modalForm, setModalForm] = useState<Partial<Teacher>>({});
 
   useEffect(() => {
-    setLoading(true);
-    setTimeout(() => {
-      setTeachers([...mockTeachers]);
-      setUserRole(localStorage.getItem('role') || '');
-      setLoading(false);
-    }, 600);
+    setUserRole(localStorage.getItem('role') || '');
   }, []);
 
   useEffect(() => {
@@ -43,6 +42,13 @@ const Teachers = () => {
       if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
     };
   }, [searchTerm]);
+
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['teachers', debouncedSearch],
+    queryFn: () => getTeachers({ search: debouncedSearch }),
+    enabled: !!token
+  });
+  const teachers = data?.data || [];
 
   const filteredTeachers = teachers.filter(t =>
     t.full_name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
@@ -62,15 +68,28 @@ const Teachers = () => {
     setModalMode('edit');
     setModalOpen(true);
   };
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => deleteTeacher(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['teachers'] })
+  });
   const handleDelete = (id: string) => {
     setDeleteId(id);
   };
-  const confirmDelete = () => {
-    setTeachers(prev => prev.filter(t => t.teacher_id !== deleteId));
+  const confirmDelete = async () => {
+    if (!deleteId) return;
+    await deleteMutation.mutateAsync(deleteId);
     setDeleteId(null);
     customToast({ title: 'Teacher deleted', description: 'The teacher has been removed.' });
   };
-  const handleSave = (data: Partial<Teacher>) => {
+  const addMutation = useMutation({
+    mutationFn: async (teacher: Partial<Teacher>) => addTeacher(teacher),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['teachers'] })
+  });
+  const updateMutation = useMutation({
+    mutationFn: async (teacher: Partial<Teacher>) => updateTeacher(teacher),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['teachers'] })
+  });
+  const handleSave = async (data: Partial<Teacher>) => {
     // Inline validation
     const errors: { [key: string]: string } = {};
     if (!data.full_name || data.full_name.trim().length < 2) {
@@ -80,7 +99,7 @@ const Teachers = () => {
       errors.email = 'Email is required';
     } else if (!/^\S+@\S+\.\S+$/.test(data.email)) {
       errors.email = 'Invalid email address';
-    } else if (teachers.some(t => t.email === data.email && t.teacher_id !== selectedTeacher?.teacher_id)) {
+    } else if (teachers.some((t: Teacher) => t.email === data.email && t.teacher_id !== selectedTeacher?.teacher_id)) {
       errors.email = 'A teacher with this email already exists.';
     }
     if (!data.subject_name) {
@@ -92,13 +111,10 @@ const Teachers = () => {
     }
     setFormErrors({});
     if (modalMode === 'create') {
-      setTeachers(prev => [
-        { ...modalForm, teacher_id: crypto.randomUUID() } as Teacher,
-        ...prev,
-      ]);
+      await addMutation.mutateAsync(data);
       customToast({ title: 'Teacher added', description: 'A new teacher has been added.' });
     } else if (modalMode === 'edit' && modalForm.teacher_id) {
-      setTeachers(prev => prev.map(t => t.teacher_id === modalForm.teacher_id ? { ...t, ...modalForm } as Teacher : t));
+      await updateMutation.mutateAsync({ ...modalForm, ...data });
       customToast({ title: 'Teacher updated', description: 'Teacher details have been updated.' });
     }
     setModalOpen(false);
@@ -106,7 +122,8 @@ const Teachers = () => {
     setSelectedTeacher(null);
   };
 
-  if (loading) return <Loading size="lg" text="Loading teachers..." />;
+  if (isLoading) return <Loading size="lg" text="Loading teachers..." />;
+  if (isError) return <div className="text-center text-destructive">Failed to load teachers.</div>;
 
   return (
     <div className="space-y-6">

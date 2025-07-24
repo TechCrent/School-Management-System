@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { mockSubjects, mockStudents, Student } from '../data/mockData';
+import { Student } from '../data/mockData';
+import { getStudents, getSubjects, getGradesByStudentId } from '../api/edulite';
 import {
   Select,
   SelectTrigger,
@@ -7,43 +8,42 @@ import {
   SelectItem,
   SelectValue
 } from '@/components/ui/select';
-import { getGradesByStudentId } from '@/api/edulite';
-
-// Mock grades data for demonstration
-const mockGrades = [
-  { subject_id: 'sub_1', grade: 'A', comment: 'Excellent work!' },
-  { subject_id: 'sub_2', grade: 'B+', comment: 'Good effort, keep improving.' },
-  { subject_id: 'sub_3', grade: 'A-', comment: 'Great participation.' },
-  { subject_id: 'sub_4', grade: 'B', comment: 'Solid understanding.' },
-  { subject_id: 'sub_5', grade: 'A', comment: 'Very creative.' },
-];
 
 const ReportCard = () => {
   const [student, setStudent] = useState<Student | null>(null);
-  const [grades, setGrades] = useState<typeof mockGrades>([]);
+  const [grades, setGrades] = useState<any[]>([]);
   const [selectedStudentId, setSelectedStudentId] = useState<string>('');
   const [loading, setLoading] = useState(true);
+  const [students, setStudents] = useState<Student[]>([]);
+  const [subjects, setSubjects] = useState<any[]>([]);
 
   useEffect(() => {
     setLoading(true);
     const role = localStorage.getItem('role') || '';
     let user = JSON.parse(localStorage.getItem('user') || '{}') as Student;
     let studentId = user?.student_id;
-    if (role === 'admin' || role === 'teacher') {
-      user = mockStudents[0];
-      setSelectedStudentId(user?.student_id || '');
-      studentId = user?.student_id;
-    }
-    setStudent(user);
-    getGradesByStudentId(studentId).then(res => {
-      setGrades(res.data || []);
-      setLoading(false);
+    Promise.all([
+      getStudents(),
+      getSubjects()
+    ]).then(([studentsRes, subjectsRes]) => {
+      setStudents(studentsRes.data || []);
+      setSubjects(subjectsRes.data || []);
+      if (role === 'admin' || role === 'teacher') {
+        user = (studentsRes.data && studentsRes.data[0]) || user;
+        setSelectedStudentId(user?.student_id || '');
+        studentId = user?.student_id;
+      }
+      setStudent(user);
+      getGradesByStudentId(studentId).then(res => {
+        setGrades(res.data || []);
+        setLoading(false);
+      });
     });
   }, []);
 
   useEffect(() => {
     if (selectedStudentId) {
-      const user = mockStudents.find(s => s.student_id === selectedStudentId) || null;
+      const user = students.find(s => s.student_id === selectedStudentId) || null;
       setStudent(user);
       setLoading(true);
       getGradesByStudentId(selectedStudentId).then(res => {
@@ -51,7 +51,7 @@ const ReportCard = () => {
         setLoading(false);
       });
     }
-  }, [selectedStudentId]);
+  }, [selectedStudentId, students]);
 
   if (loading) return <div>Loading report card...</div>;
   return (
@@ -65,7 +65,7 @@ const ReportCard = () => {
               <SelectValue placeholder="Select Student" />
             </SelectTrigger>
             <SelectContent>
-              {mockStudents.map(s => (
+              {students.map(s => (
                 <SelectItem key={s.student_id} value={s.student_id}>{s.full_name}</SelectItem>
               ))}
             </SelectContent>
@@ -86,7 +86,7 @@ const ReportCard = () => {
             </thead>
             <tbody>
               {grades.map(g => {
-                const subject = mockSubjects.find(s => s.subject_id === g.subject_id);
+                const subject = subjects.find((s: any) => s.subject_id === g.subject_id);
                 return (
                   <tr key={g.subject_id} className="border-t">
                     <td className="p-2">{subject ? subject.name : g.subject_id}</td>

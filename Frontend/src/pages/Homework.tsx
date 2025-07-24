@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
-import { mockHomework, mockClasses, Student, Homework, Class } from '../data/mockData';
+import { getHomework, getClasses } from '../api/edulite';
+import { Student } from '../data/mockData';
 
 const HomeworkPage = () => {
-  const [homework, setHomework] = useState<Homework[]>([]);
-  const [studentClass, setStudentClass] = useState<Class | null>(null);
+  const [homework, setHomework] = useState<any[]>([]);
+  const [studentClass, setStudentClass] = useState<any | null>(null);
   const [statusMap, setStatusMap] = useState<Record<string, string>>({});
-  const [selectedHomework, setSelectedHomework] = useState<Homework | null>(null);
+  const [selectedHomework, setSelectedHomework] = useState<any | null>(null);
   const [submissionText, setSubmissionText] = useState('');
   const [submissionFile, setSubmissionFile] = useState<File | null>(null);
   const [submittedMap, setSubmittedMap] = useState<Record<string, boolean>>({});
@@ -14,23 +15,27 @@ const HomeworkPage = () => {
   const user = JSON.parse(localStorage.getItem('user') || '{}') as Student;
 
   useEffect(() => {
-    // Find the student's class
-    const cls = mockClasses.find(c => c.class_id === user.class_id) || null;
-    setStudentClass(cls);
-    if (cls) {
-      // Get homework for this class's subject
-      const hw = mockHomework.filter(h => h.subject_id === cls.subject_id);
-      setHomework(hw);
-      // Initialize status map from homework status
-      const map: Record<string, string> = {};
-      const subMap: Record<string, boolean> = {};
-      hw.forEach(h => {
-        map[h.homework_id] = h.status;
-        subMap[h.homework_id] = h.status === 'submitted' || h.status === 'graded';
-      });
-      setStatusMap(map);
-      setSubmittedMap(subMap);
-    }
+    // Find the student's class and homework
+    getClasses().then(res => {
+      const classes = res.data || [];
+      const cls = classes.find((c: any) => c.class_id === user.class_id) || null;
+      setStudentClass(cls);
+      if (cls) {
+        getHomework().then(hwRes => {
+          const hw = (hwRes.data || []).filter((h: any) => h.subject_id === cls.subject_id);
+          setHomework(hw);
+          // Initialize status map from homework status
+          const map: Record<string, string> = {};
+          const subMap: Record<string, boolean> = {};
+          hw.forEach((h: any) => {
+            map[h.homework_id] = h.status;
+            subMap[h.homework_id] = h.status === 'submitted' || h.status === 'graded';
+          });
+          setStatusMap(map);
+          setSubmittedMap(subMap);
+        });
+      }
+    });
   }, [user.class_id]);
 
   const handleSubmit = (hwId: string) => {
@@ -48,8 +53,8 @@ const HomeworkPage = () => {
   };
 
   // Type guard for feedback field
-  function getFeedback(hw: Homework): string | undefined {
-    return (hw as Homework & { feedback?: string }).feedback;
+  function getFeedback(hw: any): string | undefined {
+    return (hw as any & { feedback?: string }).feedback;
   }
 
   return (

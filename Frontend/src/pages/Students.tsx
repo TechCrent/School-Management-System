@@ -40,8 +40,7 @@ import { Loading } from '@/components/ui/loading';
 import { formatDateWithTimezone } from '@/lib/utils';
 import { notify } from '@/lib/utils';
 import { getStudents, addStudent, updateStudent, deleteStudent } from '@/api/edulite';
-import { USE_MOCK } from '../config';
-import { mockStudents } from '../data/mockData';
+import { useAuth } from '../components/layout/AuthContext';
 import { useTranslation } from 'react-i18next';
 import Papa from 'papaparse';
 import { Breadcrumbs } from '@/components/ui/breadcrumb';
@@ -66,50 +65,25 @@ export const Students = () => {
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const students = mockStudents;
-  const isError = false;
+  const { token } = useAuth();
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['students', debouncedSearch, currentPage],
+    queryFn: () => getStudents({ search: debouncedSearch, page: String(currentPage), pageSize: '10' }),
+    enabled: !!token
+  });
+  const students = data?.data || [];
 
   // Mutations
   const addMutation = useMutation({
-    mutationFn: async (student: Partial<Student>) => {
-      if (USE_MOCK) {
-        mockStudents.push({
-          student_id: crypto.randomUUID(),
-          full_name: student.full_name || '',
-          date_of_birth: student.date_of_birth || '',
-          class_id: student.class_id || 'class_1',
-          email: student.email || '',
-          parent1_email: student.parent1_email || '',
-          parent2_email: student.parent2_email || '',
-          grade: student.grade || '',
-          status: student.status || 'active',
-        });
-        return;
-      }
-      return addStudent(student);
-    },
+    mutationFn: async (student: Partial<Student>) => addStudent(student),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['students'] })
   });
   const updateMutation = useMutation({
-    mutationFn: async (vars: { id: string, student: Partial<Student> }) => {
-      if (USE_MOCK) {
-        const idx = mockStudents.findIndex(s => s.student_id === vars.id);
-        if (idx !== -1) mockStudents[idx] = { ...mockStudents[idx], ...vars.student };
-        return;
-      }
-      return updateStudent(vars.id, vars.student);
-    },
+    mutationFn: async (student: Partial<Student>) => updateStudent(student),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['students'] })
   });
   const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      if (USE_MOCK) {
-        const idx = mockStudents.findIndex(s => s.student_id === id);
-        if (idx !== -1) mockStudents.splice(idx, 1);
-        return;
-      }
-      return deleteStudent(id);
-    },
+    mutationFn: async (id: string) => deleteStudent(id),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['students'] })
   });
 
@@ -128,15 +102,9 @@ export const Students = () => {
     };
   }, [searchTerm]);
 
-  const filteredStudents = students.filter(student =>
-    student.full_name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
-    student.email.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
-    student.grade.toLowerCase().includes(debouncedSearch.toLowerCase())
-  );
-
-  const totalPages = Math.ceil(filteredStudents.length / studentsPerPage);
+  const totalPages = data?.data ? Math.ceil(data.data.length / studentsPerPage) : 1;
   const startIndex = (currentPage - 1) * studentsPerPage;
-  const currentStudents = filteredStudents.slice(startIndex, startIndex + studentsPerPage);
+  const currentStudents = students.slice(startIndex, startIndex + studentsPerPage);
 
   const canEdit = userRole === 'admin';
 
@@ -159,22 +127,6 @@ export const Students = () => {
   };
 
   const handleDelete = (id: string) => {
-    const student = students.find(s => s.student_id === id);
-    if (!student) return;
-    if (USE_MOCK) {
-      const idx = mockStudents.findIndex(s => s.student_id === id);
-      if (idx !== -1) mockStudents.splice(idx, 1);
-      setRecentlyDeleted([student]);
-      customToast({
-        title: t('Student deleted'),
-        description: t('Undo?'),
-        action: (
-          <Button variant="outline" size="sm" onClick={() => handleUndo([student])}>{t('Undo')}</Button>
-        ),
-      });
-      queryClient.invalidateQueries({ queryKey: ['students'] });
-      return;
-    }
     setStudentToDelete(id);
     setDeleteDialogOpen(true);
   };
@@ -206,7 +158,7 @@ export const Students = () => {
         await addMutation.mutateAsync(studentData);
         customToast({ title: 'Student added', description: 'A new student has been added.' });
       } else if (modalMode === 'edit' && selectedStudent) {
-        await updateMutation.mutateAsync({ id: selectedStudent.student_id, student: studentData });
+        await updateMutation.mutateAsync({ ...selectedStudent, ...studentData });
         customToast({ title: 'Student updated', description: 'Student details have been updated.' });
       }
     } catch (error) {
@@ -255,23 +207,6 @@ export const Students = () => {
   const handleBulkDelete = () => {
     setBulkDeleteDialogOpen(false);
     const deleted = students.filter(s => selectedIds.includes(s.student_id));
-    if (USE_MOCK) {
-      selectedIds.forEach(id => {
-        const idx = mockStudents.findIndex(s => s.student_id === id);
-        if (idx !== -1) mockStudents.splice(idx, 1);
-      });
-      setRecentlyDeleted(deleted);
-      setSelectedIds([]);
-      customToast({
-        title: t('Selected students deleted'),
-        description: t('Undo?'),
-        action: (
-          <Button variant="outline" size="sm" onClick={() => handleUndo(deleted)}>{t('Undo')}</Button>
-        ),
-      });
-      queryClient.invalidateQueries({ queryKey: ['students'] });
-      return;
-    }
     // TODO: Implement real API bulk delete
     setSelectedIds([]);
     customToast({ title: t('Selected students deleted') });
@@ -299,7 +234,7 @@ export const Students = () => {
     const reader = new FileReader();
     reader.onload = () => {
       try {
-        let imported: any[] = [];
+        let imported: Partial<Student>[] = [];
         if (ext === 'json') {
           imported = JSON.parse(reader.result as string);
         } else if (ext === 'csv') {
@@ -312,9 +247,8 @@ export const Students = () => {
         // Validate and add to mockStudents
         let added = 0;
         imported.forEach((s) => {
-          if (!s.email || mockStudents.some(ms => ms.email === s.email)) return;
-          mockStudents.push({
-            student_id: s.student_id || crypto.randomUUID(),
+          if (!s.email) return;
+          addMutation.mutateAsync({
             full_name: s.full_name || '',
             date_of_birth: s.date_of_birth || '',
             class_id: s.class_id || 'class_1',
@@ -353,18 +287,11 @@ export const Students = () => {
   };
 
   const handleUndo = (studentsToRestore: Student[]) => {
-    if (USE_MOCK) {
-      studentsToRestore.forEach(s => {
-        if (!mockStudents.some(ms => ms.student_id === s.student_id)) {
-          mockStudents.push(s);
-        }
-      });
-      setRecentlyDeleted([]);
-      customToast({ title: t('Undo successful') });
-      queryClient.invalidateQueries({ queryKey: ['students'] });
-    }
+    // Undo not supported in real API mode
+    customToast({ title: t('Undo not supported in live mode') });
   };
 
+  if (isLoading) return <Loading size="lg" text="Loading students..." />;
   if (isError) return <div className="text-center text-destructive">Failed to load students.</div>;
 
   return (
@@ -595,7 +522,7 @@ export const Students = () => {
               </TableBody>
             </Table>
 
-            {filteredStudents.length === 0 && (
+            {students.length === 0 && (
               <div className="text-center py-8 text-muted-foreground">
                 <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
                 <p>{t('No students found matching your search.')}</p>
@@ -607,7 +534,7 @@ export const Students = () => {
           {totalPages > 1 && (
             <div className="flex justify-between items-center mt-6">
               <p className="text-sm text-muted-foreground">
-                {t('Showing')} {startIndex + 1} {t('to')} {Math.min(startIndex + studentsPerPage, filteredStudents.length)} {t('of')} {filteredStudents.length} {t('students')}
+                {t('Showing')} {startIndex + 1} {t('to')} {Math.min(startIndex + studentsPerPage, students.length)} {t('of')} {students.length} {t('students')}
               </p>
               <div className="flex gap-2">
                 <Button
