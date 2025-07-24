@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { getHomework, getClasses } from '../api/edulite';
-import { Student } from '../data/mockData';
+import { Student, Class } from '../data/mockData';
+type Homework = { homework_id: string; title: string; due_date: string; status: string; subject_id: string; description?: string; feedback?: string };
 
 const HomeworkPage = () => {
-  const [homework, setHomework] = useState<any[]>([]);
-  const [studentClass, setStudentClass] = useState<any | null>(null);
+  const [homework, setHomework] = useState<Homework[]>([]);
+  const [studentClass, setStudentClass] = useState<Class | null>(null);
   const [statusMap, setStatusMap] = useState<Record<string, string>>({});
-  const [selectedHomework, setSelectedHomework] = useState<any | null>(null);
+  const [selectedHomework, setSelectedHomework] = useState<Homework | null>(null);
   const [submissionText, setSubmissionText] = useState('');
   const [submissionFile, setSubmissionFile] = useState<File | null>(null);
   const [submittedMap, setSubmittedMap] = useState<Record<string, boolean>>({});
@@ -17,17 +18,18 @@ const HomeworkPage = () => {
   useEffect(() => {
     // Find the student's class and homework
     getClasses().then(res => {
-      const classes = res.data || [];
-      const cls = classes.find((c: any) => c.class_id === user.class_id) || null;
+      const classes = (res.data || []) as Class[];
+      const cls = classes.find((c: Class) => c.class_id === user.class_id) || null;
       setStudentClass(cls);
       if (cls) {
         getHomework().then(hwRes => {
-          const hw = (hwRes.data || []).filter((h: any) => h.subject_id === cls.subject_id);
-          setHomework(hw);
+          const hw = (hwRes.data || []) as Homework[];
+          const filteredHw = hw.filter((h: Homework) => h.subject_id === cls.subject_id);
+          setHomework(filteredHw);
           // Initialize status map from homework status
           const map: Record<string, string> = {};
           const subMap: Record<string, boolean> = {};
-          hw.forEach((h: any) => {
+          filteredHw.forEach((h: Homework) => {
             map[h.homework_id] = h.status;
             subMap[h.homework_id] = h.status === 'submitted' || h.status === 'graded';
           });
@@ -53,8 +55,8 @@ const HomeworkPage = () => {
   };
 
   // Type guard for feedback field
-  function getFeedback(hw: any): string | undefined {
-    return (hw as any & { feedback?: string }).feedback;
+  function getFeedback(hw: Homework): string | undefined {
+    return hw.feedback;
   }
 
   return (
@@ -68,22 +70,22 @@ const HomeworkPage = () => {
               <li>No homework assigned for your class.</li>
             ) : (
               homework.map(hw => (
-                <li key={hw.homework_id} className="mb-4 p-4 border rounded-lg shadow-card flex justify-between items-center">
+                <li key={hw.homework_id} className="mb-4 p-4 border rounded-lg shadow-card bg-card text-card-foreground flex justify-between items-center">
                   <div>
-                    <div className="font-semibold">{hw.title}</div>
-                    <div>Due: {hw.due_date}</div>
-                    <div>Status: {statusMap[hw.homework_id]}</div>
+                    <div className="font-semibold text-foreground">{hw.title}</div>
+                    <div className="text-muted-foreground">Due: {hw.due_date}</div>
+                    <div className="text-muted-foreground">Status: {statusMap[hw.homework_id]}</div>
                   </div>
                   <div className="flex gap-2 items-center">
-                    <button onClick={() => setSelectedHomework(hw)} className="bg-muted px-3 py-1 rounded border">View Details</button>
+                    <button onClick={() => setSelectedHomework(hw)} className="bg-muted text-foreground px-3 py-1 rounded border">View Details</button>
                     {statusMap[hw.homework_id] === 'pending' && (
-                      <button onClick={() => setSelectedHomework(hw)} className="bg-primary text-white px-3 py-1 rounded">Submit</button>
+                      <button onClick={() => setSelectedHomework(hw)} className="bg-primary text-primary-foreground px-3 py-1 rounded">Submit</button>
                     )}
                     {statusMap[hw.homework_id] === 'submitted' && (
-                      <span className="text-green-600 font-semibold">Submitted</span>
+                      <span className="text-success font-semibold">Submitted</span>
                     )}
                     {statusMap[hw.homework_id] === 'graded' && (
-                      <span className="text-blue-600 font-semibold">Graded</span>
+                      <span className="text-info font-semibold">Graded</span>
                     )}
                   </div>
                 </li>
@@ -93,7 +95,7 @@ const HomeworkPage = () => {
           {/* Homework Details Modal */}
           {selectedHomework && (
             <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-              <div className="bg-white p-6 rounded-lg shadow-lg min-w-[300px] max-w-[90vw] relative">
+              <div className="bg-card p-6 rounded-lg shadow-lg min-w-[300px] max-w-[90vw] relative text-card-foreground">
                 <button onClick={() => setSelectedHomework(null)} className="absolute top-2 right-2 text-gray-400 hover:text-black">&times;</button>
                 <h3 className="text-xl font-bold mb-2">{selectedHomework.title}</h3>
                 <div className="mb-2">Due: {selectedHomework.due_date}</div>
@@ -110,15 +112,15 @@ const HomeworkPage = () => {
                       rows={3}
                     />
                     <input type="file" onChange={handleFileChange} />
-                    <button type="submit" className="bg-primary text-white px-4 py-2 rounded">Submit Homework</button>
+                    <button type="submit" className="bg-primary text-primary-foreground px-4 py-2 rounded">Submit Homework</button>
                   </form>
                 ) : (
                   <div className="text-green-700 font-semibold">You have submitted this homework.</div>
                 )}
                 {statusMap[selectedHomework.homework_id] === 'graded' && getFeedback(selectedHomework) && (
-                  <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded">
-                    <div className="font-semibold text-green-800">Teacher Feedback:</div>
-                    <div className="text-green-900">{getFeedback(selectedHomework)}</div>
+                  <div className="mt-4 p-3 bg-success/10 border border-success rounded">
+                    <div className="font-semibold text-success">Teacher Feedback:</div>
+                    <div className="text-success-foreground">{getFeedback(selectedHomework)}</div>
                   </div>
                 )}
               </div>

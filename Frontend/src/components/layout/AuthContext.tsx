@@ -39,11 +39,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setToken(res.data.token);
       setUser(res.data.user);
       setRole(res.data.role);
+      // Store in localStorage for dashboard and other pages
+      localStorage.setItem('token', res.data.token);
+      localStorage.setItem('role', res.data.role);
+      // If admin, ensure full_name is 'School Administrator'
+      let userToStore = res.data.user;
+      if (res.data.role === 'admin') {
+        if (!userToStore.full_name || userToStore.full_name === 'User' || userToStore.full_name === 'Admin User') {
+          userToStore = { ...userToStore, full_name: 'School Administrator' };
+        }
+      }
+      localStorage.setItem('user', JSON.stringify(userToStore));
       return { status: 'success' };
     } else {
       setToken(null);
       setUser(null);
       setRole(null);
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      localStorage.removeItem('role');
       return { status: 'error', error: res.error };
     }
   };

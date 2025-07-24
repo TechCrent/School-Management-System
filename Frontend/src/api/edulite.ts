@@ -6,6 +6,35 @@ import homework from '../data/homework.json';
 import users from '../data/users.json';
 import { mockGradesByStudent } from '../data/mockData';
 import { Class, Subject } from '../data/mockData';
+import parents from '../data/parents.json';
+import admin from '../data/admin.json';
+type Parent = {
+  parent_id: string;
+  full_name: string;
+  email: string;
+  phone: string;
+  children_ids: string[];
+};
+type Student = {
+  student_id: string;
+  full_name: string;
+  email: string;
+  grade: string;
+  date_of_birth: string;
+  address: string;
+  parent1_id: string;
+  parent2_id: string;
+};
+type Teacher = { teacher_id: string; full_name: string; email: string; subject_name: string; phone?: string };
+type HomeworkType = {
+  homework_id: string;
+  title: string;
+  due_date: string;
+  status: string;
+  subject_id: string;
+  description?: string;
+  feedback?: string;
+};
 
 function isMockMode() {
   const stored = localStorage.getItem('USE_MOCK');
@@ -43,7 +72,7 @@ function getAuthHeaders() {
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
-async function apiFetch(path: string, options: any = {}) {
+async function apiFetch(path: string, options: RequestInit = {}) {
   const res = await fetch(`${API_URL}${path}`, {
     ...options,
     headers: {
@@ -59,6 +88,24 @@ async function apiFetch(path: string, options: any = {}) {
 
 // Students
 export async function getStudents(params: Record<string, string> = {}) {
+  if (isMockMode()) {
+    const search = params.search?.toLowerCase() || '';
+    let filtered = students as Student[];
+    if (search) {
+      filtered = filtered.filter(s =>
+        s.full_name.toLowerCase().includes(search) ||
+        s.email.toLowerCase().includes(search) ||
+        s.grade.toLowerCase().includes(search)
+      );
+    }
+    if (params.noPaginate === 'true') {
+      return simulateLatency({ status: 'success', data: filtered, total: filtered.length, error: null }, 200);
+    }
+    const page = parseInt(params.page || '1', 10);
+    const pageSize = parseInt(params.pageSize || '20', 10);
+    const paged = filtered.slice((page - 1) * pageSize, page * pageSize);
+    return simulateLatency({ status: 'success', data: paged, total: filtered.length, error: null }, 200);
+  }
   const query = new URLSearchParams(params).toString();
   return apiFetch(`/students${query ? '?' + query : ''}`);
 }
@@ -89,6 +136,24 @@ export async function deleteStudent(studentId: string) {
 
 // Teachers
 export async function getTeachers(params: Record<string, string> = {}) {
+  if (isMockMode()) {
+    const search = params.search?.toLowerCase() || '';
+    let filtered = teachers as Teacher[];
+    if (search) {
+      filtered = filtered.filter(t =>
+        t.full_name.toLowerCase().includes(search) ||
+        t.email.toLowerCase().includes(search) ||
+        t.subject_name.toLowerCase().includes(search)
+      );
+    }
+    if (params.noPaginate === 'true') {
+      return simulateLatency({ status: 'success', data: filtered, total: filtered.length, error: null }, 200);
+    }
+    const page = parseInt(params.page || '1', 10);
+    const pageSize = parseInt(params.pageSize || '20', 10);
+    const paged = filtered.slice((page - 1) * pageSize, page * pageSize);
+    return simulateLatency({ status: 'success', data: paged, total: filtered.length, error: null }, 200);
+  }
   const query = new URLSearchParams(params).toString();
   return apiFetch(`/teachers${query ? '?' + query : ''}`);
 }
@@ -128,7 +193,13 @@ export async function getSubjects(params: Record<string, string> = {}) {
         s.description.toLowerCase().includes(search)
       );
     }
-    return Promise.resolve({ status: 'success', data: filtered, error: null });
+    if (params.noPaginate === 'true') {
+      return simulateLatency({ status: 'success', data: filtered, total: filtered.length, error: null }, 200);
+    }
+    const page = parseInt(params.page || '1', 10);
+    const pageSize = parseInt(params.pageSize || '20', 10);
+    const paged = filtered.slice((page - 1) * pageSize, page * pageSize);
+    return simulateLatency({ status: 'success', data: paged, total: filtered.length, error: null }, 200);
   }
   const query = new URLSearchParams(params).toString();
   return apiFetch(`/subjects${query ? '?' + query : ''}`);
@@ -184,7 +255,13 @@ export async function getClasses(params: Record<string, string> = {}) {
         cls.name.toLowerCase().includes(search)
       );
     }
-    return Promise.resolve({ status: 'success', data: filtered, error: null });
+    if (params.noPaginate === 'true') {
+      return simulateLatency({ status: 'success', data: filtered, total: filtered.length, error: null }, 200);
+    }
+    const page = parseInt(params.page || '1', 10);
+    const pageSize = parseInt(params.pageSize || '20', 10);
+    const paged = filtered.slice((page - 1) * pageSize, page * pageSize);
+    return simulateLatency({ status: 'success', data: paged, total: filtered.length, error: null }, 200);
   }
   const query = new URLSearchParams(params).toString();
   return apiFetch(`/classes${query ? '?' + query : ''}`);
@@ -235,6 +312,24 @@ export async function deleteClass(classId: string) {
 
 // Homework (if backend supports it)
 export async function getHomework(params: Record<string, string> = {}) {
+  if (isMockMode()) {
+    // Simulate search and pagination
+    const search = params.search?.toLowerCase() || '';
+    let filtered = homework;
+    if (search) {
+      filtered = filtered.filter((hw: HomeworkType) =>
+        hw.title.toLowerCase().includes(search) ||
+        (hw.description && hw.description.toLowerCase().includes(search))
+      );
+    }
+    if (params.noPaginate === 'true') {
+      return simulateLatency({ status: 'success', data: filtered, total: filtered.length, error: null }, 200);
+    }
+    const page = parseInt(params.page || '1', 10);
+    const pageSize = parseInt(params.pageSize || '20', 10);
+    const paged = filtered.slice((page - 1) * pageSize, page * pageSize);
+    return simulateLatency({ status: 'success', data: paged, total: filtered.length, error: null }, 200);
+  }
   const query = new URLSearchParams(params).toString();
   return apiFetch(`/homework${query ? '?' + query : ''}`);
 }
@@ -261,6 +356,51 @@ export async function deleteHomework(homeworkId: string) {
 
 // Users/Auth
 export async function login(username: string, password: string) {
+  if (isMockMode()) {
+    // Admin login
+    if ((admin[0].username === username || admin[0].email === username) && admin[0].password === password) {
+      return Promise.resolve({
+        status: 'success',
+        data: {
+          token: 'mock-admin-token',
+          user: admin[0],
+          role: 'admin'
+        },
+        error: null
+      });
+    }
+    // Parent login (by email)
+    const parent = (parents as Parent[]).find((p) => p.email === username && password === 'Parent$1234');
+    if (parent) {
+      return Promise.resolve({
+        status: 'success',
+        data: {
+          token: 'mock-parent-token',
+          user: parent,
+          role: 'parent'
+        },
+        error: null
+      });
+    }
+    // Student login (by email)
+    // (Assume students.json is imported as students)
+    if (typeof students !== 'undefined') {
+      const student = (students as Student[]).find((s) => s.email === username && password === 'Student$1234');
+      if (student) {
+        return Promise.resolve({
+          status: 'success',
+          data: {
+            token: 'mock-student-token',
+            user: student,
+            role: 'student'
+          },
+          error: null
+        });
+      }
+    }
+    return Promise.resolve({ status: 'error', data: null, error: 'Invalid credentials' });
+  }
+  // Real API
   const res = await apiFetch('/login', {
     method: 'POST',
     body: JSON.stringify({ username, password })
@@ -273,6 +413,41 @@ export async function login(username: string, password: string) {
 
 export function logout() {
   setToken('');
+}
+
+// Parents
+export async function getParents() {
+  if (isMockMode()) {
+    return simulateLatency({ status: 'success', data: parents, error: null }, 200);
+  }
+  // Implement real API call if needed
+  return apiFetch('/parents');
+}
+
+export async function getParentById(parentId: string) {
+  if (isMockMode()) {
+    const parent = (parents as Parent[]).find((p) => p.parent_id === parentId);
+    return Promise.resolve({ status: parent ? 'success' : 'error', data: parent || null, error: parent ? null : 'Parent not found' });
+  }
+  return apiFetch(`/parents/${parentId}`);
+}
+
+export async function getParentByEmail(email: string) {
+  if (isMockMode()) {
+    const parent = (parents as Parent[]).find((p) => p.email === email);
+    return Promise.resolve({ status: parent ? 'success' : 'error', data: parent || null, error: parent ? null : 'Parent not found' });
+  }
+  // Implement real API call if needed
+  return apiFetch(`/parents?email=${encodeURIComponent(email)}`);
+}
+
+// Admin
+export async function getAdmin() {
+  if (isMockMode()) {
+    return simulateLatency({ status: 'success', data: admin[0], error: null }, 200);
+  }
+  // Implement real API call if needed
+  return apiFetch('/admin');
 }
 
 // Grades (if backend supports it)

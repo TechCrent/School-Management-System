@@ -61,6 +61,10 @@ export const Profile = () => {
 
   useEffect(() => {
     if (user) {
+      if (user.role === 'admin') {
+        // Debug: log admin user object
+        console.log('Admin user object:', user);
+      }
       reset({
         full_name: user.full_name || '',
         email: user.email || '',
@@ -257,9 +261,12 @@ export const Profile = () => {
                 <Calendar className="h-4 w-4 text-muted-foreground" />
                 <span>{t('Member since 2024')}</span>
               </div>
-              <div className="flex items-center gap-3 text-sm">
-                <User className="h-4 w-4 text-muted-foreground" />
-                <span>{t('ID')}: {user?.user_id?.slice(0, 8) || 'N/A'}...</span>
+              {/* Show user ID and relationships */}
+              <div className="mb-4">
+                <Label>ID:</Label>
+                <span className="ml-2 font-mono">
+                  {user?.student_id || user?.parent_id || user?.teacher_id || user?.admin_id || (user?.role === 'admin' ? (user?.username || user?.email || 'N/A') : 'N/A')}
+                </span>
               </div>
             </CardContent>
           </Card>

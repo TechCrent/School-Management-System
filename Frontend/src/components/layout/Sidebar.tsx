@@ -101,6 +101,10 @@ export const Sidebar = () => {
         transition-all duration-300 ease-smooth
         ${isCollapsed ? '-translate-x-full lg:w-20' : 'w-64'}
         lg:translate-x-0
+        w-full max-w-xs sm:max-w-sm md:w-64
+        min-h-screen
+        flex flex-col
+        shadow-lg
       `}>
         <div className="flex flex-col h-full">
           {/* Logo */}
@@ -203,19 +207,7 @@ export const Sidebar = () => {
           </nav>
 
           {/* Logout */}
-          <div className="p-4 border-t border-border">
-            <button
-              onClick={handleLogout}
-              className="
-                flex items-center gap-3 w-full px-4 py-3 rounded-lg
-                text-muted-foreground hover:text-destructive hover:bg-destructive/10
-                transition-all duration-200
-              "
-            >
-              <LogOut className="h-5 w-5 flex-shrink-0" />
-              {!isCollapsed && <span className="font-medium">Logout</span>}
-            </button>
-          </div>
+          {/* Removed logout button from sidebar as per best practice */}
 
           {/* Collapse Toggle (Desktop) */}
           <div className="hidden lg:block p-4">

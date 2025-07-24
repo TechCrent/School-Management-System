@@ -139,10 +139,12 @@ const Teachers = () => {
           </Button>
         )}
       </div>
-      <Card className="shadow-card">
+      <Card className="shadow-card bg-card text-card-foreground">
         <CardHeader>
-          <CardTitle>Teacher Directory</CardTitle>
-          <CardDescription>Search and manage teacher information</CardDescription>
+          <CardTitle className="text-muted-foreground">Teacher Directory</CardTitle>
+          <CardDescription>
+            Search and manage teacher information
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col sm:flex-row gap-4 mb-6">

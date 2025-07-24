@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { getStudents, getHomework, getClasses } from '../api/edulite';
+import { Student, Class } from '../data/mockData';
+type Homework = { homework_id: string; title: string; due_date: string; status: string };
 
 const getRecentGrades = () => [
   { subject: 'Mathematics', grade: 'A' },
@@ -7,10 +9,10 @@ const getRecentGrades = () => [
 ];
 
 const ParentChildren = () => {
-  const [children, setChildren] = useState<any[]>([]);
-  const [homework, setHomework] = useState<any[]>([]);
-  const [classes, setClasses] = useState<any[]>([]);
-  const [selectedChild, setSelectedChild] = useState<any | null>(null);
+  const [children, setChildren] = useState<Student[]>([]);
+  const [homework, setHomework] = useState<Homework[]>([]);
+  const [classes, setClasses] = useState<Class[]>([]);
+  const [selectedChild, setSelectedChild] = useState<Student | null>(null);
 
   useEffect(() => {
     getStudents().then(res => {
@@ -25,9 +27,9 @@ const ParentChildren = () => {
   }, []);
 
   const getUpcomingHomework = (studentId: string) =>
-    homework.filter(hw => hw.status === 'pending').slice(0, 2);
+    homework.filter((hw: Homework) => hw.status === 'pending').slice(0, 2);
   const getClassInfo = (classId: string) =>
-    classes.find((cls: any) => cls.class_id === classId);
+    classes.find((cls: Class) => cls.class_id === classId);
 
   return (
     <div>

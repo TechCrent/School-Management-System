@@ -14,6 +14,14 @@ import {
 } from 'lucide-react';
 import { getStudents, getTeachers, getHomework, getClasses } from '../api/edulite';
 import { Student, Class } from '../data/mockData';
+import teachersJson from '../data/teachers.json';
+import subjectsJson from '../data/subjects.json';
+type TeacherType = { teacher_id: string; full_name: string; email: string; subject_name: string; phone?: string };
+type SubjectType = { subject_id: string; name: string; description?: string };
+const teachersData: TeacherType[] = teachersJson as unknown as TeacherType[];
+const subjectsData: SubjectType[] = subjectsJson as unknown as SubjectType[];
+type Teacher = { teacher_id: string; full_name: string; email: string; subject_name: string; phone?: string };
+type Homework = { homework_id: string; title: string; due_date: string; status: string; subject_id: string; description?: string; feedback?: string };
 import { formatDateWithTimezone } from '@/lib/utils';
 import { useNotification } from '@/components/layout/NotificationContext';
 import { Loading } from '@/components/ui/loading';
@@ -27,6 +35,9 @@ interface DashboardStats {
   completedHomework: number;
 }
 
+type HomeworkType = Homework & { teacher_id?: string; grade?: string };
+type ClassType = Class & { teacher_id?: string; subject_id?: string; grade?: string };
+
 export const Dashboard = () => {
   const { t } = useTranslation();
   const [stats, setStats] = useState<DashboardStats>({
@@ -38,8 +49,8 @@ export const Dashboard = () => {
     completedHomework: 0
   });
   const [students, setStudents] = useState<Student[]>([]);
-  const [teachers, setTeachers] = useState<any[]>([]);
-  const [homework, setHomework] = useState<any[]>([]);
+  const [teachers, setTeachers] = useState<Teacher[]>([]);
+  const [homework, setHomework] = useState<Homework[]>([]);
   const [classes, setClasses] = useState<Class[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -53,11 +64,12 @@ export const Dashboard = () => {
   const studentClass: Class | undefined = (userRole === 'student' && userProfile)
     ? classes.find(cls => cls.class_id === userProfile.class_id)
     : undefined;
-  const studentHomework: any[] = (userRole === 'student' && studentClass)
-    ? homework.filter(hw => hw.subject_id === studentClass.subject_id)
+  const studentHomework: Homework[] = (userRole === 'student' && studentClass)
+    ? homework.filter((hw: Homework) => hw.subject_id === studentClass.subject_id)
     : [];
 
   useEffect(() => {
+    console.log('Dashboard: USE_MOCK =', localStorage.getItem('USE_MOCK'));
     setLoading(true);
     // Get user info from localStorage
     const role = localStorage.getItem('role') || '';
@@ -67,23 +79,30 @@ export const Dashboard = () => {
     setUserName(user?.full_name || 'User');
     setUserId(user?.student_id || user?.id || '');
     setUserProfile(user);
+    const isMock = localStorage.getItem('USE_MOCK') === null ? true : localStorage.getItem('USE_MOCK') === 'true';
     Promise.all([
-      getStudents(),
-      getTeachers(),
+      getStudents(isMock ? { noPaginate: 'true' } : {}),
+      getTeachers(isMock ? { noPaginate: 'true' } : {}),
       getHomework(),
       getClasses()
     ]).then(([studentsRes, teachersRes, homeworkRes, classesRes]) => {
+      console.log('Dashboard data:', {
+        studentsRes,
+        teachersRes,
+        homeworkRes,
+        classesRes
+      });
       setStudents(studentsRes.data || []);
       setTeachers(teachersRes.data || []);
       setHomework(homeworkRes.data || []);
       setClasses(classesRes.data || []);
-      const pendingHW = (homeworkRes.data || []).filter((hw: any) => hw.status === 'pending').length;
-      const completedHW = (homeworkRes.data || []).filter((hw: any) => hw.status === 'submitted' || hw.status === 'graded').length;
+      const pendingHW = (homeworkRes.data || []).filter((hw: Homework) => hw.status === 'pending').length;
+      const completedHW = (homeworkRes.data || []).filter((hw: Homework) => hw.status === 'submitted' || hw.status === 'graded').length;
       setStats({
-        totalStudents: (studentsRes.data || []).length,
-        totalTeachers: (teachersRes.data || []).length,
-        totalHomework: (homeworkRes.data || []).length,
-        totalClasses: (classesRes.data || []).length,
+        totalStudents: typeof studentsRes.total === 'number' ? studentsRes.total : (Array.isArray(studentsRes.data) ? studentsRes.data.length : 0),
+        totalTeachers: typeof teachersRes.total === 'number' ? teachersRes.total : (Array.isArray(teachersRes.data) ? teachersRes.data.length : 0),
+        totalHomework: typeof homeworkRes.total === 'number' ? homeworkRes.total : (Array.isArray(homeworkRes.data) ? homeworkRes.data.length : 0),
+        totalClasses: typeof classesRes.total === 'number' ? classesRes.total : (Array.isArray(classesRes.data) ? classesRes.data.length : 0),
         pendingHomework: pendingHW,
         completedHomework: completedHW
       });
@@ -98,6 +117,9 @@ export const Dashboard = () => {
           description: 'Your English class has a new time.'
         });
       }
+      setLoading(false);
+    }).catch((err) => {
+      console.error('Dashboard data load error:', err);
       setLoading(false);
     });
   }, []);
@@ -115,52 +137,52 @@ export const Dashboard = () => {
         return (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <Card className="shadow-card hover:shadow-glow transition-all duration-300">
+              <Card className="shadow-card hover:shadow-glow transition-all duration-300 bg-card text-card-foreground">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">{t('Total Students')}</CardTitle>
-                  <Users className="h-4 w-4 text-muted-foreground" />
+                  <CardTitle className="text-sm font-medium text-muted-foreground">{t('Total Students')}</CardTitle>
+                  <Users className="h-4 w-4 text-primary" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-primary">{stats.totalStudents}</div>
+                  <div className="text-2xl font-bold text-foreground">{stats.totalStudents}</div>
                   <p className="text-xs text-muted-foreground">
                     {t('Active students in system')}
                   </p>
                 </CardContent>
               </Card>
 
-              <Card className="shadow-card hover:shadow-glow transition-all duration-300">
+              <Card className="shadow-card hover:shadow-glow transition-all duration-300 bg-card text-card-foreground">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">{t('Total Teachers')}</CardTitle>
-                  <GraduationCap className="h-4 w-4 text-muted-foreground" />
+                  <CardTitle className="text-sm font-medium text-muted-foreground">{t('Total Teachers')}</CardTitle>
+                  <GraduationCap className="h-4 w-4 text-secondary" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-secondary">{stats.totalTeachers}</div>
+                  <div className="text-2xl font-bold text-foreground">{stats.totalTeachers}</div>
                   <p className="text-xs text-muted-foreground">
                     {t('Active teaching staff')}
                   </p>
                 </CardContent>
               </Card>
 
-              <Card className="shadow-card hover:shadow-glow transition-all duration-300">
+              <Card className="shadow-card hover:shadow-glow transition-all duration-300 bg-card text-card-foreground">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">{t('Active Classes')}</CardTitle>
-                  <Calendar className="h-4 w-4 text-muted-foreground" />
+                  <CardTitle className="text-sm font-medium text-muted-foreground">{t('Active Classes')}</CardTitle>
+                  <Calendar className="h-4 w-4 text-accent" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-accent">{stats.totalClasses}</div>
+                  <div className="text-2xl font-bold text-foreground">{stats.totalClasses}</div>
                   <p className="text-xs text-muted-foreground">
                     {t('Scheduled classes')}
                   </p>
                 </CardContent>
               </Card>
 
-              <Card className="shadow-card hover:shadow-glow transition-all duration-300">
+              <Card className="shadow-card hover:shadow-glow transition-all duration-300 bg-card text-card-foreground">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">{t('Homework Tasks')}</CardTitle>
-                  <BookOpen className="h-4 w-4 text-muted-foreground" />
+                  <CardTitle className="text-sm font-medium text-muted-foreground">{t('Homework Tasks')}</CardTitle>
+                  <BookOpen className="h-4 w-4 text-primary" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{stats.totalHomework}</div>
+                  <div className="text-2xl font-bold text-foreground">{stats.totalHomework}</div>
                   <p className="text-xs text-muted-foreground">
                     {t('Total assignments')}
                   </p>
@@ -401,7 +423,7 @@ export const Dashboard = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <TrendingUp className="h-5 w-5 text-primary" />
-                Recent Homework
+                Recent Homeworks
               </CardTitle>
               <CardDescription>
                 Latest assignments and their status
@@ -409,20 +431,36 @@ export const Dashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {homework.slice(0, 3).map((hw: any) => (
-                  <div key={hw.homework_id} className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                    <div>
-                      <p className="font-medium">{hw.title}</p>
-                      <p className="text-sm text-muted-foreground">Due: {formatDateWithTimezone(hw.due_date, timezone, 'yyyy-MM-dd HH:mm zzz')}</p>
-                    </div>
-                    <Badge 
-                      variant={hw.status === 'pending' ? 'destructive' : 'default'}
-                      className="capitalize"
-                    >
-                      {hw.status}
-                    </Badge>
+                {homework.length === 0 && (
+                  <div className="text-center py-6 text-muted-foreground">
+                    <AlertCircle className="h-8 w-8 mx-auto mb-2" />
+                    <p>{t('No homeworks assigned')}</p>
                   </div>
-                ))}
+                )}
+                {homework.map((hw) => {
+                  const hwTyped = hw as HomeworkType;
+                  const subject = subjectsData.find((subj) => subj.subject_id === hwTyped.subject_id);
+                  const teacher = teachersData.find((t) => t.teacher_id === hwTyped.teacher_id);
+                  return (
+                    <div key={hw.homework_id} className="flex flex-col md:flex-row md:items-center md:justify-between p-3 bg-muted rounded-lg gap-2">
+                      <div>
+                        <p className="font-medium">{hw.title}</p>
+                        <p className="text-sm text-muted-foreground">Due: {formatDateWithTimezone(hw.due_date, timezone, 'yyyy-MM-dd HH:mm zzz')}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {subject ? `Subject: ${subject.name}` : ''}
+                          {hwTyped.grade ? ` | Grade: ${hwTyped.grade}` : ''}
+                          {teacher ? ` | Teacher: ${teacher.full_name}` : ''}
+                        </p>
+                      </div>
+                      <Badge 
+                        variant={hw.status === 'pending' ? 'destructive' : 'default'}
+                        className="capitalize"
+                      >
+                        {hw.status}
+                      </Badge>
+                    </div>
+                  );
+                })}
               </div>
             </CardContent>
           </Card>
@@ -439,24 +477,33 @@ export const Dashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {classes.map((cls: any) => (
-                  <div key={cls.class_id} className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                    <div>
-                      <p className="font-medium">{cls.name}</p>
-                      <p className="text-sm text-muted-foreground">{formatDateWithTimezone(cls.schedule, timezone, 'yyyy-MM-dd HH:mm zzz')}</p>
-                    </div>
-                    <Badge variant="outline">
-                      {cls.student_count} students
-                    </Badge>
-                  </div>
-                ))}
-                
                 {classes.length === 0 && (
                   <div className="text-center py-6 text-muted-foreground">
                     <AlertCircle className="h-8 w-8 mx-auto mb-2" />
                     <p>{t('No classes scheduled for today')}</p>
                   </div>
                 )}
+                {classes.map((cls) => {
+                  const clsTyped = cls as ClassType;
+                  const teacher = teachersData.find((t) => t.teacher_id === clsTyped.teacher_id);
+                  const subject = subjectsData.find((subj) => subj.subject_id === clsTyped.subject_id);
+                  return (
+                    <div key={cls.class_id} className="flex flex-col md:flex-row md:items-center md:justify-between p-3 bg-muted rounded-lg gap-2">
+                      <div>
+                        <p className="font-medium">{cls.name}</p>
+                        <p className="text-sm text-muted-foreground">{formatDateWithTimezone(cls.schedule, timezone, 'yyyy-MM-dd HH:mm zzz')}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {subject ? `Subject: ${subject.name}` : ''}
+                          {clsTyped.grade ? ` | Grade: ${clsTyped.grade}` : ''}
+                          {teacher ? ` | Teacher: ${teacher.full_name}` : ''}
+                        </p>
+                      </div>
+                      <Badge variant="outline">
+                        {cls.student_count} students
+                      </Badge>
+                    </div>
+                  );
+                })}
               </div>
             </CardContent>
           </Card>

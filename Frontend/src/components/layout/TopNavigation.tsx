@@ -5,7 +5,8 @@ import {
   Settings, 
   LogOut, 
   ChevronDown,
-  Bell
+  Bell,
+  ArrowLeft
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -83,6 +84,14 @@ export const TopNavigation = () => {
     <header className="h-16 border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60 sticky top-0 z-50">
       <div className="flex h-full items-center justify-between px-6">
         <div className="flex items-center space-x-4">
+          {/* Return (Back) Button - mobile only */}
+          <button
+            onClick={() => navigate(-1)}
+            className="lg:hidden mr-2 p-2 rounded-full hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary"
+            aria-label="Go back"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </button>
           <h1 className="text-xl font-semibold bg-gradient-primary bg-clip-text text-transparent">
             EduLite Dashboard
           </h1>

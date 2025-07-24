@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Student } from '../data/mockData';
+import { Student, Subject } from '../data/mockData';
 import { getStudents, getSubjects, getGradesByStudentId } from '../api/edulite';
 import {
   Select,
@@ -8,14 +8,15 @@ import {
   SelectItem,
   SelectValue
 } from '@/components/ui/select';
+type Grade = { subject_id: string; grade: string; comment: string };
 
 const ReportCard = () => {
   const [student, setStudent] = useState<Student | null>(null);
-  const [grades, setGrades] = useState<any[]>([]);
+  const [grades, setGrades] = useState<Grade[]>([]);
   const [selectedStudentId, setSelectedStudentId] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [students, setStudents] = useState<Student[]>([]);
-  const [subjects, setSubjects] = useState<any[]>([]);
+  const [subjects, setSubjects] = useState<Subject[]>([]);
 
   useEffect(() => {
     setLoading(true);
@@ -85,8 +86,8 @@ const ReportCard = () => {
               </tr>
             </thead>
             <tbody>
-              {grades.map(g => {
-                const subject = subjects.find((s: any) => s.subject_id === g.subject_id);
+              {grades.map((g) => {
+                const subject = subjects.find((s) => s.subject_id === g.subject_id);
                 return (
                   <tr key={g.subject_id} className="border-t">
                     <td className="p-2">{subject ? subject.name : g.subject_id}</td>

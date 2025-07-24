@@ -146,9 +146,9 @@ const Classes = () => {
           </Button>
         )}
       </div>
-      <Card className="shadow-card">
+      <Card className="shadow-card bg-card text-card-foreground">
         <CardHeader>
-          <CardTitle>Class Directory</CardTitle>
+          <CardTitle className="text-muted-foreground">Class Directory</CardTitle>
           <CardDescription>Search and manage class information</CardDescription>
         </CardHeader>
         <CardContent>

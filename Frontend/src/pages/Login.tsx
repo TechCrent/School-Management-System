@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { EduLiteLogo } from '../components/ui/logo';
 import { USE_MOCK } from '../config';
@@ -11,6 +11,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Eye, EyeOff } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../components/layout/AuthContext';
+import { Switch } from '@/components/ui/switch';
 
 type AuthResponse = {
   status: string;
@@ -27,6 +28,23 @@ export const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth();
+
+  // Universal mock/live toggle
+  const [isMock, setIsMock] = useState(() => {
+    const stored = localStorage.getItem('USE_MOCK');
+    if (stored === null) {
+      localStorage.setItem('USE_MOCK', 'true');
+      return true;
+    }
+    return stored === 'true';
+  });
+
+  useEffect(() => {
+    // Ensure default is set on first load
+    if (localStorage.getItem('USE_MOCK') === null) {
+      localStorage.setItem('USE_MOCK', 'true');
+    }
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,7 +71,21 @@ export const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
+      <div className="mb-6 flex items-center gap-2">
+        <Switch
+          checked={isMock}
+          onCheckedChange={(checked) => {
+            localStorage.setItem('USE_MOCK', checked ? 'true' : 'false');
+            setIsMock(checked);
+            window.location.reload();
+          }}
+          id="mock-toggle-login"
+        />
+        <label htmlFor="mock-toggle-login" className="text-xs text-muted-foreground select-none">
+          {isMock ? 'Mock Data' : 'Live Data'}
+        </label>
+      </div>
       <div className="w-full max-w-md">
         <Card className="shadow-card">
           <CardHeader className="text-center">

@@ -15,6 +15,19 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { Student, mockStudents } from '@/data/mockData';
+import parents from '@/data/parents.json';
+import studentsData from '@/data/students.json';
+type StudentType = {
+  student_id: string;
+  full_name: string;
+  email: string;
+  grade: string;
+  date_of_birth: string;
+  address: string;
+  parent1_id: string;
+  parent2_id: string;
+};
+const allStudents: StudentType[] = studentsData as StudentType[];
 
 interface StudentModalProps {
   isOpen: boolean;
@@ -128,6 +141,52 @@ export const StudentModal = ({ isOpen, onClose, onSave, student, mode }: Student
             {mode === 'create' && 'Enter the student information below.'}
             {mode === 'edit' && 'Update the student information below.'}
             {mode === 'view' && 'View student information.'}
+            {mode === 'view' && student && (
+              <div className="mb-2">
+                {(() => {
+                  const s = student as unknown as StudentType;
+                  return <>
+                    <div><b>Student ID:</b> <span className="font-mono">{s.student_id}</span></div>
+                    <div className="mt-2">
+                      <b>Parents:</b>
+                      <ul className="ml-2">
+                        {s.parent1_id && (
+                          <li>
+                            {(() => {
+                              const p = parents.find(par => par.parent_id === s.parent1_id);
+                              return p ? `${p.full_name} (${p.parent_id})` : s.parent1_id;
+                            })()}
+                          </li>
+                        )}
+                        {s.parent2_id && (
+                          <li>
+                            {(() => {
+                              const p = parents.find(par => par.parent_id === s.parent2_id);
+                              return p ? `${p.full_name} (${p.parent_id})` : s.parent2_id;
+                            })()}
+                          </li>
+                        )}
+                      </ul>
+                    </div>
+                    {/* Siblings section */}
+                    <div className="mt-2">
+                      <b>Siblings:</b>
+                      <ul className="ml-2">
+                        {(() => {
+                          const siblings = allStudents.filter((sib: StudentType) =>
+                            sib.student_id !== s.student_id &&
+                            sib.parent1_id === s.parent1_id &&
+                            sib.parent2_id === s.parent2_id
+                          );
+                          if (siblings.length === 0) return <li>No siblings</li>;
+                          return siblings.map(sib => <li key={sib.student_id}>{sib.full_name}</li>);
+                        })()}
+                      </ul>
+                    </div>
+                  </>;
+                })()}
+              </div>
+            )}
           </DialogDescription>
         </DialogHeader>
 

@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getStudents, getHomework, getSubjects } from '../api/edulite';
+import { Student } from '../data/mockData';
+type Homework = { homework_id: string; title: string; due_date: string; status: string };
 
 const getRecentGrades = () => [
   { subject: 'Mathematics', grade: 'A' },
@@ -7,8 +9,8 @@ const getRecentGrades = () => [
 ];
 
 const ParentDashboard = () => {
-  const [children, setChildren] = useState<any[]>([]);
-  const [homework, setHomework] = useState<any[]>([]);
+  const [children, setChildren] = useState<Student[]>([]);
+  const [homework, setHomework] = useState<Homework[]>([]);
 
   useEffect(() => {
     // In a real app, fetch children for the logged-in parent
@@ -22,7 +24,7 @@ const ParentDashboard = () => {
   }, []);
 
   const getUpcomingHomework = (studentId: string) =>
-    homework.filter(hw => hw.status === 'pending').slice(0, 2);
+    homework.filter((hw: Homework) => hw.status === 'pending').slice(0, 2);
 
   return (
     <div>

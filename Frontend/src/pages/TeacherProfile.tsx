@@ -1,15 +1,9 @@
-import { useState, useEffect } from 'react';
-
-// Mock teacher profile data
-const mockTeacherProfile = {
-  full_name: 'Jane Smith',
-  email: 'jane.smith@schoolapp.com',
-  subject: 'Mathematics',
-  phone: '+1-555-0101',
-};
+import { useEffect, useState } from 'react';
+import { getClasses } from '../api/edulite';
 
 const TeacherProfile = () => {
-  const [profile, setProfile] = useState({ ...mockTeacherProfile });
+  const [profile, setProfile] = useState<any>(null);
+  const [classes, setClasses] = useState<any[]>([]);
   const [editing, setEditing] = useState(false);
   const [showNotifications, setShowNotifications] = useState(() => {
     const stored = localStorage.getItem('showNotifications');
@@ -17,8 +11,19 @@ const TeacherProfile = () => {
   });
 
   useEffect(() => {
-    localStorage.setItem('showNotifications', String(showNotifications));
-  }, [showNotifications]);
+    // Get teacher from localStorage
+    const userData = localStorage.getItem('user');
+    const teacher = userData ? JSON.parse(userData) : null;
+    setProfile(teacher);
+    // Fetch classes taught by this teacher
+    if (teacher && teacher.teacher_id) {
+      getClasses({ noPaginate: 'true' }).then(res => {
+        const allClasses = res.data || [];
+        const myClasses = allClasses.filter((c: any) => c.teacher_id === teacher.teacher_id);
+        setClasses(myClasses);
+      });
+    }
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setProfile({ ...profile, [e.target.name]: e.target.value });
@@ -30,10 +35,16 @@ const TeacherProfile = () => {
     // In a real app, save profile changes to backend
   };
 
+  if (!profile) return <div>Loading...</div>;
+
   return (
     <div>
       <h2 className="text-2xl font-bold mb-4">My Profile</h2>
       <form onSubmit={handleSave} className="max-w-md p-4 border rounded-lg shadow-card bg-white">
+        <div className="mb-4">
+          <label className="block font-medium mb-1">Teacher ID</label>
+          <div className="font-mono">{profile.teacher_id}</div>
+        </div>
         <div className="mb-4">
           <label className="block font-medium mb-1">Full Name</label>
           <input
@@ -60,8 +71,8 @@ const TeacherProfile = () => {
           <label className="block font-medium mb-1">Subject</label>
           <input
             type="text"
-            name="subject"
-            value={profile.subject}
+            name="subject_name"
+            value={profile.subject_name || ''}
             onChange={handleChange}
             className="w-full border rounded p-2"
             disabled={!editing}
@@ -72,11 +83,20 @@ const TeacherProfile = () => {
           <input
             type="tel"
             name="phone"
-            value={profile.phone}
+            value={profile.phone || ''}
             onChange={handleChange}
             className="w-full border rounded p-2"
             disabled={!editing}
           />
+        </div>
+        <div className="mb-4">
+          <label className="block font-medium mb-1">Classes Taught</label>
+          <ul className="ml-2">
+            {classes.length === 0 && <li>No classes found.</li>}
+            {classes.map(cls => (
+              <li key={cls.class_id}>{cls.name} ({cls.class_id})</li>
+            ))}
+          </ul>
         </div>
         <div className="mb-4 flex items-center gap-2">
           <input
@@ -92,7 +112,7 @@ const TeacherProfile = () => {
           {editing ? (
             <>
               <button type="submit" className="bg-primary text-white px-4 py-2 rounded">Save</button>
-              <button type="button" onClick={() => { setProfile({ ...mockTeacherProfile }); setEditing(false); }} className="bg-muted px-4 py-2 rounded">Cancel</button>
+              <button type="button" onClick={() => { setEditing(false); }} className="bg-muted px-4 py-2 rounded">Cancel</button>
             </>
           ) : (
             <button type="button" onClick={() => setEditing(true)} className="bg-primary text-white px-4 py-2 rounded">Edit</button>
