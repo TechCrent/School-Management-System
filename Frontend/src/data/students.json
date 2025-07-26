@@ -1,53 +1,53 @@
 [
   {
     "student_id": "S0001",
-    "full_name": "Michelle Hernandez",
-    "email": "michelle.hernandezS0001@schoolmail.com",
-    "grade": "1",
-    "date_of_birth": "2016-05-01",
-    "address": "145 Hernandez St, Cityville",
+    "full_name": "John Doe",
+    "email": "john.doe@example.com",
+    "grade": "8A",
+    "date_of_birth": "2010-05-15",
+    "address": "123 Main St, Cityville",
     "parent1_id": "P0001",
     "parent2_id": "P0002"
   },
   {
     "student_id": "S0002",
-    "full_name": "Susan Hernandez",
-    "email": "susan.hernandezS0002@schoolmail.com",
-    "grade": "11",
-    "date_of_birth": "2012-02-18",
-    "address": "774 Hernandez St, Cityville",
-    "parent1_id": "P0001",
-    "parent2_id": "P0002"
+    "full_name": "Emma Wilson",
+    "email": "emma.wilson@example.com",
+    "grade": "8A",
+    "date_of_birth": "2010-03-22",
+    "address": "456 Oak Ave, Cityville",
+    "parent1_id": "P0003",
+    "parent2_id": "P0004"
   },
   {
     "student_id": "S0003",
-    "full_name": "Michelle Jones",
-    "email": "michelle.jonesS0003@schoolmail.com",
-    "grade": "10",
-    "date_of_birth": "2010-04-01",
-    "address": "854 Jones St, Cityville",
-    "parent1_id": "P0003",
-    "parent2_id": "P0004"
+    "full_name": "Michael Johnson",
+    "email": "michael.johnson@example.com",
+    "grade": "8A",
+    "date_of_birth": "2010-07-10",
+    "address": "789 Pine St, Cityville",
+    "parent1_id": "P0005",
+    "parent2_id": "P0006"
   },
   {
     "student_id": "S0004",
-    "full_name": "Donna Jones",
-    "email": "donna.jonesS0004@schoolmail.com",
-    "grade": "8",
-    "date_of_birth": "2012-02-05",
-    "address": "310 Jones St, Cityville",
-    "parent1_id": "P0003",
-    "parent2_id": "P0004"
+    "full_name": "Sophia Brown",
+    "email": "sophia.brown@example.com",
+    "grade": "8A",
+    "date_of_birth": "2010-01-18",
+    "address": "321 Elm St, Cityville",
+    "parent1_id": "P0007",
+    "parent2_id": "P0008"
   },
   {
     "student_id": "S0005",
-    "full_name": "Michelle Jones",
-    "email": "michelle.jonesS0005@schoolmail.com",
-    "grade": "10",
-    "date_of_birth": "2011-08-04",
-    "address": "484 Jones St, Cityville",
-    "parent1_id": "P0003",
-    "parent2_id": "P0004"
+    "full_name": "William Davis",
+    "email": "william.davis@example.com",
+    "grade": "8A",
+    "date_of_birth": "2010-09-05",
+    "address": "654 Maple Dr, Cityville",
+    "parent1_id": "P0009",
+    "parent2_id": "P0010"
   },
   {
     "student_id": "S0006",

@@ -56,7 +56,7 @@ export const Login = () => {
         // Redirect based on role
         const role = localStorage.getItem('role');
         let redirectPath = '/';
-        if (role === 'student' || role === 'parent') {
+        if (role === 'student') {
           redirectPath = '/homework';
         }
         navigate(redirectPath);
@@ -162,7 +162,7 @@ export const Login = () => {
               <p className="text-sm text-muted-foreground mb-2">{t('Demo Credentials (for testing only):')}</p>
               <div className="text-xs space-y-1">
                 <div><strong>{t('Admin:')}</strong> admin@schoolapp.com / Admin$1234</div>
-                <div><strong>{t('Teacher:')}</strong> jane.smith@schoolapp.com / Teacher$123</div>
+                <div><strong>{t('Teacher:')}</strong> sarah.johnson@schoolapp.com / Teacher$123</div>
                 <div><strong>{t('Student:')}</strong> michelle.hernandezS0001@schoolmail.com / Student$1234</div>
                 <div><strong>{t('Parent:')}</strong> linda.hernandez@parentmail.com / Parent$1234</div>
               </div>

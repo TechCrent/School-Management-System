@@ -26,6 +26,7 @@ import ParentNotifications from "./pages/ParentNotifications";
 import TeacherProfile from "./pages/TeacherProfile";
 import ParentProfile from "./pages/ParentProfile";
 import AdminDashboard from "./pages/AdminDashboard";
+import AdminReports from "./pages/AdminReports";
 import Subjects from "./pages/Subjects";
 import Teachers from "./pages/Teachers";
 import TeacherClasses from "./pages/TeacherClasses";
@@ -59,6 +60,8 @@ const App = () => (
                     </Layout>
                   </ProtectedRoute>
                 } />
+                
+                {/* Admin Routes */}
                 <Route path="/students" element={
                   <ProtectedRoute allowedRoles={['admin']}>
                     <Layout>
@@ -67,9 +70,49 @@ const App = () => (
                   </ProtectedRoute>
                 } />
                 <Route path="/teachers" element={
-                  <ProtectedRoute allowedRoles={['admin', 'teacher']}>
+                  <ProtectedRoute allowedRoles={['admin']}>
                     <Layout>
                       <Teachers />
+                    </Layout>
+                  </ProtectedRoute>
+                } />
+                <Route path="/admin/reports" element={
+                  <ProtectedRoute allowedRoles={['admin']}>
+                    <Layout>
+                      <AdminReports />
+                    </Layout>
+                  </ProtectedRoute>
+                } />
+                <Route path="/activity-log" element={
+                  <ProtectedRoute allowedRoles={['admin']}>
+                    <Layout>
+                      <ActivityLog />
+                    </Layout>
+                  </ProtectedRoute>
+                } />
+                
+                {/* Shared Routes */}
+                <Route path="/classes" element={
+                  <ProtectedRoute allowedRoles={['admin', 'teacher', 'student', 'parent']}>
+                    <Layout>
+                      <ClassesPage />
+                    </Layout>
+                  </ProtectedRoute>
+                } />
+                <Route path="/subjects" element={
+                  <ProtectedRoute allowedRoles={['admin', 'teacher', 'student', 'parent']}>
+                    <Layout>
+                      <Subjects />
+                    </Layout>
+                  </ProtectedRoute>
+                } />
+                <Route path="/homework" element={
+                  <ProtectedRoute allowedRoles={['admin', 'teacher', 'student']}>
+                    <Layout>
+                      {localStorage.getItem('role') === 'student' ? <HomeworkPage /> :
+                       localStorage.getItem('role') === 'teacher' ? <TeacherHomework /> : 
+                       localStorage.getItem('role') === 'admin' ? <TeacherHomework /> :
+                       <HomeworkPage />}
                     </Layout>
                   </ProtectedRoute>
                 } />
@@ -87,49 +130,13 @@ const App = () => (
                     </Layout>
                   </ProtectedRoute>
                 } />
-                <Route path="/homework" element={
-                  <ProtectedRoute allowedRoles={['admin', 'teacher', 'student', 'parent']}>
-                    <Layout>
-                      {/* Render student homework page for students, placeholder for others */}
-                      {localStorage.getItem('role') === 'student' ? <HomeworkPage /> : (
-                        <div className="text-center py-12">
-                          <h1 className="text-2xl font-bold mb-4">Homework</h1>
-                          <p className="text-muted-foreground">Coming soon...</p>
-                        </div>
-                      )}
-                    </Layout>
-                  </ProtectedRoute>
-                } />
-                <Route path="/classes" element={
-                  <ProtectedRoute allowedRoles={['admin', 'teacher', 'student', 'parent']}>
-                    <Layout>
-                      <ClassesPage />
-                    </Layout>
-                  </ProtectedRoute>
-                } />
-                <Route path="/subjects" element={
-                  <ProtectedRoute allowedRoles={['admin', 'teacher', 'student', 'parent']}>
-                    <Layout>
-                      <Subjects />
-                    </Layout>
-                  </ProtectedRoute>
-                } />
-                <Route path="/creativity-board" element={
-                  <ProtectedRoute allowedRoles={['admin', 'teacher', 'student', 'parent']}>
-                    <Layout>
-                      <div className="text-center py-12">
-                        <h1 className="text-2xl font-bold mb-4">Creativity Board</h1>
-                        <p className="text-muted-foreground">Coming soon...</p>
-                      </div>
-                    </Layout>
-                  </ProtectedRoute>
-                } />
                 <Route path="/profile" element={
                   <ProtectedRoute allowedRoles={['admin', 'teacher', 'student', 'parent']}>
                     <Layout>
                       {localStorage.getItem('role') === 'teacher' ? <TeacherProfile /> :
                        localStorage.getItem('role') === 'parent' ? <ParentProfile /> :
                        localStorage.getItem('role') === 'student' ? <Profile /> :
+                       localStorage.getItem('role') === 'admin' ? <Profile /> :
                        <Profile />}
                     </Layout>
                   </ProtectedRoute>
@@ -141,19 +148,15 @@ const App = () => (
                     </Layout>
                   </ProtectedRoute>
                 } />
-                <Route path="/help" element={<Help />} />
-                <Route path="/activity-log" element={
-                  <ProtectedRoute allowedRoles={['admin']}>
-                    <ActivityLog />
-                  </ProtectedRoute>
-                } />
-                <Route path="/parent" element={
-                  <ProtectedRoute allowedRoles={['parent']}>
+                <Route path="/help" element={
+                  <ProtectedRoute allowedRoles={['admin', 'teacher', 'student', 'parent']}>
                     <Layout>
-                      <ParentDashboard />
+                      <Help />
                     </Layout>
                   </ProtectedRoute>
                 } />
+
+                {/* Parent Routes */}
                 <Route path="/parent/children" element={
                   <ProtectedRoute allowedRoles={['parent']}>
                     <Layout>
@@ -168,6 +171,8 @@ const App = () => (
                     </Layout>
                   </ProtectedRoute>
                 } />
+                
+                {/* Teacher Routes */}
                 <Route path="/teacher/classes" element={
                   <ProtectedRoute allowedRoles={['teacher']}>
                     <Layout>
@@ -189,7 +194,20 @@ const App = () => (
                     </Layout>
                   </ProtectedRoute>
                 } />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                
+                {/* Legacy Routes - Redirect to proper routes */}
+                <Route path="/creativity-board" element={
+                  <ProtectedRoute allowedRoles={['admin', 'teacher', 'student', 'parent']}>
+                    <Layout>
+                      <div className="text-center py-12">
+                        <h1 className="text-2xl font-bold mb-4">Creativity Board</h1>
+                        <p className="text-muted-foreground">Coming soon...</p>
+                      </div>
+                    </Layout>
+                  </ProtectedRoute>
+                } />
+                
+                {/* Catch-all route */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </ErrorBoundary>

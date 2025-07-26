@@ -170,7 +170,12 @@ export const Students = () => {
         await addMutation.mutateAsync(studentData);
         customToast({ title: 'Student added', description: 'A new student has been added.' });
       } else if (modalMode === 'edit' && selectedStudent) {
-        await updateMutation.mutateAsync({ ...selectedStudent, ...studentData });
+        // Ensure we preserve the original student_id for updates
+        const updateData = {
+          ...studentData,
+          student_id: selectedStudent.student_id
+        };
+        await updateMutation.mutateAsync(updateData);
         customToast({ title: 'Student updated', description: 'Student details have been updated.' });
       }
     } catch (error) {
@@ -477,7 +482,9 @@ export const Students = () => {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline">{student.grade}</Badge>
+                        <Badge variant="outline">
+                          {student.grade.includes('Grade') ? student.grade : `Grade ${student.grade}A`}
+                        </Badge>
                       </TableCell>
                       <TableCell>
                         {formatDateWithTimezone(student.date_of_birth, timezone, 'yyyy-MM-dd')} ({calculateAge(student.date_of_birth)} years)

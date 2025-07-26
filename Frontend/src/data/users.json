@@ -1,6 +1,10 @@
 [
   { "id": "admin-001", "email": "admin@schoolapp.com", "full_name": "School Administrator", "role": "admin", "password": "Admin$1234" },
-  { "id": "teacher-001", "email": "jane.smith@schoolapp.com", "full_name": "Jane Smith", "role": "teacher", "password": "Teacher$123" },
-  { "id": "student-001", "email": "student1@example.com", "full_name": "Student One", "role": "student", "password": "Student$1234" },
-  { "id": "parent-001", "email": "parent1@example.com", "full_name": "Parent One", "role": "parent", "password": "Parent$1234" }
+  { "id": "teacher-001", "email": "sarah.johnson@schoolapp.com", "full_name": "Dr. Sarah Johnson", "role": "teacher", "password": "Teacher$123" },
+  { "id": "teacher-002", "email": "michael.chen@schoolapp.com", "full_name": "Prof. Michael Chen", "role": "teacher", "password": "Teacher$123" },
+  { "id": "teacher-003", "email": "emily.rodriguez@schoolapp.com", "full_name": "Dr. Emily Rodriguez", "role": "teacher", "password": "Teacher$123" },
+  { "id": "teacher-004", "email": "david.thompson@schoolapp.com", "full_name": "Mr. David Thompson", "role": "teacher", "password": "Teacher$123" },
+  { "id": "teacher-005", "email": "jennifer.williams@schoolapp.com", "full_name": "Ms. Jennifer Williams", "role": "teacher", "password": "Teacher$123" },
+  { "id": "student-001", "email": "michelle.hernandezS0001@schoolmail.com", "full_name": "Michelle Hernandez", "role": "student", "password": "Student$1234" },
+  { "id": "parent-001", "email": "linda.hernandez@parentmail.com", "full_name": "Linda Hernandez", "role": "parent", "password": "Parent$1234" }
 ] 

@@ -18,33 +18,27 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [role, setRole] = useState<string | null>(null);
-  const [token, setToken] = useState<string | null>(null);
-
-  useEffect(() => {
-    const storedToken = localStorage.getItem('token');
+  const [user, setUser] = useState<User | null>(() => {
     const storedUser = localStorage.getItem('user');
-    const storedRole = localStorage.getItem('role');
-    if (storedToken && storedUser && storedRole) {
-      setToken(storedToken);
-      setUser(JSON.parse(storedUser));
-      setRole(storedRole);
-    }
-  }, []);
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
+  const [role, setRole] = useState<string | null>(() => localStorage.getItem('role'));
+  const [token, setToken] = useState<string | null>(() => localStorage.getItem('token'));
+
+  // No need for useEffect to load from localStorage
 
   const login = async (username: string, password: string) => {
     const res = await apiLogin(username, password);
     if (res.status === 'success') {
       setToken(res.data.token);
       setUser(res.data.user);
-      setRole(res.data.role);
+      setRole(res.data.user.role);
       // Store in localStorage for dashboard and other pages
       localStorage.setItem('token', res.data.token);
-      localStorage.setItem('role', res.data.role);
+      localStorage.setItem('role', res.data.user.role);
       // If admin, ensure full_name is 'School Administrator'
       let userToStore = res.data.user;
-      if (res.data.role === 'admin') {
+      if (res.data.user.role === 'admin') {
         if (!userToStore.full_name || userToStore.full_name === 'User' || userToStore.full_name === 'Admin User') {
           userToStore = { ...userToStore, full_name: 'School Administrator' };
         }

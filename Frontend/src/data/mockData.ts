@@ -83,7 +83,7 @@ export const mockUsers: User[] = [
 // Mock Students (showing first 10)
 export const mockStudents: Student[] = [
   {
-    student_id: "123e4567-e89b-12d3-a456-426614174000",
+    student_id: "S0001",
     full_name: "John Doe",
     date_of_birth: "2010-05-15",
     class_id: "class_1",
@@ -98,7 +98,7 @@ export const mockStudents: Student[] = [
     status: "active"
   },
   {
-    student_id: "123e4567-e89b-12d3-a456-426614174001",
+    student_id: "S0002",
     full_name: "Emma Wilson",
     date_of_birth: "2010-03-22",
     class_id: "class_1",
@@ -113,7 +113,7 @@ export const mockStudents: Student[] = [
     status: "active"
   },
   {
-    student_id: "123e4567-e89b-12d3-a456-426614174002",
+    student_id: "S0003",
     full_name: "Michael Johnson",
     date_of_birth: "2010-07-10",
     class_id: "class_1",
@@ -128,7 +128,7 @@ export const mockStudents: Student[] = [
     status: "active"
   },
   {
-    student_id: "123e4567-e89b-12d3-a456-426614174003",
+    student_id: "S0004",
     full_name: "Sophia Brown",
     date_of_birth: "2010-01-18",
     class_id: "class_1",
@@ -143,7 +143,7 @@ export const mockStudents: Student[] = [
     status: "active"
   },
   {
-    student_id: "123e4567-e89b-12d3-a456-426614174004",
+    student_id: "S0005",
     full_name: "William Davis",
     date_of_birth: "2010-09-05",
     class_id: "class_1",
@@ -287,35 +287,35 @@ export const mockAuth = {
 };
 
 export const mockGradesByStudent: Record<string, Array<{ subject_id: string, grade: string, comment: string }>> = {
-  '123e4567-e89b-12d3-a456-426614174000': [
+  'S0001': [
     { subject_id: 'sub_1', grade: 'A', comment: 'Excellent work!' },
     { subject_id: 'sub_2', grade: 'B+', comment: 'Good effort, keep improving.' },
     { subject_id: 'sub_3', grade: 'A-', comment: 'Great participation.' },
     { subject_id: 'sub_4', grade: 'B', comment: 'Solid understanding.' },
     { subject_id: 'sub_5', grade: 'A', comment: 'Very creative.' },
   ],
-  '123e4567-e89b-12d3-a456-426614174001': [
+  'S0002': [
     { subject_id: 'sub_1', grade: 'B', comment: 'Good, but can improve.' },
     { subject_id: 'sub_2', grade: 'A', comment: 'Outstanding!' },
     { subject_id: 'sub_3', grade: 'B+', comment: 'Nice effort.' },
     { subject_id: 'sub_4', grade: 'A-', comment: 'Great improvement.' },
     { subject_id: 'sub_5', grade: 'B', comment: 'Keep practicing.' },
   ],
-  '123e4567-e89b-12d3-a456-426614174002': [
+  'S0003': [
     { subject_id: 'sub_1', grade: 'C+', comment: 'Needs more focus.' },
     { subject_id: 'sub_2', grade: 'B', comment: 'Good participation.' },
     { subject_id: 'sub_3', grade: 'B-', comment: 'Can do better.' },
     { subject_id: 'sub_4', grade: 'A', comment: 'Excellent!' },
     { subject_id: 'sub_5', grade: 'A-', comment: 'Very creative.' },
   ],
-  '123e4567-e89b-12d3-a456-426614174003': [
+  'S0004': [
     { subject_id: 'sub_1', grade: 'A-', comment: 'Great job.' },
     { subject_id: 'sub_2', grade: 'A', comment: 'Outstanding!' },
     { subject_id: 'sub_3', grade: 'B+', comment: 'Good effort.' },
     { subject_id: 'sub_4', grade: 'B', comment: 'Solid.' },
     { subject_id: 'sub_5', grade: 'B+', comment: 'Keep it up.' },
   ],
-  '123e4567-e89b-12d3-a456-426614174004': [
+  'S0005': [
     { subject_id: 'sub_1', grade: 'B+', comment: 'Nice work.' },
     { subject_id: 'sub_2', grade: 'B', comment: 'Good.' },
     { subject_id: 'sub_3', grade: 'A', comment: 'Excellent.' },

@@ -171,58 +171,68 @@ const TeacherClasses = () => {
 
       {/* Class Details Modal */}
       {selectedClass && (
-        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg min-w-[400px] max-w-[90vw] max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold">{selectedClass.name}</h3>
-              <button onClick={closeModal} className="text-gray-400 hover:text-black">&times;</button>
-            </div>
-            
-            <div className="space-y-4">
-              <div>
-                <h4 className="font-semibold mb-2">Class Information</h4>
-                <p><strong>Schedule:</strong> {selectedClass.schedule}</p>
-                <p><strong>Students:</strong> {students.length}</p>
-                {selectedClass.zoom_link && (
-                  <p>
-                    <strong>Zoom Link:</strong>
-                    <a href={selectedClass.zoom_link} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline ml-1">
-                      Join Meeting
-                    </a>
-                  </p>
-                )}
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-card border rounded-lg shadow-lg min-w-[400px] max-w-[90vw] max-h-[90vh] overflow-y-auto relative text-card-foreground">
+            <div className="p-6">
+              <div className="flex items-start justify-between mb-4">
+                <h3 className="text-xl font-semibold text-foreground">{selectedClass.name}</h3>
+                <button
+                  onClick={closeModal}
+                  className="rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground"
+                >
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                  <span className="sr-only">Close</span>
+                </button>
               </div>
-
-              <div>
-                <h4 className="font-semibold mb-2">Student Roster</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-48 overflow-y-auto">
-                  {students.map(student => (
-                    <div key={student.student_id} className="flex items-center space-x-2 p-2 border rounded">
-                      <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-                        <span className="text-sm font-medium">{student.full_name.charAt(0)}</span>
-                      </div>
-                      <div>
-                        <div className="font-medium text-sm">{student.full_name}</div>
-                        <div className="text-xs text-muted-foreground">{student.email}</div>
-                      </div>
-                    </div>
-                  ))}
+              
+              <div className="space-y-4">
+                <div>
+                  <h4 className="font-semibold mb-2">Class Information</h4>
+                  <p><strong>Schedule:</strong> {selectedClass.schedule}</p>
+                  <p><strong>Students:</strong> {students.length}</p>
+                  {selectedClass.zoom_link && (
+                    <p>
+                      <strong>Zoom Link:</strong>
+                      <a href={selectedClass.zoom_link} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline ml-1">
+                        Join Meeting
+                      </a>
+                    </p>
+                  )}
                 </div>
-              </div>
 
-              <div className="flex gap-2 pt-4">
-                <Button variant="outline" className="flex-1">
-                  <Calendar className="h-4 w-4 mr-2" />
-                  Mark Attendance
-                </Button>
-                <Button variant="outline" className="flex-1">
-                  <BookOpen className="h-4 w-4 mr-2" />
-                  Add Material
-                </Button>
-                <Button variant="outline" className="flex-1">
-                  <Users className="h-4 w-4 mr-2" />
-                  Post Announcement
-                </Button>
+                <div>
+                  <h4 className="font-semibold mb-2">Student Roster</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-48 overflow-y-auto">
+                    {students.map(student => (
+                      <div key={student.student_id} className="flex items-center space-x-2 p-2 border rounded">
+                        <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                          <span className="text-sm font-medium">{student.full_name.charAt(0)}</span>
+                        </div>
+                        <div>
+                          <div className="font-medium text-sm">{student.full_name}</div>
+                          <div className="text-xs text-muted-foreground">{student.email}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex gap-2 pt-4">
+                  <Button variant="outline" className="flex-1">
+                    <Calendar className="h-4 w-4 mr-2" />
+                    Mark Attendance
+                  </Button>
+                  <Button variant="outline" className="flex-1">
+                    <BookOpen className="h-4 w-4 mr-2" />
+                    Add Material
+                  </Button>
+                  <Button variant="outline" className="flex-1">
+                    <Users className="h-4 w-4 mr-2" />
+                    Post Announcement
+                  </Button>
+                </div>
               </div>
             </div>
           </div>

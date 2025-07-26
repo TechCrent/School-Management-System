@@ -17,7 +17,7 @@ try {
   
   console.log('\n🔍 Testing the exact query from the endpoint:');
   try {
-    const testQuery = `SELECT * FROM teachers WHERE (full_name LIKE ? OR email LIKE ?) AND (active IS NULL OR active = 1) LIMIT ? OFFSET ?`;
+    const testQuery = `SELECT * FROM teachers WHERE (full_name LIKE ? OR email LIKE ?) LIMIT ? OFFSET ?`;
     const result = db.prepare(testQuery).all('%', '%', 20, 0);
     console.log(`✅ Query successful, found ${result.length} teachers`);
   } catch (err) {

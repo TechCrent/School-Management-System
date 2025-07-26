@@ -1,7 +1,82 @@
 [
-  { "subject_id": "sub_1", "name": "Mathematics", "description": "Algebra and basic mathematics" },
-  { "subject_id": "sub_2", "name": "English", "description": "Language arts and literature" },
-  { "subject_id": "sub_3", "name": "Science", "description": "Biology, chemistry, and physics basics" },
-  { "subject_id": "sub_4", "name": "History", "description": "World and local history" },
-  { "subject_id": "sub_5", "name": "Art", "description": "Creative arts and design" }
+  { 
+    "subject_id": "sub_1", 
+    "name": "Mathematics", 
+    "description": "Comprehensive mathematics including algebra, geometry, calculus, and statistics. Focuses on problem-solving, logical thinking, and mathematical reasoning.",
+    "grade_levels": ["9", "10", "11", "12"],
+    "credits": 4,
+    "department": "Mathematics"
+  },
+  { 
+    "subject_id": "sub_2", 
+    "name": "English Literature", 
+    "description": "Advanced study of literature, composition, and language arts. Covers classic and contemporary works, writing skills, and critical analysis.",
+    "grade_levels": ["9", "10", "11", "12"],
+    "credits": 4,
+    "department": "English"
+  },
+  { 
+    "subject_id": "sub_3", 
+    "name": "Biology", 
+    "description": "Study of living organisms, their structure, function, growth, and evolution. Includes laboratory work and scientific methodology.",
+    "grade_levels": ["10", "11", "12"],
+    "credits": 4,
+    "department": "Science"
+  },
+  { 
+    "subject_id": "sub_4", 
+    "name": "World History", 
+    "description": "Comprehensive study of world civilizations, major historical events, and their impact on modern society. Includes cultural and social perspectives.",
+    "grade_levels": ["9", "10", "11", "12"],
+    "credits": 3,
+    "department": "Social Studies"
+  },
+  { 
+    "subject_id": "sub_5", 
+    "name": "Art & Design", 
+    "description": "Creative arts including drawing, painting, sculpture, digital art, and design principles. Encourages artistic expression and creative thinking.",
+    "grade_levels": ["9", "10", "11", "12"],
+    "credits": 2,
+    "department": "Fine Arts"
+  },
+  { 
+    "subject_id": "sub_6", 
+    "name": "Physics", 
+    "description": "Study of matter, energy, and their interactions. Covers mechanics, thermodynamics, electromagnetism, and modern physics concepts.",
+    "grade_levels": ["11", "12"],
+    "credits": 4,
+    "department": "Science"
+  },
+  { 
+    "subject_id": "sub_7", 
+    "name": "Chemistry", 
+    "description": "Study of matter, its properties, and chemical reactions. Includes laboratory experiments, atomic theory, and chemical bonding.",
+    "grade_levels": ["11", "12"],
+    "credits": 4,
+    "department": "Science"
+  },
+  { 
+    "subject_id": "sub_8", 
+    "name": "Physical Education", 
+    "description": "Physical fitness, sports, and health education. Promotes physical well-being, teamwork, and healthy lifestyle choices.",
+    "grade_levels": ["9", "10", "11", "12"],
+    "credits": 1,
+    "department": "Physical Education"
+  },
+  { 
+    "subject_id": "sub_9", 
+    "name": "Computer Science", 
+    "description": "Programming, algorithms, data structures, and computer systems. Prepares students for technology careers and digital literacy.",
+    "grade_levels": ["10", "11", "12"],
+    "credits": 3,
+    "department": "Technology"
+  },
+  { 
+    "subject_id": "sub_10", 
+    "name": "Psychology", 
+    "description": "Study of human behavior, mental processes, and psychological principles. Covers cognitive, developmental, and social psychology.",
+    "grade_levels": ["11", "12"],
+    "credits": 3,
+    "department": "Social Studies"
+  }
 ] 

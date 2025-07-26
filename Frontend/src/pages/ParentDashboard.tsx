@@ -27,6 +27,8 @@ interface Student {
   grade: string;
   email: string;
   status?: string;
+  parent1_id?: string;
+  parent2_id?: string;
 }
 
 interface Homework {
@@ -84,10 +86,9 @@ const ParentDashboard = () => {
       ]);
 
       if (studentsRes.status === 'success' && studentsRes.data) {
-        // Get children for this parent
-        const childrenIds = parent?.children_ids || [];
+        // Get children for this parent using parent1_id and parent2_id
         const parentChildren = studentsRes.data.filter((student: Student) => 
-          childrenIds.includes(student.student_id)
+          student.parent1_id === parent?.parent_id || student.parent2_id === parent?.parent_id
         );
         setChildren(parentChildren);
       }

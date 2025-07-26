@@ -85,7 +85,7 @@ export const StudentModal = ({ isOpen, onClose, onSave, student, mode }: Student
       setValue('parent2_email', student.parent2_email || '');
       setValue('parent2_name', student.parent2_name || '');
       setValue('parent2_contact', student.parent2_contact || '');
-      setValue('status', student.status);
+      setValue('status', student.status || 'active');
     } else if (mode === 'create') {
       reset();
     }
@@ -102,11 +102,17 @@ export const StudentModal = ({ isOpen, onClose, onSave, student, mode }: Student
     }
     setIsLoading(true);
     try {
-      await onSave({
+      // Transform form data to match backend structure
+      const studentData = {
         ...data,
         student_id: student?.student_id || crypto.randomUUID(),
         class_id: 'class_1', // Default class
-      });
+        address: '', // Default address
+        parent1_id: '', // Will be set by backend if needed
+        parent2_id: '', // Will be set by backend if needed
+      };
+      
+      await onSave(studentData);
       
       toast({
         title: mode === 'create' ? 'Student created' : 'Student updated',
@@ -250,6 +256,8 @@ export const StudentModal = ({ isOpen, onClose, onSave, student, mode }: Student
                   <SelectItem value="Grade 8A">Grade 8A</SelectItem>
                   <SelectItem value="Grade 9A">Grade 9A</SelectItem>
                   <SelectItem value="Grade 10A">Grade 10A</SelectItem>
+                  <SelectItem value="Grade 11A">Grade 11A</SelectItem>
+                  <SelectItem value="Grade 12A">Grade 12A</SelectItem>
                 </SelectContent>
               </Select>
             </div>

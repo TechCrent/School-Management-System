@@ -11,32 +11,400 @@
     "attendance_id": "att_2",
     "class_id": "class_1",
     "date": "2025-01-15",
-    "student_id": "S0002",
+    "student_id": "S0004",
     "status": "absent",
-    "notes": "Sick"
+    "notes": "Sick - parent called"
   },
   {
     "attendance_id": "att_3",
     "class_id": "class_1",
+    "date": "2025-01-15",
+    "student_id": "S0006",
+    "status": "present",
+    "notes": ""
+  },
+  {
+    "attendance_id": "att_4",
+    "class_id": "class_1",
+    "date": "2025-01-15",
+    "student_id": "S0007",
+    "status": "late",
+    "notes": "Arrived 10 minutes late"
+  },
+  {
+    "attendance_id": "att_5",
+    "class_id": "class_1",
+    "date": "2025-01-15",
+    "student_id": "S0008",
+    "status": "present",
+    "notes": ""
+  },
+  {
+    "attendance_id": "att_6",
+    "class_id": "class_1",
+    "date": "2025-01-15",
+    "student_id": "S0009",
+    "status": "present",
+    "notes": ""
+  },
+  {
+    "attendance_id": "att_7",
+    "class_id": "class_1",
+    "date": "2025-01-15",
+    "student_id": "S0017",
+    "status": "present",
+    "notes": ""
+  },
+  {
+    "attendance_id": "att_8",
+    "class_id": "class_2",
+    "date": "2025-01-15",
+    "student_id": "S0001",
+    "status": "present",
+    "notes": ""
+  },
+  {
+    "attendance_id": "att_9",
+    "class_id": "class_2",
+    "date": "2025-01-15",
+    "student_id": "S0004",
+    "status": "absent",
+    "notes": "Sick - parent called"
+  },
+  {
+    "attendance_id": "att_10",
+    "class_id": "class_2",
+    "date": "2025-01-15",
+    "student_id": "S0006",
+    "status": "present",
+    "notes": ""
+  },
+  {
+    "attendance_id": "att_11",
+    "class_id": "class_2",
+    "date": "2025-01-15",
+    "student_id": "S0007",
+    "status": "late",
+    "notes": "Arrived 10 minutes late"
+  },
+  {
+    "attendance_id": "att_12",
+    "class_id": "class_2",
+    "date": "2025-01-15",
+    "student_id": "S0008",
+    "status": "present",
+    "notes": ""
+  },
+  {
+    "attendance_id": "att_13",
+    "class_id": "class_2",
+    "date": "2025-01-15",
+    "student_id": "S0009",
+    "status": "present",
+    "notes": ""
+  },
+  {
+    "attendance_id": "att_14",
+    "class_id": "class_2",
+    "date": "2025-01-15",
+    "student_id": "S0017",
+    "status": "present",
+    "notes": ""
+  },
+  {
+    "attendance_id": "att_15",
+    "class_id": "class_3",
+    "date": "2025-01-15",
+    "student_id": "S0002",
+    "status": "present",
+    "notes": ""
+  },
+  {
+    "attendance_id": "att_16",
+    "class_id": "class_3",
     "date": "2025-01-15",
     "student_id": "S0003",
     "status": "present",
     "notes": ""
   },
   {
-    "attendance_id": "att_4",
-    "class_id": "class_2",
+    "attendance_id": "att_17",
+    "class_id": "class_3",
+    "date": "2025-01-15",
+    "student_id": "S0005",
+    "status": "present",
+    "notes": ""
+  },
+  {
+    "attendance_id": "att_18",
+    "class_id": "class_3",
+    "date": "2025-01-15",
+    "student_id": "S0010",
+    "status": "present",
+    "notes": ""
+  },
+  {
+    "attendance_id": "att_19",
+    "class_id": "class_3",
+    "date": "2025-01-15",
+    "student_id": "S0011",
+    "status": "absent",
+    "notes": "Family emergency"
+  },
+  {
+    "attendance_id": "att_20",
+    "class_id": "class_3",
+    "date": "2025-01-15",
+    "student_id": "S0012",
+    "status": "present",
+    "notes": ""
+  },
+  {
+    "attendance_id": "att_21",
+    "class_id": "class_3",
+    "date": "2025-01-15",
+    "student_id": "S0018",
+    "status": "present",
+    "notes": ""
+  },
+  {
+    "attendance_id": "att_22",
+    "class_id": "class_4",
+    "date": "2025-01-15",
+    "student_id": "S0002",
+    "status": "present",
+    "notes": ""
+  },
+  {
+    "attendance_id": "att_23",
+    "class_id": "class_4",
+    "date": "2025-01-15",
+    "student_id": "S0003",
+    "status": "present",
+    "notes": ""
+  },
+  {
+    "attendance_id": "att_24",
+    "class_id": "class_4",
+    "date": "2025-01-15",
+    "student_id": "S0005",
+    "status": "present",
+    "notes": ""
+  },
+  {
+    "attendance_id": "att_25",
+    "class_id": "class_4",
+    "date": "2025-01-15",
+    "student_id": "S0010",
+    "status": "present",
+    "notes": ""
+  },
+  {
+    "attendance_id": "att_26",
+    "class_id": "class_4",
+    "date": "2025-01-15",
+    "student_id": "S0011",
+    "status": "absent",
+    "notes": "Family emergency"
+  },
+  {
+    "attendance_id": "att_27",
+    "class_id": "class_4",
+    "date": "2025-01-15",
+    "student_id": "S0012",
+    "status": "present",
+    "notes": ""
+  },
+  {
+    "attendance_id": "att_28",
+    "class_id": "class_4",
+    "date": "2025-01-15",
+    "student_id": "S0018",
+    "status": "present",
+    "notes": ""
+  },
+  {
+    "attendance_id": "att_29",
+    "class_id": "class_5",
+    "date": "2025-01-16",
+    "student_id": "S0013",
+    "status": "present",
+    "notes": ""
+  },
+  {
+    "attendance_id": "att_30",
+    "class_id": "class_5",
+    "date": "2025-01-16",
+    "student_id": "S0014",
+    "status": "present",
+    "notes": ""
+  },
+  {
+    "attendance_id": "att_31",
+    "class_id": "class_5",
+    "date": "2025-01-16",
+    "student_id": "S0019",
+    "status": "late",
+    "notes": "Traffic delay"
+  },
+  {
+    "attendance_id": "att_32",
+    "class_id": "class_6",
+    "date": "2025-01-16",
+    "student_id": "S0013",
+    "status": "present",
+    "notes": ""
+  },
+  {
+    "attendance_id": "att_33",
+    "class_id": "class_6",
+    "date": "2025-01-16",
+    "student_id": "S0014",
+    "status": "present",
+    "notes": ""
+  },
+  {
+    "attendance_id": "att_34",
+    "class_id": "class_6",
+    "date": "2025-01-16",
+    "student_id": "S0019",
+    "status": "late",
+    "notes": "Traffic delay"
+  },
+  {
+    "attendance_id": "att_35",
+    "class_id": "class_7",
+    "date": "2025-01-16",
+    "student_id": "S0002",
+    "status": "present",
+    "notes": ""
+  },
+  {
+    "attendance_id": "att_36",
+    "class_id": "class_7",
+    "date": "2025-01-16",
+    "student_id": "S0003",
+    "status": "present",
+    "notes": ""
+  },
+  {
+    "attendance_id": "att_37",
+    "class_id": "class_7",
+    "date": "2025-01-16",
+    "student_id": "S0005",
+    "status": "present",
+    "notes": ""
+  },
+  {
+    "attendance_id": "att_38",
+    "class_id": "class_7",
+    "date": "2025-01-16",
+    "student_id": "S0010",
+    "status": "present",
+    "notes": ""
+  },
+  {
+    "attendance_id": "att_39",
+    "class_id": "class_7",
+    "date": "2025-01-16",
+    "student_id": "S0011",
+    "status": "present",
+    "notes": ""
+  },
+  {
+    "attendance_id": "att_40",
+    "class_id": "class_7",
+    "date": "2025-01-16",
+    "student_id": "S0012",
+    "status": "present",
+    "notes": ""
+  },
+  {
+    "attendance_id": "att_41",
+    "class_id": "class_7",
+    "date": "2025-01-16",
+    "student_id": "S0018",
+    "status": "present",
+    "notes": ""
+  },
+  {
+    "attendance_id": "att_42",
+    "class_id": "class_8",
+    "date": "2025-01-16",
+    "student_id": "S0001",
+    "status": "present",
+    "notes": ""
+  },
+  {
+    "attendance_id": "att_43",
+    "class_id": "class_8",
     "date": "2025-01-16",
     "student_id": "S0004",
     "status": "present",
     "notes": ""
   },
   {
-    "attendance_id": "att_5",
-    "class_id": "class_2",
+    "attendance_id": "att_44",
+    "class_id": "class_8",
     "date": "2025-01-16",
-    "student_id": "S0005",
-    "status": "late",
-    "notes": "Arrived 10 minutes late"
+    "student_id": "S0006",
+    "status": "present",
+    "notes": ""
+  },
+  {
+    "attendance_id": "att_45",
+    "class_id": "class_8",
+    "date": "2025-01-16",
+    "student_id": "S0007",
+    "status": "present",
+    "notes": ""
+  },
+  {
+    "attendance_id": "att_46",
+    "class_id": "class_8",
+    "date": "2025-01-16",
+    "student_id": "S0008",
+    "status": "present",
+    "notes": ""
+  },
+  {
+    "attendance_id": "att_47",
+    "class_id": "class_8",
+    "date": "2025-01-16",
+    "student_id": "S0009",
+    "status": "present",
+    "notes": ""
+  },
+  {
+    "attendance_id": "att_48",
+    "class_id": "class_8",
+    "date": "2025-01-16",
+    "student_id": "S0017",
+    "status": "present",
+    "notes": ""
+  },
+  {
+    "attendance_id": "att_49",
+    "class_id": "class_16",
+    "date": "2025-01-16",
+    "student_id": "S0015",
+    "status": "present",
+    "notes": ""
+  },
+  {
+    "attendance_id": "att_50",
+    "class_id": "class_16",
+    "date": "2025-01-16",
+    "student_id": "S0016",
+    "status": "present",
+    "notes": ""
+  },
+  {
+    "attendance_id": "att_51",
+    "class_id": "class_16",
+    "date": "2025-01-16",
+    "student_id": "S0020",
+    "status": "present",
+    "notes": ""
   }
 ] 

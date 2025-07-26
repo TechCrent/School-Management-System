@@ -12,7 +12,7 @@ const roleDefaultRoute: Record<string, string> = {
   admin: '/',
   teacher: '/',
   student: '/homework',
-  parent: '/homework',
+  parent: '/',
 };
 
 export const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {

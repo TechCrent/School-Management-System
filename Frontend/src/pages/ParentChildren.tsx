@@ -233,17 +233,23 @@ const ParentChildren = () => {
 
       {/* Child Details Modal */}
       {selectedChild && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-background rounded-lg shadow-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-card border rounded-lg shadow-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto relative text-card-foreground">
             <div className="p-6">
-              <div className="flex items-center justify-between mb-6">
+              <div className="flex items-start justify-between mb-6">
                 <div>
                   <h3 className="text-2xl font-bold text-foreground">{selectedChild.full_name}</h3>
                   <p className="text-muted-foreground">Grade {selectedChild.grade} • {selectedChild.status || 'Active'}</p>
                 </div>
-                <Button variant="ghost" size="sm" onClick={closeModal}>
-                  ×
-                </Button>
+                <button
+                  onClick={closeModal}
+                  className="rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground"
+                >
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                  <span className="sr-only">Close</span>
+                </button>
               </div>
 
               <div className="space-y-6">

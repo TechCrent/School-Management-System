@@ -3,8 +3,8 @@
     "submission_id": "sub_1",
     "homework_id": "hw-1",
     "student_id": "S0001",
-    "submitted_at": "2025-01-14T10:30:00Z",
-    "content": "I completed exercises 1-20 from chapter 5. Here are my solutions...",
+    "submitted_at": "2025-01-18T10:30:00Z",
+    "content": "I completed exercises 1-20 from Chapter 3. Here are my solutions for the linear equations problems. I showed all work and checked my solutions as requested.",
     "attachments": [
       {
         "name": "algebra_solutions.pdf",
@@ -21,9 +21,9 @@
   {
     "submission_id": "sub_2",
     "homework_id": "hw-1",
-    "student_id": "S0002",
-    "submitted_at": "2025-01-15T14:20:00Z",
-    "content": "Completed the algebra exercises. Please find my work attached.",
+    "student_id": "S0004",
+    "submitted_at": "2025-01-19T14:20:00Z",
+    "content": "Completed the algebra exercises. Please find my work attached. I had some difficulty with problems 15-17 but tried my best.",
     "attachments": [
       {
         "name": "homework_1.pdf",
@@ -32,22 +32,345 @@
       }
     ],
     "status": "graded",
-    "grade": "A-",
-    "feedback": "Excellent work! Your solutions show good understanding of linear equations. Minor error in problem 15.",
-    "graded_at": "2025-01-16T09:15:00Z",
-    "graded_by": "789e0123-e89b-12d3-a456-426614174001"
+    "grade": "B-",
+    "feedback": "Good effort on most problems. Issues with problems 15-17 show need for more practice with complex equations. Review chapter 2 concepts.",
+    "graded_at": "2025-01-20T09:15:00Z",
+    "graded_by": "T001"
   },
   {
     "submission_id": "sub_3",
     "homework_id": "hw-1",
-    "student_id": "S0003",
-    "submitted_at": "2025-01-13T16:45:00Z",
-    "content": "Here are my solutions for the algebra problems.",
+    "student_id": "S0006",
+    "submitted_at": "2025-01-17T16:45:00Z",
+    "content": "Here are my solutions for the algebra problems. I completed all exercises and double-checked my work.",
     "attachments": [],
     "status": "submitted",
     "grade": null,
     "feedback": null,
     "graded_at": null,
     "graded_by": null
+  },
+  {
+    "submission_id": "sub_4",
+    "homework_id": "hw-2",
+    "student_id": "S0001",
+    "submitted_at": "2025-01-21T11:15:00Z",
+    "content": "Essay analyzing themes in Romeo and Juliet. I focused on love, fate, and family conflict as requested. Included proper citations from the text.",
+    "attachments": [
+      {
+        "name": "shakespeare_essay.docx",
+        "url": "/submissions/shakespeare_essay.docx",
+        "size": "45KB"
+      }
+    ],
+    "status": "graded",
+    "grade": "A-",
+    "feedback": "Excellent analysis of themes. Strong use of textual evidence. Minor issues with citation format. Overall, very well done!",
+    "graded_at": "2025-01-22T14:30:00Z",
+    "graded_by": "T002"
+  },
+  {
+    "submission_id": "sub_5",
+    "homework_id": "hw-2",
+    "student_id": "S0004",
+    "submitted_at": "2025-01-22T09:45:00Z",
+    "content": "My essay on Romeo and Juliet. I wrote about the themes you mentioned.",
+    "attachments": [
+      {
+        "name": "essay_final.docx",
+        "url": "/submissions/essay_final.docx",
+        "size": "38KB"
+      }
+    ],
+    "status": "graded",
+    "grade": "C+",
+    "feedback": "Basic understanding of themes shown. Essay needs more depth and analysis. Missing proper citations. Please review essay writing guidelines.",
+    "graded_at": "2025-01-23T10:20:00Z",
+    "graded_by": "T002"
+  },
+  {
+    "submission_id": "sub_6",
+    "homework_id": "hw-3",
+    "student_id": "S0002",
+    "submitted_at": "2025-01-17T15:30:00Z",
+    "content": "I reviewed chapters 1-4 and completed the practice problems. Ready for the quiz tomorrow.",
+    "attachments": [
+      {
+        "name": "quiz_prep_notes.pdf",
+        "url": "/submissions/quiz_prep_notes.pdf",
+        "size": "800KB"
+      }
+    ],
+    "status": "completed",
+    "grade": "A",
+    "feedback": "Excellent preparation! Your notes show thorough understanding of the material. Good luck on the quiz!",
+    "graded_at": "2025-01-18T08:45:00Z",
+    "graded_by": "T001"
+  },
+  {
+    "submission_id": "sub_7",
+    "homework_id": "hw-4",
+    "student_id": "S0002",
+    "submitted_at": "2025-01-23T13:20:00Z",
+    "content": "Lab report on cell structure observation. I included microscope drawings and labeled diagrams as requested.",
+    "attachments": [
+      {
+        "name": "cell_lab_report.pdf",
+        "url": "/submissions/cell_lab_report.pdf",
+        "size": "3.2MB"
+      }
+    ],
+    "status": "submitted",
+    "grade": null,
+    "feedback": null,
+    "graded_at": null,
+    "graded_by": null
+  },
+  {
+    "submission_id": "sub_8",
+    "homework_id": "hw-4",
+    "student_id": "S0003",
+    "submitted_at": "2025-01-24T10:15:00Z",
+    "content": "Biology lab report with detailed observations and analysis of cell components. Included high-quality microscope drawings.",
+    "attachments": [
+      {
+        "name": "cell_structure_report.pdf",
+        "url": "/submissions/cell_structure_report.pdf",
+        "size": "4.1MB"
+      }
+    ],
+    "status": "graded",
+    "grade": "A+",
+    "feedback": "Outstanding work! Excellent drawings and thorough analysis. Your understanding of cell structure is exceptional.",
+    "graded_at": "2025-01-25T11:30:00Z",
+    "graded_by": "T003"
+  },
+  {
+    "submission_id": "sub_9",
+    "homework_id": "hw-5",
+    "student_id": "S0001",
+    "submitted_at": "2025-01-28T16:45:00Z",
+    "content": "Research paper on Ancient Egyptian civilization covering government, religion, and daily life. Used 5 sources as required.",
+    "attachments": [
+      {
+        "name": "ancient_egypt_paper.docx",
+        "url": "/submissions/ancient_egypt_paper.docx",
+        "size": "125KB"
+      }
+    ],
+    "status": "submitted",
+    "grade": null,
+    "feedback": null,
+    "graded_at": null,
+    "graded_by": null
+  },
+  {
+    "submission_id": "sub_10",
+    "homework_id": "hw-6",
+    "student_id": "S0001",
+    "submitted_at": "2025-01-26T12:30:00Z",
+    "content": "Color theory portfolio with primary, secondary, and tertiary color wheels. Used various media including paint and digital tools.",
+    "attachments": [
+      {
+        "name": "color_theory_portfolio.pdf",
+        "url": "/submissions/color_theory_portfolio.pdf",
+        "size": "8.5MB"
+      }
+    ],
+    "status": "graded",
+    "grade": "A+",
+    "feedback": "Beautiful portfolio! Excellent understanding of color theory. Your use of different media shows creativity and skill.",
+    "graded_at": "2025-01-27T15:20:00Z",
+    "graded_by": "T005"
+  },
+  {
+    "submission_id": "sub_11",
+    "homework_id": "hw-7",
+    "student_id": "S0013",
+    "submitted_at": "2025-01-22T14:10:00Z",
+    "content": "Physics problem set on Newton's laws. Completed problems 1-15 with all calculations and free-body diagrams shown.",
+    "attachments": [
+      {
+        "name": "newton_laws_problems.pdf",
+        "url": "/submissions/newton_laws_problems.pdf",
+        "size": "2.8MB"
+      }
+    ],
+    "status": "graded",
+    "grade": "A-",
+    "feedback": "Very good work! Clear calculations and diagrams. Minor error in problem 12. Overall excellent understanding of Newton's laws.",
+    "graded_at": "2025-01-23T09:45:00Z",
+    "graded_by": "T006"
+  },
+  {
+    "submission_id": "sub_12",
+    "homework_id": "hw-8",
+    "student_id": "S0019",
+    "submitted_at": "2025-01-25T11:20:00Z",
+    "content": "Chemistry lab report on chemical reactions. Recorded all observations and wrote balanced equations for each reaction.",
+    "attachments": [
+      {
+        "name": "chemical_reactions_lab.pdf",
+        "url": "/submissions/chemical_reactions_lab.pdf",
+        "size": "3.7MB"
+      }
+    ],
+    "status": "graded",
+    "grade": "A",
+    "feedback": "Excellent lab report! Thorough observations and accurate balanced equations. Your analysis shows deep understanding.",
+    "graded_at": "2025-01-26T13:15:00Z",
+    "graded_by": "T007"
+  },
+  {
+    "submission_id": "sub_13",
+    "homework_id": "hw-9",
+    "student_id": "S0002",
+    "submitted_at": "2025-01-23T15:45:00Z",
+    "content": "Poetry analysis of three poems from our anthology. Analyzed theme, imagery, and poetic devices for each poem.",
+    "attachments": [
+      {
+        "name": "poetry_analysis.docx",
+        "url": "/submissions/poetry_analysis.docx",
+        "size": "67KB"
+      }
+    ],
+    "status": "graded",
+    "grade": "B+",
+    "feedback": "Good analysis of themes and imagery. Could have explored poetic devices more deeply. Well-written overall.",
+    "graded_at": "2025-01-24T10:30:00Z",
+    "graded_by": "T002"
+  },
+  {
+    "submission_id": "sub_14",
+    "homework_id": "hw-10",
+    "student_id": "S0013",
+    "submitted_at": "2025-01-26T09:30:00Z",
+    "content": "Geometry proofs for triangles and quadrilaterals. Used two-column proof format for all 10 problems.",
+    "attachments": [
+      {
+        "name": "geometry_proofs.pdf",
+        "url": "/submissions/geometry_proofs.pdf",
+        "size": "1.9MB"
+      }
+    ],
+    "status": "submitted",
+    "grade": null,
+    "feedback": null,
+    "graded_at": null,
+    "graded_by": null
+  },
+  {
+    "submission_id": "sub_15",
+    "homework_id": "hw-11",
+    "student_id": "S0013",
+    "submitted_at": "2025-01-28T13:15:00Z",
+    "content": "Genetics problems with Punnett squares for monohybrid and dihybrid crosses. Included probability calculations.",
+    "attachments": [
+      {
+        "name": "genetics_problems.pdf",
+        "url": "/submissions/genetics_problems.pdf",
+        "size": "2.3MB"
+      }
+    ],
+    "status": "submitted",
+    "grade": null,
+    "feedback": null,
+    "graded_at": null,
+    "graded_by": null
+  },
+  {
+    "submission_id": "sub_16",
+    "homework_id": "hw-12",
+    "student_id": "S0020",
+    "submitted_at": "2025-01-30T16:20:00Z",
+    "content": "World War II timeline with major events, key figures, and significance of each event. Comprehensive coverage of the war period.",
+    "attachments": [
+      {
+        "name": "wwii_timeline.pdf",
+        "url": "/submissions/wwii_timeline.pdf",
+        "size": "1.5MB"
+      }
+    ],
+    "status": "submitted",
+    "grade": null,
+    "feedback": null,
+    "graded_at": null,
+    "graded_by": null
+  },
+  {
+    "submission_id": "sub_17",
+    "homework_id": "hw-13",
+    "student_id": "S0001",
+    "submitted_at": "2025-01-24T14:30:00Z",
+    "content": "Perspective drawings: one-point, two-point, and three-point perspective. Used proper vanishing points as instructed.",
+    "attachments": [
+      {
+        "name": "perspective_drawings.pdf",
+        "url": "/submissions/perspective_drawings.pdf",
+        "size": "5.2MB"
+      }
+    ],
+    "status": "graded",
+    "grade": "A",
+    "feedback": "Excellent perspective drawings! Proper use of vanishing points and good technical skill. Well done!",
+    "graded_at": "2025-01-25T12:45:00Z",
+    "graded_by": "T015"
+  },
+  {
+    "submission_id": "sub_18",
+    "homework_id": "hw-14",
+    "student_id": "S0015",
+    "submitted_at": "2025-01-27T10:45:00Z",
+    "content": "Physics problems on energy conservation. Calculated kinetic and potential energy transformations in various scenarios.",
+    "attachments": [
+      {
+        "name": "energy_conservation.pdf",
+        "url": "/submissions/energy_conservation.pdf",
+        "size": "3.1MB"
+      }
+    ],
+    "status": "graded",
+    "grade": "A+",
+    "feedback": "Perfect work! Excellent understanding of energy conservation principles. All calculations are accurate and well-explained.",
+    "graded_at": "2025-01-28T11:20:00Z",
+    "graded_by": "T006"
+  },
+  {
+    "submission_id": "sub_19",
+    "homework_id": "hw-15",
+    "student_id": "S0020",
+    "submitted_at": "2025-01-29T15:10:00Z",
+    "content": "Stoichiometry problems involving mass-mass, mass-volume, and volume-volume relationships. Showed all calculations.",
+    "attachments": [
+      {
+        "name": "stoichiometry_problems.pdf",
+        "url": "/submissions/stoichiometry_problems.pdf",
+        "size": "2.7MB"
+      }
+    ],
+    "status": "submitted",
+    "grade": null,
+    "feedback": null,
+    "graded_at": null,
+    "graded_by": null
+  },
+  {
+    "submission_id": "sub_20",
+    "homework_id": "hw-16",
+    "student_id": "S0015",
+    "submitted_at": "2025-01-25T13:40:00Z",
+    "content": "Creative writing short story using plot, character, setting, and conflict elements. 3-page story about a mysterious discovery.",
+    "attachments": [
+      {
+        "name": "creative_story.docx",
+        "url": "/submissions/creative_story.docx",
+        "size": "52KB"
+      }
+    ],
+    "status": "graded",
+    "grade": "A",
+    "feedback": "Engaging story with well-developed characters and plot. Good use of setting and conflict. Creative and original!",
+    "graded_at": "2025-01-26T14:25:00Z",
+    "graded_by": "T012"
   }
 ] 

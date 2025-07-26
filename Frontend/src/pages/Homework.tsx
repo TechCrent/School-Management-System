@@ -14,8 +14,12 @@ const HomeworkPage = () => {
 
   // Get logged-in student info
   const user = JSON.parse(localStorage.getItem('user') || '{}') as Student;
+  const userRole = localStorage.getItem('role');
 
   useEffect(() => {
+    // Only load homework for students
+    if (userRole !== 'student') return;
+    
     // Find the student's class and homework
     getClasses().then(res => {
       const classes = (res.data || []) as Class[];
@@ -38,7 +42,7 @@ const HomeworkPage = () => {
         });
       }
     });
-  }, [user.class_id]);
+  }, [user.class_id, userRole]);
 
   const handleSubmit = (hwId: string) => {
     setStatusMap(prev => ({ ...prev, [hwId]: 'submitted' }));
@@ -62,11 +66,25 @@ const HomeworkPage = () => {
   return (
     <div className="space-y-6">
       <div className="flex flex-col space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight text-foreground">My Homework</h2>
-        <p className="text-muted-foreground">Manage and submit your homework assignments</p>
+        <h2 className="text-3xl font-bold tracking-tight text-foreground">
+          {userRole === 'student' ? 'My Homework' : 'Homework Management'}
+        </h2>
+        <p className="text-muted-foreground">
+          {userRole === 'student' ? 'Manage and submit your homework assignments' : 'View and manage homework assignments'}
+        </p>
       </div>
       
-      {studentClass ? (
+      {userRole !== 'student' ? (
+        <div className="flex flex-col items-center justify-center py-12 text-center">
+          <div className="rounded-full bg-muted p-3 mb-4">
+            <svg className="h-6 w-6 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+          </div>
+          <h3 className="text-lg font-semibold text-foreground mb-2">Teacher/Admin View</h3>
+          <p className="text-muted-foreground">Please use the teacher homework management interface for creating and managing assignments.</p>
+        </div>
+      ) : studentClass ? (
         <>
           <div className="flex items-center space-x-2 text-sm text-muted-foreground">
             <span>Class:</span>

@@ -71,7 +71,19 @@ db.exec(`
     email TEXT NOT NULL,
     grade TEXT NOT NULL,
     date_of_birth TEXT,
-    address TEXT
+    address TEXT,
+    parent1_id TEXT,
+    parent2_id TEXT,
+    parent1_email TEXT,
+    parent1_name TEXT,
+    parent1_contact TEXT,
+    parent2_email TEXT,
+    parent2_name TEXT,
+    parent2_contact TEXT,
+    status TEXT DEFAULT 'active',
+    class_id TEXT,
+    FOREIGN KEY (parent1_id) REFERENCES parents(parent_id),
+    FOREIGN KEY (parent2_id) REFERENCES parents(parent_id)
   );
   CREATE TABLE IF NOT EXISTS teachers (
     teacher_id TEXT PRIMARY KEY,
@@ -88,7 +100,9 @@ db.exec(`
     role TEXT NOT NULL,
     active INTEGER DEFAULT 1,
     reset_token TEXT,
-    reset_token_expiry TEXT
+    reset_token_expiry TEXT,
+    parent_id TEXT,
+    FOREIGN KEY (parent_id) REFERENCES parents(parent_id)
   );
   CREATE TABLE IF NOT EXISTS classes (
     class_id TEXT PRIMARY KEY,
@@ -210,12 +224,28 @@ db.exec(`
     FOREIGN KEY (class_id) REFERENCES classes(class_id),
     FOREIGN KEY (subject_id) REFERENCES subjects(subject_id)
   );
+  CREATE TABLE IF NOT EXISTS parents (
+    parent_id TEXT PRIMARY KEY,
+    full_name TEXT NOT NULL,
+    email TEXT UNIQUE NOT NULL,
+    phone TEXT,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+  );
+  CREATE TABLE IF NOT EXISTS student_parents (
+    student_id TEXT NOT NULL,
+    parent_id TEXT NOT NULL,
+    relationship_type TEXT DEFAULT 'primary',
+    PRIMARY KEY (student_id, parent_id),
+    FOREIGN KEY (student_id) REFERENCES students(student_id),
+    FOREIGN KEY (parent_id) REFERENCES parents(parent_id)
+  );
 `);
 
 // Insert demo users if not present
 const demoUsers = [
   { user_id: '1', username: 'admin', password: 'admin123', role: 'admin' },
-  { user_id: '2', username: 'teacher', password: 'teacher123', role: 'teacher' }
+  { user_id: '2', username: 'teacher', password: 'teacher123', role: 'teacher' },
+  { user_id: '3', username: 'parent', password: 'parent123', role: 'parent' }
 ];
 
 // Use synchronous password hashing for demo users
@@ -247,6 +277,11 @@ const sampleClasses = [
   { class_id: 'C001', name: 'Advanced Mathematics', teacher_id: 'T001' },
   { class_id: 'C002', name: 'English Literature', teacher_id: 'T002' },
   { class_id: 'C003', name: 'Physics', teacher_id: 'T003' }
+];
+
+const sampleParents = [
+  { parent_id: 'P001', full_name: 'Linda Hernandez', email: 'linda.hernandez@parentmail.com', phone: '555-10001' },
+  { parent_id: 'P002', full_name: 'William Hernandez', email: 'william.hernandez@parentmail.com', phone: '555-20002' }
 ];
 
 const sampleSubjects = [
@@ -326,6 +361,25 @@ sampleHomework.forEach(hw => {
   }
 });
 
+// Insert sample parents if not exists
+sampleParents.forEach(parent => {
+  const exists = db.prepare('SELECT * FROM parents WHERE parent_id = ?').get(parent.parent_id);
+  if (!exists) {
+    db.prepare('INSERT INTO parents (parent_id, full_name, email, phone) VALUES (?, ?, ?, ?)').run(
+      parent.parent_id, parent.full_name, parent.email, parent.phone
+    );
+  }
+});
+
+// Update students with parent relationships
+db.prepare('UPDATE students SET parent1_id = ? WHERE student_id = ?').run('P001', 'S001');
+db.prepare('UPDATE students SET parent1_id = ? WHERE student_id = ?').run('P001', 'S002');
+db.prepare('UPDATE students SET parent2_id = ? WHERE student_id = ?').run('P002', 'S001');
+db.prepare('UPDATE students SET parent2_id = ? WHERE student_id = ?').run('P002', 'S002');
+
+// Update parent user with parent_id
+db.prepare('UPDATE users SET parent_id = ? WHERE username = ?').run('P001', 'parent');
+
 // Auth middleware
 function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];
@@ -361,9 +415,30 @@ app.post('/login', async (req, res) => {
     logAudit('login_failed', { username });
     return res.status(401).json({ error: 'Invalid credentials' });
   }
+  
+  // Get additional user info based on role
+  let userInfo = { ...user };
+  
+  if (user.role === 'parent' && user.parent_id) {
+    const parent = db.prepare('SELECT * FROM parents WHERE parent_id = ?').get(user.parent_id);
+    if (parent) {
+      userInfo = { ...user, ...parent };
+    }
+  } else if (user.role === 'teacher') {
+    const teacher = db.prepare('SELECT * FROM teachers WHERE email = ?').get(user.username);
+    if (teacher) {
+      userInfo = { ...user, ...teacher };
+    }
+  } else if (user.role === 'student') {
+    const student = db.prepare('SELECT * FROM students WHERE email = ?').get(user.username);
+    if (student) {
+      userInfo = { ...user, ...student };
+    }
+  }
+  
   logAudit('login_success', { username });
   const token = jwt.sign({ username: user.username, role: user.role }, JWT_SECRET, { expiresIn: '1h' });
-  res.json({ token, role: user.role });
+  res.json({ token, role: user.role, user: userInfo });
 });
 
 // Validation schemas
@@ -373,7 +448,17 @@ const studentSchema = Joi.object({
   email: Joi.string().email().required(),
   grade: Joi.string().required(),
   date_of_birth: Joi.string().optional(),
-  address: Joi.string().optional()
+  address: Joi.string().optional(),
+  parent1_id: Joi.string().optional(),
+  parent2_id: Joi.string().optional(),
+  parent1_email: Joi.string().email().optional(),
+  parent1_name: Joi.string().optional(),
+  parent1_contact: Joi.string().optional(),
+  parent2_email: Joi.string().email().optional(),
+  parent2_name: Joi.string().optional(),
+  parent2_contact: Joi.string().optional(),
+  status: Joi.string().valid('active', 'inactive').optional(),
+  class_id: Joi.string().optional()
 });
 
 const teacherSchema = Joi.object({
@@ -383,6 +468,13 @@ const teacherSchema = Joi.object({
   subject: Joi.string().optional(),
   date_of_birth: Joi.string().optional(),
   address: Joi.string().optional()
+});
+
+const parentSchema = Joi.object({
+  parent_id: Joi.string(),
+  full_name: Joi.string().min(2).required(),
+  email: Joi.string().email().required(),
+  phone: Joi.string().optional().allow('')
 });
 
 const classSchema = Joi.object({
@@ -538,13 +630,27 @@ app.post('/students', requireRole(['admin']), (req, res) => {
   if (error) return res.status(400).json({ error: error.details[0].message });
   const student = { ...req.body, student_id: req.body.student_id || Date.now().toString() };
   try {
-    db.prepare(`INSERT INTO students (student_id, full_name, email, grade, date_of_birth, address) VALUES (?, ?, ?, ?, ?, ?);`).run(
+    db.prepare(`INSERT INTO students (
+      student_id, full_name, email, grade, date_of_birth, address,
+      parent1_id, parent2_id, parent1_email, parent1_name, parent1_contact,
+      parent2_email, parent2_name, parent2_contact, status, class_id
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`).run(
       student.student_id,
       student.full_name,
       student.email,
       student.grade,
       student.date_of_birth || '',
-      student.address || ''
+      student.address || '',
+      student.parent1_id || '',
+      student.parent2_id || '',
+      student.parent1_email || '',
+      student.parent1_name || '',
+      student.parent1_contact || '',
+      student.parent2_email || '',
+      student.parent2_name || '',
+      student.parent2_contact || '',
+      student.status || 'active',
+      student.class_id || ''
     );
     logAudit('student_create', student);
     res.status(201).json(apiSuccess(student));
@@ -561,12 +667,26 @@ app.put('/students/:id', requireRole(['admin']), (req, res) => {
   if (!student) return res.status(404).json({ error: 'Student not found' });
   const updated = { ...student, ...req.body };
   try {
-    db.prepare(`UPDATE students SET full_name = ?, email = ?, grade = ?, date_of_birth = ?, address = ? WHERE student_id = ?`).run(
+    db.prepare(`UPDATE students SET 
+      full_name = ?, email = ?, grade = ?, date_of_birth = ?, address = ?,
+      parent1_id = ?, parent2_id = ?, parent1_email = ?, parent1_name = ?, parent1_contact = ?,
+      parent2_email = ?, parent2_name = ?, parent2_contact = ?, status = ?, class_id = ?
+      WHERE student_id = ?`).run(
       updated.full_name,
       updated.email,
       updated.grade,
       updated.date_of_birth || '',
       updated.address || '',
+      updated.parent1_id || '',
+      updated.parent2_id || '',
+      updated.parent1_email || '',
+      updated.parent1_name || '',
+      updated.parent1_contact || '',
+      updated.parent2_email || '',
+      updated.parent2_name || '',
+      updated.parent2_contact || '',
+      updated.status || 'active',
+      updated.class_id || '',
       id
     );
     logAudit('student_update', updated);
@@ -657,6 +777,104 @@ app.delete('/teachers/:id', requireRole(['admin']), (req, res) => {
     res.json(apiSuccess({ message: 'Teacher deleted successfully' }));
   } catch (err) {
     res.status(400).json(apiError('Failed to delete teacher', err.message));
+  }
+});
+
+// Parents CRUD
+app.get('/parents', requireRole(['admin', 'parent']), (req, res) => {
+  const { page = 1, pageSize = 20, search = '', email } = req.query;
+  const offset = (parseInt(page) - 1) * parseInt(pageSize);
+  const searchQuery = `%${search}%`;
+  try {
+    let query = 'SELECT * FROM parents';
+    let params = [];
+    
+    if (email) {
+      query += ' WHERE email = ?';
+      params.push(email);
+    } else if (search) {
+      query += ' WHERE (full_name LIKE ? OR email LIKE ?)';
+      params.push(searchQuery, searchQuery);
+    }
+    
+    query += ' LIMIT ? OFFSET ?';
+    params.push(pageSize, offset);
+    
+    const parents = db.prepare(query).all(...params);
+    res.json(apiSuccess(parents));
+  } catch (err) {
+    res.status(500).json(apiError('Failed to fetch parents'));
+  }
+});
+
+app.get('/parents/:id', requireRole(['admin', 'parent']), (req, res) => {
+  const id = req.params.id;
+  try {
+    const parent = db.prepare('SELECT * FROM parents WHERE parent_id = ?').get(id);
+    if (!parent) return res.status(404).json({ error: 'Parent not found' });
+    
+    // Get children for this parent
+    const children = db.prepare(`
+      SELECT s.* FROM students s 
+      WHERE s.parent1_id = ? OR s.parent2_id = ?
+    `).all(id, id);
+    
+    parent.children = children;
+    res.json(apiSuccess(parent));
+  } catch (err) {
+    res.status(500).json(apiError('Failed to fetch parent'));
+  }
+});
+
+app.post('/parents', requireRole(['admin']), (req, res) => {
+  const { error } = parentSchema.validate(req.body);
+  if (error) return res.status(400).json({ error: error.details[0].message });
+  const parent = { ...req.body, parent_id: req.body.parent_id || Date.now().toString() };
+  try {
+    db.prepare('INSERT INTO parents (parent_id, full_name, email, phone) VALUES (?, ?, ?, ?)').run(
+      parent.parent_id,
+      parent.full_name,
+      parent.email,
+      parent.phone || ''
+    );
+    logAudit('parent_create', parent);
+    res.status(201).json(apiSuccess(parent));
+  } catch (err) {
+    res.status(400).json(apiError('Failed to add parent', err.message));
+  }
+});
+
+app.put('/parents/:id', requireRole(['admin']), (req, res) => {
+  const { error } = parentSchema.validate(req.body);
+  if (error) return res.status(400).json({ error: error.details[0].message });
+  const id = req.params.id;
+  const parent = db.prepare('SELECT * FROM parents WHERE parent_id = ?').get(id);
+  if (!parent) return res.status(404).json({ error: 'Parent not found' });
+  const updated = { ...parent, ...req.body };
+  try {
+    db.prepare('UPDATE parents SET full_name = ?, email = ?, phone = ? WHERE parent_id = ?').run(
+      updated.full_name,
+      updated.email,
+      updated.phone || '',
+      id
+    );
+    logAudit('parent_update', updated);
+    res.json(apiSuccess(updated));
+  } catch (err) {
+    res.status(400).json(apiError('Failed to update parent', err.message));
+  }
+});
+
+app.delete('/parents/:id', requireRole(['admin']), (req, res) => {
+  const id = req.params.id;
+  const parent = db.prepare('SELECT * FROM parents WHERE parent_id = ?').get(id);
+  if (!parent) return res.status(404).json({ error: 'Parent not found' });
+  try {
+    db.prepare('DELETE FROM parents WHERE parent_id = ?').run(id);
+    logAudit('parent_delete', { parent_id: id });
+    res.json(apiSuccess({ message: 'Parent deleted successfully' }));
+  } catch (err) {
+    res.status(400).json(apiError('Failed to delete parent', err.message));
   }
 });
 

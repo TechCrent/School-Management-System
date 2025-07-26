@@ -13,10 +13,23 @@ import {
   Menu,
   X,
   LifeBuoy,
-  Bell
+  Bell,
+  BarChart3
 } from "lucide-react";
 import { EduLiteLogo } from "../ui/logo";
 import { useTranslation } from 'react-i18next';
+import { useAuth } from './AuthContext';
+import { useCustomToast } from '@/hooks/use-toast';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 const navigationItems = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
@@ -36,6 +49,7 @@ const teacherNavigationItems = [
   { title: "My Classes", url: "/teacher/classes", icon: Calendar },
   { title: "My Homework", url: "/teacher/homework", icon: BookOpen },
   { title: "My Students", url: "/teacher/students", icon: Users },
+  { title: "Report Cards", url: "/report-cards", icon: FileText },
   { title: "Profile", url: "/profile", icon: User },
   { title: "Help & Support", url: "/help", icon: LifeBuoy },
 ];
@@ -50,9 +64,10 @@ const studentNavigationItems = [
 ];
 
 const parentNavigationItems = [
-  { title: "Dashboard", url: "/parent", icon: LayoutDashboard },
+  { title: "Dashboard", url: "/", icon: LayoutDashboard },
   { title: "My Children", url: "/parent/children", icon: Users },
   { title: "Notifications", url: "/parent/notifications", icon: Bell },
+  { title: "Classes", url: "/classes", icon: Calendar },
   { title: "Profile", url: "/profile", icon: User },
   { title: "Help & Support", url: "/help", icon: LifeBuoy },
 ];
@@ -64,26 +79,50 @@ const adminNavigationItems = [
   { title: "Classes", url: "/classes", icon: Calendar },
   { title: "Subjects", url: "/subjects", icon: BookOpen },
   { title: "Report Cards", url: "/report-cards", icon: FileText },
+  { title: "Reports", url: "/admin/reports", icon: BarChart3 },
+  { title: "Activity Log", url: "/activity-log", icon: FileText },
   { title: "Profile", url: "/profile", icon: User },
   { title: "Help & Support", url: "/help", icon: LifeBuoy },
-  { title: "Activity Log", url: "/activity-log", icon: FileText },
 ];
 
 export const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { logout } = useAuth();
+  const { customToast } = useCustomToast();
   const userRole = localStorage.getItem('role');
 
   const isActive = (path: string) => location.pathname === path;
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('role');
-    localStorage.removeItem('user');
+    logout();
+    customToast({
+      title: "Logged out successfully",
+      description: "You have been securely logged out.",
+    });
     navigate('/login');
+    setLogoutDialogOpen(false);
   };
+
+  const getNavigationItems = () => {
+    switch (userRole) {
+      case 'admin':
+        return adminNavigationItems;
+      case 'teacher':
+        return teacherNavigationItems;
+      case 'student':
+        return studentNavigationItems;
+      case 'parent':
+        return parentNavigationItems;
+      default:
+        return navigationItems.filter(item => !item.adminOnly || userRole === 'admin');
+    }
+  };
+
+  const navigationItemsToShow = getNavigationItems();
 
   return (
     <>
@@ -114,100 +153,39 @@ export const Sidebar = () => {
 
           {/* Navigation */}
           <nav className="flex-1 p-4 space-y-2" aria-label="Main sidebar navigation">
-            {userRole === 'teacher'
-              ? teacherNavigationItems.map((item) => (
-                  <NavLink
-                    key={item.title}
-                    to={item.url}
-                    className={`
-                      flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200
-                      hover:bg-muted hover:shadow-glow
-                      ${isActive(item.url) 
-                        ? 'bg-primary text-primary-foreground shadow-glow' 
-                        : 'text-muted-foreground hover:text-foreground'
-                      }
-                    `}
-                  >
-                    <item.icon className="h-5 w-5 flex-shrink-0" />
-                    {!isCollapsed && <span className="font-medium">{t(item.title)}</span>}
-                  </NavLink>
-                ))
-              : userRole === 'student'
-                ? studentNavigationItems.map((item) => (
-                    <NavLink
-                      key={item.title}
-                      to={item.url}
-                      className={`
-                        flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200
-                        hover:bg-muted hover:shadow-glow
-                        ${isActive(item.url) 
-                          ? 'bg-primary text-primary-foreground shadow-glow' 
-                          : 'text-muted-foreground hover:text-foreground'
-                        }
-                      `}
-                    >
-                      <item.icon className="h-5 w-5 flex-shrink-0" />
-                      {!isCollapsed && <span className="font-medium">{t(item.title)}</span>}
-                    </NavLink>
-                  ))
-                : userRole === 'parent'
-                  ? parentNavigationItems.map((item) => (
-                      <NavLink
-                        key={item.title}
-                        to={item.url}
-                        className={`
-                          flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200
-                          hover:bg-muted hover:shadow-glow
-                          ${isActive(item.url) 
-                            ? 'bg-primary text-primary-foreground shadow-glow' 
-                            : 'text-muted-foreground hover:text-foreground'
-                          }
-                        `}
-                      >
-                        <item.icon className="h-5 w-5 flex-shrink-0" />
-                        {!isCollapsed && <span className="font-medium">{t(item.title)}</span>}
-                      </NavLink>
-                    ))
-                  : userRole === 'admin'
-                    ? adminNavigationItems.map((item) => (
-                        <NavLink
-                          key={item.title}
-                          to={item.url}
-                          className={`
-                            flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200
-                            hover:bg-muted hover:shadow-glow
-                            ${isActive(item.url) 
-                              ? 'bg-primary text-primary-foreground shadow-glow' 
-                              : 'text-muted-foreground hover:text-foreground'
-                            }
-                          `}
-                        >
-                          <item.icon className="h-5 w-5 flex-shrink-0" />
-                          {!isCollapsed && <span className="font-medium">{t(item.title)}</span>}
-                        </NavLink>
-                      ))
-                    : navigationItems.filter(item => !item.adminOnly || userRole === 'admin').map((item) => (
-                    <NavLink
-                      key={item.title}
-                      to={item.url}
-                      className={`
-                        flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200
-                        hover:bg-muted hover:shadow-glow
-                        ${isActive(item.url) 
-                          ? 'bg-primary text-primary-foreground shadow-glow' 
-                          : 'text-muted-foreground hover:text-foreground'
-                        }
-                      `}
-                      aria-current={isActive(item.url) ? 'page' : undefined}
-                    >
-                      <item.icon className="h-5 w-5 flex-shrink-0" />
-                      {!isCollapsed && <span className="font-medium">{t(item.title)}</span>}
-                    </NavLink>
-                  ))}
+            {navigationItemsToShow.map((item) => (
+              <NavLink
+                key={item.title}
+                to={item.url}
+                className={`
+                  flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200
+                  hover:bg-muted hover:shadow-glow
+                  ${isActive(item.url) 
+                    ? 'bg-primary text-primary-foreground shadow-glow' 
+                    : 'text-muted-foreground hover:text-foreground'
+                  }
+                `}
+              >
+                <item.icon className="h-5 w-5 flex-shrink-0" />
+                {!isCollapsed && <span className="font-medium">{t(item.title)}</span>}
+              </NavLink>
+            ))}
           </nav>
 
-          {/* Logout */}
-          {/* Removed logout button from sidebar as per best practice */}
+          {/* Logout Section */}
+          <div className="p-4 border-t border-border">
+            <button
+              onClick={() => setLogoutDialogOpen(true)}
+              className={`
+                flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200
+                hover:bg-destructive/10 hover:text-destructive w-full
+                text-muted-foreground hover:text-destructive
+              `}
+            >
+              <LogOut className="h-5 w-5 flex-shrink-0" />
+              {!isCollapsed && <span className="font-medium">{t('Logout')}</span>}
+            </button>
+          </div>
 
           {/* Collapse Toggle (Desktop) */}
           <div className="hidden lg:block p-4">
@@ -228,6 +206,27 @@ export const Sidebar = () => {
           onClick={() => setIsCollapsed(true)}
         />
       )}
+
+      {/* Logout Confirmation Dialog */}
+      <AlertDialog open={logoutDialogOpen} onOpenChange={setLogoutDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Log out</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to log out? You will need to sign in again to access your account.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleLogout} 
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Log out
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };

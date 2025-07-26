@@ -12,8 +12,10 @@ import { Plus, Edit, Trash2, Mail, BookOpen } from 'lucide-react';
 import { Loading } from '@/components/ui/loading';
 import { useCustomToast } from '@/hooks/use-toast';
 import { Breadcrumbs } from '@/components/ui/breadcrumb';
+import { useTranslation } from 'react-i18next';
 
 const Teachers = () => {
+  const { t } = useTranslation();
   const { token } = useAuth();
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState('');
@@ -231,7 +233,7 @@ const Teachers = () => {
                 </button>
               </div>
               
-              <form onSubmit={e => { e.preventDefault(); handleSave(selectedTeacher || {}); }} className="space-y-4">
+              <form onSubmit={e => { e.preventDefault(); handleSave(modalForm); }} className="space-y-4">
                 <div>
                   <label className="text-sm font-medium text-foreground">Full Name</label>
                   <Input

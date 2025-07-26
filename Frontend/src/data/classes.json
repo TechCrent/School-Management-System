@@ -1,20 +1,222 @@
 [
   {
     "class_id": "class_1",
-    "name": "Grade 8A Mathematics",
-    "teacher_id": "t-1",
+    "name": "Grade 9A Mathematics",
+    "teacher_id": "T001",
     "subject_id": "sub_1",
-    "schedule": "Monday 10:00 AM - 11:00 AM",
-    "zoom_link": "https://zoom.us/j/123456789",
-    "student_count": 25
+    "schedule": "Monday 8:00 AM - 9:00 AM, Wednesday 8:00 AM - 9:00 AM, Friday 8:00 AM - 9:00 AM",
+    "room": "Room 101",
+    "student_count": 25,
+    "grade_level": "9",
+    "semester": "2024-2025-1"
   },
   {
     "class_id": "class_2",
-    "name": "Grade 8A English",
-    "teacher_id": "t-1",
+    "name": "Grade 9A English Literature",
+    "teacher_id": "T002",
     "subject_id": "sub_2",
-    "schedule": "Tuesday 9:00 AM - 10:00 AM",
-    "zoom_link": "https://zoom.us/j/987654321",
-    "student_count": 25
+    "schedule": "Monday 9:15 AM - 10:15 AM, Wednesday 9:15 AM - 10:15 AM, Friday 9:15 AM - 10:15 AM",
+    "room": "Room 102",
+    "student_count": 25,
+    "grade_level": "9",
+    "semester": "2024-2025-1"
+  },
+  {
+    "class_id": "class_3",
+    "name": "Grade 10A Mathematics",
+    "teacher_id": "T001",
+    "subject_id": "sub_1",
+    "schedule": "Monday 10:30 AM - 11:30 AM, Wednesday 10:30 AM - 11:30 AM, Friday 10:30 AM - 11:30 AM",
+    "room": "Room 103",
+    "student_count": 28,
+    "grade_level": "10",
+    "semester": "2024-2025-1"
+  },
+  {
+    "class_id": "class_4",
+    "name": "Grade 10A English Literature",
+    "teacher_id": "T002",
+    "subject_id": "sub_2",
+    "schedule": "Monday 11:45 AM - 12:45 PM, Wednesday 11:45 AM - 12:45 PM, Friday 11:45 AM - 12:45 PM",
+    "room": "Room 104",
+    "student_count": 28,
+    "grade_level": "10",
+    "semester": "2024-2025-1"
+  },
+  {
+    "class_id": "class_5",
+    "name": "Grade 11A Mathematics",
+    "teacher_id": "T001",
+    "subject_id": "sub_1",
+    "schedule": "Tuesday 8:00 AM - 9:00 AM, Thursday 8:00 AM - 9:00 AM",
+    "room": "Room 105",
+    "student_count": 30,
+    "grade_level": "11",
+    "semester": "2024-2025-1"
+  },
+  {
+    "class_id": "class_6",
+    "name": "Grade 11A English Literature",
+    "teacher_id": "T002",
+    "subject_id": "sub_2",
+    "schedule": "Tuesday 9:15 AM - 10:15 AM, Thursday 9:15 AM - 10:15 AM",
+    "room": "Room 106",
+    "student_count": 30,
+    "grade_level": "11",
+    "semester": "2024-2025-1"
+  },
+  {
+    "class_id": "class_7",
+    "name": "Grade 10A Biology",
+    "teacher_id": "T003",
+    "subject_id": "sub_3",
+    "schedule": "Tuesday 10:30 AM - 11:30 AM, Thursday 10:30 AM - 11:30 AM",
+    "room": "Lab 201",
+    "student_count": 26,
+    "grade_level": "10",
+    "semester": "2024-2025-1"
+  },
+  {
+    "class_id": "class_8",
+    "name": "Grade 9A World History",
+    "teacher_id": "T004",
+    "subject_id": "sub_4",
+    "schedule": "Tuesday 11:45 AM - 12:45 PM, Thursday 11:45 AM - 12:45 PM",
+    "room": "Room 107",
+    "student_count": 25,
+    "grade_level": "9",
+    "semester": "2024-2025-1"
+  },
+  {
+    "class_id": "class_9",
+    "name": "Grade 10A Biology",
+    "teacher_id": "T003",
+    "subject_id": "sub_3",
+    "schedule": "Monday 1:00 PM - 2:00 PM, Wednesday 1:00 PM - 2:00 PM",
+    "room": "Lab 202",
+    "student_count": 27,
+    "grade_level": "10",
+    "semester": "2024-2025-1"
+  },
+  {
+    "class_id": "class_10",
+    "name": "Grade 10A World History",
+    "teacher_id": "T004",
+    "subject_id": "sub_4",
+    "schedule": "Monday 2:15 PM - 3:15 PM, Wednesday 2:15 PM - 3:15 PM",
+    "room": "Room 108",
+    "student_count": 28,
+    "grade_level": "10",
+    "semester": "2024-2025-1"
+  },
+  {
+    "class_id": "class_11",
+    "name": "Grade 11A Biology",
+    "teacher_id": "T003",
+    "subject_id": "sub_3",
+    "schedule": "Tuesday 1:00 PM - 2:00 PM, Thursday 1:00 PM - 2:00 PM",
+    "room": "Lab 203",
+    "student_count": 29,
+    "grade_level": "11",
+    "semester": "2024-2025-1"
+  },
+  {
+    "class_id": "class_12",
+    "name": "Grade 11A World History",
+    "teacher_id": "T004",
+    "subject_id": "sub_4",
+    "schedule": "Tuesday 2:15 PM - 3:15 PM, Thursday 2:15 PM - 3:15 PM",
+    "room": "Room 109",
+    "student_count": 30,
+    "grade_level": "11",
+    "semester": "2024-2025-1"
+  },
+  {
+    "class_id": "class_13",
+    "name": "Grade 9A Art & Design",
+    "teacher_id": "T005",
+    "subject_id": "sub_5",
+    "schedule": "Friday 1:00 PM - 3:00 PM",
+    "room": "Art Studio 301",
+    "student_count": 20,
+    "grade_level": "9",
+    "semester": "2024-2025-1"
+  },
+  {
+    "class_id": "class_14",
+    "name": "Grade 11A Physics",
+    "teacher_id": "T006",
+    "subject_id": "sub_6",
+    "schedule": "Monday 10:30 AM - 11:30 AM, Wednesday 10:30 AM - 11:30 AM",
+    "room": "Lab 204",
+    "student_count": 24,
+    "grade_level": "11",
+    "semester": "2024-2025-1"
+  },
+  {
+    "class_id": "class_15",
+    "name": "Grade 10A Art & Design",
+    "teacher_id": "T005",
+    "subject_id": "sub_5",
+    "schedule": "Tuesday 1:00 PM - 3:00 PM",
+    "room": "Art Studio 302",
+    "student_count": 22,
+    "grade_level": "10",
+    "semester": "2024-2025-1"
+  },
+  {
+    "class_id": "class_16",
+    "name": "Grade 12A Physics",
+    "teacher_id": "T006",
+    "subject_id": "sub_6",
+    "schedule": "Tuesday 10:30 AM - 11:30 AM, Thursday 10:30 AM - 11:30 AM",
+    "room": "Lab 205",
+    "student_count": 26,
+    "grade_level": "12",
+    "semester": "2024-2025-1"
+  },
+  {
+    "class_id": "class_17",
+    "name": "Grade 11A Art & Design",
+    "teacher_id": "T005",
+    "subject_id": "sub_5",
+    "schedule": "Wednesday 1:00 PM - 3:00 PM",
+    "room": "Art Studio 303",
+    "student_count": 18,
+    "grade_level": "11",
+    "semester": "2024-2025-1"
+  },
+  {
+    "class_id": "class_18",
+    "name": "Grade 12A Physics",
+    "teacher_id": "T006",
+    "subject_id": "sub_6",
+    "schedule": "Monday 2:15 PM - 3:15 PM, Wednesday 2:15 PM - 3:15 PM",
+    "room": "Lab 206",
+    "student_count": 25,
+    "grade_level": "12",
+    "semester": "2024-2025-1"
+  },
+  {
+    "class_id": "class_19",
+    "name": "Grade 11A Chemistry",
+    "teacher_id": "T007",
+    "subject_id": "sub_7",
+    "schedule": "Tuesday 11:45 AM - 12:45 PM, Thursday 11:45 AM - 12:45 PM",
+    "room": "Lab 207",
+    "student_count": 28,
+    "grade_level": "11",
+    "semester": "2024-2025-1"
+  },
+  {
+    "class_id": "class_20",
+    "name": "Grade 12A Chemistry",
+    "teacher_id": "T007",
+    "subject_id": "sub_7",
+    "schedule": "Monday 11:45 AM - 12:45 PM, Wednesday 11:45 AM - 12:45 PM",
+    "room": "Lab 208",
+    "student_count": 27,
+    "grade_level": "12",
+    "semester": "2024-2025-1"
   }
 ] 
