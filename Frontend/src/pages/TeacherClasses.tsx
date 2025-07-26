@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Users, Calendar, BookOpen } from 'lucide-react';
 import { Loading } from '@/components/ui/loading';
 import { Breadcrumbs } from '@/components/ui/breadcrumb';
+import studentEnrollments from '../data/studentEnrollments.json';
 
 interface Class {
   class_id: string;
@@ -29,7 +30,10 @@ const TeacherClasses = () => {
   const [loading, setLoading] = useState(true);
   const [selectedClass, setSelectedClass] = useState<Class | null>(null);
   const [students, setStudents] = useState<Student[]>([]);
-  const teacherId = JSON.parse(localStorage.getItem('user') || '{}').teacher_id;
+  
+  // For mock data testing, use a default teacher ID if none is set
+  const storedUser = localStorage.getItem('user');
+  const teacherId = storedUser ? JSON.parse(storedUser).teacher_id : 't-1';
 
   useEffect(() => {
     loadClasses();
@@ -55,7 +59,16 @@ const TeacherClasses = () => {
     try {
       const studentsRes: ApiResponse<Student[]> = await getStudents();
       if (studentsRes.status === 'success' && studentsRes.data) {
-        const classStudents = studentsRes.data.filter((stu: Student) => stu.class_id === cls.class_id);
+        // Get students enrolled in this class using studentEnrollments
+        const classEnrollments = studentEnrollments.filter(
+          enrollment => enrollment.class_id === cls.class_id && enrollment.status === 'active'
+        );
+        
+        const enrolledStudentIds = classEnrollments.map(enrollment => enrollment.student_id);
+        const classStudents = studentsRes.data.filter(student => 
+          enrolledStudentIds.includes(student.student_id)
+        );
+        
         setStudents(classStudents);
       }
     } catch (error) {

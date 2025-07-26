@@ -3,9 +3,13 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon index.js",
-    "start": "node index.js",
-    "test": "jest"
+    "dev": "nodemon start.js",
+    "start": "node start.js",
+    "start:direct": "node index.js",
+    "test": "jest",
+    "test:server": "node test-server.js",
+    "setup": "node start.js",
+    "check": "node -e \"require('dotenv').config(); console.log('Environment check:'); console.log('JWT_SECRET:', process.env.JWT_SECRET ? 'Set' : 'Missing'); console.log('PORT:', process.env.PORT || '4000 (default)'); console.log('DB_PATH:', process.env.DB_PATH || 'edulite.db (default)');\""
   },
   "keywords": [],
   "author": "",
@@ -21,7 +25,9 @@
     "express-rate-limit": "^8.0.1",
     "joi": "^17.10.0",
     "jsonwebtoken": "^9.0.0",
-    "node-fetch": "^3.3.2"
+    "node-fetch": "^3.3.2",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
     "jest": "^29.7.0",

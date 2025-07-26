@@ -1,3 +1,18 @@
+// Environment variable validation - MUST BE FIRST
+require('dotenv').config();
+
+const requiredEnvVars = ['JWT_SECRET'];
+const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
+
+if (missingVars.length > 0) {
+  console.error('❌ Missing required environment variables:', missingVars.join(', '));
+  console.error('Please create a .env file with the following variables:');
+  missingVars.forEach(varName => {
+    console.error(`  ${varName}=your-secret-value`);
+  });
+  process.exit(1);
+}
+
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
@@ -6,7 +21,6 @@ const path = require('path');
 const jwt = require('jsonwebtoken');
 const Joi = require('joi');
 const bcrypt = require('bcrypt');
-require('dotenv').config();
 const rateLimit = require('express-rate-limit');
 const fs = require('fs');
 const swaggerUi = require('swagger-ui-express');
@@ -1358,8 +1372,30 @@ const swaggerSpec = swaggerJSDoc(swaggerOptions);
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 if (require.main === module) {
-  app.listen(PORT, () => {
-    console.log(`EduLite Nexus Backend running on http://localhost:${PORT}`);
+  const server = app.listen(PORT, () => {
+    console.log('🚀 EduLite Nexus Backend started successfully!');
+    console.log(`📍 Server running on http://localhost:${PORT}`);
+    console.log(`📚 API Documentation: http://localhost:${PORT}/docs`);
+    console.log(`🔐 JWT Secret: ${JWT_SECRET ? 'Configured' : 'Missing!'}`);
+    console.log(`💾 Database: ${process.env.DB_PATH || 'edulite.db'}`);
+    console.log('✅ Ready to accept requests...\n');
+  });
+
+  // Graceful shutdown
+  process.on('SIGTERM', () => {
+    console.log('\n🛑 Received SIGTERM, shutting down gracefully...');
+    server.close(() => {
+      console.log('✅ Server closed');
+      process.exit(0);
+    });
+  });
+
+  process.on('SIGINT', () => {
+    console.log('\n🛑 Received SIGINT, shutting down gracefully...');
+    server.close(() => {
+      console.log('✅ Server closed');
+      process.exit(0);
+    });
   });
 }
 

@@ -1,8 +1,8 @@
 [
   {
     "class_id": "class_1",
-    "name": "Grade 8A",
-    "teacher_id": "789e0123-e89b-12d3-a456-426614174001",
+    "name": "Grade 8A Mathematics",
+    "teacher_id": "t-1",
     "subject_id": "sub_1",
     "schedule": "Monday 10:00 AM - 11:00 AM",
     "zoom_link": "https://zoom.us/j/123456789",
@@ -11,7 +11,7 @@
   {
     "class_id": "class_2",
     "name": "Grade 8A English",
-    "teacher_id": "789e0123-e89b-12d3-a456-426614174002",
+    "teacher_id": "t-1",
     "subject_id": "sub_2",
     "schedule": "Tuesday 9:00 AM - 10:00 AM",
     "zoom_link": "https://zoom.us/j/987654321",

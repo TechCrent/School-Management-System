@@ -4,9 +4,32 @@
     "title": "Algebra Practice",
     "description": "Complete exercises 1-20 from chapter 5",
     "subject_id": "sub_1",
-    "teacher_id": "789e0123-e89b-12d3-a456-426614174001",
+    "teacher_id": "t-1",
+    "class_id": "class_1",
     "due_date": "2025-08-01",
     "created_at": "2025-07-20",
     "status": "pending"
+  },
+  {
+    "homework_id": "hw-2",
+    "title": "Essay Writing",
+    "description": "Write a 500-word essay on Shakespeare's influence on modern literature",
+    "subject_id": "sub_2",
+    "teacher_id": "t-1",
+    "class_id": "class_2",
+    "due_date": "2025-08-05",
+    "created_at": "2025-07-22",
+    "status": "active"
+  },
+  {
+    "homework_id": "hw-3",
+    "title": "Math Quiz Preparation",
+    "description": "Review chapters 1-4 for upcoming quiz",
+    "subject_id": "sub_1",
+    "teacher_id": "t-1",
+    "class_id": "class_1",
+    "due_date": "2025-07-30",
+    "created_at": "2025-07-25",
+    "status": "completed"
   }
 ] 

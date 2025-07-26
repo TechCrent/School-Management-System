@@ -61,6 +61,7 @@ import {
 import { useCustomToast } from '@/hooks/use-toast';
 import { Loading } from '@/components/ui/loading';
 import { Breadcrumbs } from '@/components/ui/breadcrumb';
+import studentEnrollments from '../data/studentEnrollments.json';
 
 interface Student {
   student_id: string;
@@ -114,7 +115,9 @@ const TeacherStudents = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedClass, setSelectedClass] = useState<string>('all');
   
-  const teacherId = JSON.parse(localStorage.getItem('user') || '{}').teacher_id;
+  // For mock data testing, use a default teacher ID if none is set
+  const storedUser = localStorage.getItem('user');
+  const teacherId = storedUser ? JSON.parse(storedUser).teacher_id : 't-1';
   const { customToast } = useCustomToast();
 
   // Form states
@@ -143,8 +146,22 @@ const TeacherStudents = () => {
       }
 
       if (studentsRes.status === 'success' && studentsRes.data) {
+        // Get teacher's classes
         const teacherClasses = classesRes.data?.filter((cls: Class) => cls.teacher_id === teacherId).map((cls: Class) => cls.class_id) || [];
-        const myStudents = studentsRes.data.filter((stu: Student) => teacherClasses.includes(stu.class_id));
+        
+        // Get students enrolled in teacher's classes using studentEnrollments
+        const teacherEnrollments = studentEnrollments.filter(
+          enrollment => teacherClasses.includes(enrollment.class_id) && enrollment.status === 'active'
+        );
+        
+        const enrolledStudentIds = teacherEnrollments.map(enrollment => enrollment.student_id);
+        const myStudents = studentsRes.data.filter((stu: Student) => 
+          enrolledStudentIds.includes(stu.student_id)
+        ).map(student => ({
+          ...student,
+          class_id: teacherEnrollments.find(enrollment => enrollment.student_id === student.student_id)?.class_id || ''
+        }));
+        
         setStudents(myStudents);
       }
 
