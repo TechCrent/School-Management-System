@@ -1,0 +1,67 @@
+[
+  {
+    "performance_id": "perf_1",
+    "student_id": "S0001",
+    "class_id": "class_1",
+    "subject_id": "sub_1",
+    "semester": "2024-2025-1",
+    "overall_grade": "A-",
+    "gpa": 3.7,
+    "attendance_rate": 95.2,
+    "homework_completion_rate": 88.5,
+    "participation_score": 92.0,
+    "last_updated": "2025-01-15T10:30:00Z"
+  },
+  {
+    "performance_id": "perf_2",
+    "student_id": "S0002",
+    "class_id": "class_1",
+    "subject_id": "sub_1",
+    "semester": "2024-2025-1",
+    "overall_grade": "B+",
+    "gpa": 3.3,
+    "attendance_rate": 87.8,
+    "homework_completion_rate": 92.3,
+    "participation_score": 85.5,
+    "last_updated": "2025-01-15T10:30:00Z"
+  },
+  {
+    "performance_id": "perf_3",
+    "student_id": "S0003",
+    "class_id": "class_1",
+    "subject_id": "sub_1",
+    "semester": "2024-2025-1",
+    "overall_grade": "A",
+    "gpa": 3.9,
+    "attendance_rate": 98.5,
+    "homework_completion_rate": 96.2,
+    "participation_score": 94.8,
+    "last_updated": "2025-01-15T10:30:00Z"
+  },
+  {
+    "performance_id": "perf_4",
+    "student_id": "S0004",
+    "class_id": "class_2",
+    "subject_id": "sub_2",
+    "semester": "2024-2025-1",
+    "overall_grade": "B-",
+    "gpa": 2.8,
+    "attendance_rate": 82.1,
+    "homework_completion_rate": 78.9,
+    "participation_score": 75.2,
+    "last_updated": "2025-01-15T10:30:00Z"
+  },
+  {
+    "performance_id": "perf_5",
+    "student_id": "S0005",
+    "class_id": "class_2",
+    "subject_id": "sub_2",
+    "semester": "2024-2025-1",
+    "overall_grade": "A+",
+    "gpa": 4.0,
+    "attendance_rate": 100.0,
+    "homework_completion_rate": 100.0,
+    "participation_score": 98.5,
+    "last_updated": "2025-01-15T10:30:00Z"
+  }
+] 

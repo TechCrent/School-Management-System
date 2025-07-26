@@ -163,8 +163,8 @@ export const Login = () => {
               <div className="text-xs space-y-1">
                 <div><strong>{t('Admin:')}</strong> admin@schoolapp.com / Admin$1234</div>
                 <div><strong>{t('Teacher:')}</strong> jane.smith@schoolapp.com / Teacher$123</div>
-                <div><strong>{t('Student:')}</strong> student1@example.com / Student$1234</div>
-                <div><strong>{t('Parent:')}</strong> parent1@example.com / Parent$1234</div>
+                <div><strong>{t('Student:')}</strong> michelle.hernandezS0001@schoolmail.com / Student$1234</div>
+                <div><strong>{t('Parent:')}</strong> linda.hernandez@parentmail.com / Parent$1234</div>
               </div>
             </div>
           </CardContent>

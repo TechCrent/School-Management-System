@@ -1,0 +1,8 @@
+[2025-07-26T03:41:49.065Z] login_failed: {"username":"teacher"}
+[2025-07-26T03:41:55.489Z] login_failed: {"username":"teacher"}
+[2025-07-26T03:42:36.171Z] login_failed: {"username":"teacher"}
+[2025-07-26T03:42:42.055Z] login_failed: {"username":"admin"}
+[2025-07-26T03:45:39.600Z] login_failed: {"username":"admin"}
+[2025-07-26T03:46:31.851Z] login_success: {"username":"admin"}
+[2025-07-26T03:53:39.635Z] login_success: {"username":"admin"}
+[2025-07-26T03:55:24.954Z] login_success: {"username":"admin"}

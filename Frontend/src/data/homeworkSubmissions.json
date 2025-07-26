@@ -1,0 +1,53 @@
+[
+  {
+    "submission_id": "sub_1",
+    "homework_id": "hw-1",
+    "student_id": "S0001",
+    "submitted_at": "2025-01-14T10:30:00Z",
+    "content": "I completed exercises 1-20 from chapter 5. Here are my solutions...",
+    "attachments": [
+      {
+        "name": "algebra_solutions.pdf",
+        "url": "/submissions/algebra_solutions.pdf",
+        "size": "1.2MB"
+      }
+    ],
+    "status": "submitted",
+    "grade": null,
+    "feedback": null,
+    "graded_at": null,
+    "graded_by": null
+  },
+  {
+    "submission_id": "sub_2",
+    "homework_id": "hw-1",
+    "student_id": "S0002",
+    "submitted_at": "2025-01-15T14:20:00Z",
+    "content": "Completed the algebra exercises. Please find my work attached.",
+    "attachments": [
+      {
+        "name": "homework_1.pdf",
+        "url": "/submissions/homework_1.pdf",
+        "size": "2.1MB"
+      }
+    ],
+    "status": "graded",
+    "grade": "A-",
+    "feedback": "Excellent work! Your solutions show good understanding of linear equations. Minor error in problem 15.",
+    "graded_at": "2025-01-16T09:15:00Z",
+    "graded_by": "789e0123-e89b-12d3-a456-426614174001"
+  },
+  {
+    "submission_id": "sub_3",
+    "homework_id": "hw-1",
+    "student_id": "S0003",
+    "submitted_at": "2025-01-13T16:45:00Z",
+    "content": "Here are my solutions for the algebra problems.",
+    "attachments": [],
+    "status": "submitted",
+    "grade": null,
+    "feedback": null,
+    "graded_at": null,
+    "graded_by": null
+  }
+] 

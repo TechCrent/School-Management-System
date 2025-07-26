@@ -215,62 +215,132 @@ const Teachers = () => {
       </Card>
       {/* Modal for Add/Edit Teacher */}
       {modalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg min-w-[300px] max-w-[90vw] relative">
-            <button onClick={() => setModalOpen(false)} className="absolute top-2 right-2 text-gray-400 hover:text-black">&times;</button>
-            <h3 className="text-xl font-bold mb-2">{modalMode === 'create' ? 'Add Teacher' : 'Edit Teacher'}</h3>
-            <form onSubmit={e => { e.preventDefault(); handleSave(selectedTeacher || {}); }} className="flex flex-col gap-3">
-              <Input
-                type="text"
-                placeholder="Full Name"
-                value={modalForm.full_name || ''}
-                onChange={e => setModalForm(prev => ({ ...prev, full_name: e.target.value }))}
-                className={`mb-2 ${formErrors.full_name ? 'border-destructive' : ''}`}
-                required
-              />
-              {formErrors.full_name && <p className="text-sm text-destructive mt-1">{formErrors.full_name}</p>}
-              <Input
-                type="email"
-                placeholder="Email"
-                value={modalForm.email || ''}
-                onChange={e => setModalForm(prev => ({ ...prev, email: e.target.value }))}
-                className={`mb-2 ${formErrors.email ? 'border-destructive' : ''}`}
-                required
-              />
-              {formErrors.email && <p className="text-sm text-destructive mt-1">{formErrors.email}</p>}
-              <Input
-                type="text"
-                placeholder="Subject Name"
-                value={modalForm.subject_name || ''}
-                onChange={e => setModalForm(prev => ({ ...prev, subject_name: e.target.value }))}
-                className={`mb-2 ${formErrors.subject_name ? 'border-destructive' : ''}`}
-                required
-              />
-              {formErrors.subject_name && <p className="text-sm text-destructive mt-1">{formErrors.subject_name}</p>}
-              <Input
-                type="tel"
-                placeholder="Phone"
-                value={modalForm.phone || ''}
-                onChange={e => setModalForm(prev => ({ ...prev, phone: e.target.value }))}
-                className="mb-2"
-              />
-              <div className="flex gap-2 mt-2">
-                <Button type="submit" className="bg-primary text-white px-4 py-2 rounded">{modalMode === 'create' ? 'Add' : 'Save'}</Button>
-                <Button type="button" onClick={() => { setModalOpen(false); setModalForm({}); }} className="bg-muted px-4 py-2 rounded">Cancel</Button>
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-card border rounded-lg shadow-lg min-w-[400px] max-w-[90vw] max-h-[90vh] overflow-y-auto relative text-card-foreground">
+            <div className="p-6">
+              <div className="flex items-start justify-between mb-4">
+                <h3 className="text-xl font-semibold text-foreground">{modalMode === 'create' ? 'Add Teacher' : 'Edit Teacher'}</h3>
+                <button 
+                  onClick={() => setModalOpen(false)} 
+                  className="rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground"
+                >
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                  <span className="sr-only">Close</span>
+                </button>
               </div>
-            </form>
+              
+              <form onSubmit={e => { e.preventDefault(); handleSave(selectedTeacher || {}); }} className="space-y-4">
+                <div>
+                  <label className="text-sm font-medium text-foreground">Full Name</label>
+                  <Input
+                    type="text"
+                    placeholder="Enter full name"
+                    value={modalForm.full_name || ''}
+                    onChange={e => setModalForm(prev => ({ ...prev, full_name: e.target.value }))}
+                    className={formErrors.full_name ? 'border-destructive focus-visible:ring-destructive' : ''}
+                    required
+                  />
+                  {formErrors.full_name && <p className="text-sm text-destructive mt-1">{formErrors.full_name}</p>}
+                </div>
+                
+                <div>
+                  <label className="text-sm font-medium text-foreground">Email</label>
+                  <Input
+                    type="email"
+                    placeholder="Enter email address"
+                    value={modalForm.email || ''}
+                    onChange={e => setModalForm(prev => ({ ...prev, email: e.target.value }))}
+                    className={formErrors.email ? 'border-destructive focus-visible:ring-destructive' : ''}
+                    required
+                  />
+                  {formErrors.email && <p className="text-sm text-destructive mt-1">{formErrors.email}</p>}
+                </div>
+                
+                <div>
+                  <label className="text-sm font-medium text-foreground">Subject</label>
+                  <Input
+                    type="text"
+                    placeholder="Enter subject name"
+                    value={modalForm.subject_name || ''}
+                    onChange={e => setModalForm(prev => ({ ...prev, subject_name: e.target.value }))}
+                    className={formErrors.subject_name ? 'border-destructive focus-visible:ring-destructive' : ''}
+                    required
+                  />
+                  {formErrors.subject_name && <p className="text-sm text-destructive mt-1">{formErrors.subject_name}</p>}
+                </div>
+                
+                <div>
+                  <label className="text-sm font-medium text-foreground">Phone (Optional)</label>
+                  <Input
+                    type="tel"
+                    placeholder="Enter phone number"
+                    value={modalForm.phone || ''}
+                    onChange={e => setModalForm(prev => ({ ...prev, phone: e.target.value }))}
+                  />
+                </div>
+                
+                <div className="flex gap-2 pt-4">
+                  <Button 
+                    type="submit" 
+                    className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+                  >
+                    {modalMode === 'create' ? 'Add Teacher' : 'Save Changes'}
+                  </Button>
+                  <Button 
+                    type="button" 
+                    onClick={() => { setModalOpen(false); setModalForm({}); }} 
+                    variant="outline"
+                    className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2"
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       )}
+      
       {/* Delete Confirmation Dialog */}
       {deleteId && (
-        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg min-w-[300px] max-w-[90vw] relative">
-            <h3 className="text-xl font-bold mb-2">Delete Teacher</h3>
-            <p>Are you sure you want to delete this teacher? This action cannot be undone.</p>
-            <div className="flex gap-2 mt-4">
-              <Button onClick={confirmDelete} className="bg-destructive text-white px-4 py-2 rounded">Delete</Button>
-              <Button onClick={() => setDeleteId(null)} className="bg-muted px-4 py-2 rounded">Cancel</Button>
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-card border rounded-lg shadow-lg min-w-[400px] max-w-[90vw] relative text-card-foreground">
+            <div className="p-6">
+              <div className="flex items-start justify-between mb-4">
+                <h3 className="text-xl font-semibold text-foreground">Delete Teacher</h3>
+                <button 
+                  onClick={() => setDeleteId(null)} 
+                  className="rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground"
+                >
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                  <span className="sr-only">Close</span>
+                </button>
+              </div>
+              
+              <div className="space-y-4">
+                <p className="text-muted-foreground">Are you sure you want to delete this teacher? This action cannot be undone.</p>
+                
+                <div className="flex gap-2 pt-4">
+                  <Button 
+                    onClick={confirmDelete} 
+                    variant="destructive"
+                    className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-destructive text-destructive-foreground hover:bg-destructive/90 h-10 px-4 py-2"
+                  >
+                    Delete Teacher
+                  </Button>
+                  <Button 
+                    onClick={() => setDeleteId(null)} 
+                    variant="outline"
+                    className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2"
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </div>
             </div>
           </div>
         </div>

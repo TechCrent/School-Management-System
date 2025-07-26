@@ -1,0 +1,46 @@
+[
+  {
+    "material_id": "mat_1",
+    "class_id": "class_1",
+    "title": "Algebra Chapter 5 Notes",
+    "description": "Comprehensive notes covering linear equations and inequalities",
+    "file_type": "pdf",
+    "file_url": "/materials/algebra_ch5_notes.pdf",
+    "uploaded_at": "2025-01-10",
+    "uploaded_by": "789e0123-e89b-12d3-a456-426614174001",
+    "file_size": "2.5MB"
+  },
+  {
+    "material_id": "mat_2",
+    "class_id": "class_1",
+    "title": "Practice Problems Set 1",
+    "description": "Homework problems for practice",
+    "file_type": "docx",
+    "file_url": "/materials/practice_problems_1.docx",
+    "uploaded_at": "2025-01-12",
+    "uploaded_by": "789e0123-e89b-12d3-a456-426614174001",
+    "file_size": "1.2MB"
+  },
+  {
+    "material_id": "mat_3",
+    "class_id": "class_2",
+    "title": "English Literature Reading List",
+    "description": "Required reading materials for the semester",
+    "file_type": "pdf",
+    "file_url": "/materials/reading_list.pdf",
+    "uploaded_at": "2025-01-08",
+    "uploaded_by": "789e0123-e89b-12d3-a456-426614174002",
+    "file_size": "800KB"
+  },
+  {
+    "material_id": "mat_4",
+    "class_id": "class_2",
+    "title": "Essay Writing Guidelines",
+    "description": "Format and style guidelines for essays",
+    "file_type": "pdf",
+    "file_url": "/materials/essay_guidelines.pdf",
+    "uploaded_at": "2025-01-09",
+    "uploaded_by": "789e0123-e89b-12d3-a456-426614174002",
+    "file_size": "1.5MB"
+  }
+] 

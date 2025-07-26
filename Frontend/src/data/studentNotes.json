@@ -1,0 +1,57 @@
+[
+  {
+    "note_id": "note_1",
+    "student_id": "S0001",
+    "teacher_id": "789e0123-e89b-12d3-a456-426614174001",
+    "note_type": "observation",
+    "title": "Excellent Problem-Solving Skills",
+    "content": "Sarah demonstrated exceptional problem-solving abilities during today's algebra lesson. She was able to work through complex equations independently and helped other students understand the concepts.",
+    "created_at": "2025-01-14T14:30:00Z",
+    "is_private": false,
+    "tags": ["positive", "problem-solving", "leadership"]
+  },
+  {
+    "note_id": "note_2",
+    "student_id": "S0001",
+    "teacher_id": "789e0123-e89b-12d3-a456-426614174001",
+    "note_type": "concern",
+    "title": "Late Homework Submission",
+    "content": "Sarah has been submitting homework assignments late for the past two weeks. Need to follow up with her to understand if there are any issues affecting her ability to complete assignments on time.",
+    "created_at": "2025-01-12T09:15:00Z",
+    "is_private": true,
+    "tags": ["homework", "attendance", "follow-up"]
+  },
+  {
+    "note_id": "note_3",
+    "student_id": "S0002",
+    "teacher_id": "789e0123-e89b-12d3-a456-426614174001",
+    "note_type": "improvement",
+    "title": "Significant Progress in Participation",
+    "content": "Michael has shown remarkable improvement in class participation over the last month. He's now actively engaging in discussions and asking thoughtful questions.",
+    "created_at": "2025-01-13T11:45:00Z",
+    "is_private": false,
+    "tags": ["improvement", "participation", "positive"]
+  },
+  {
+    "note_id": "note_4",
+    "student_id": "S0003",
+    "teacher_id": "789e0123-e89b-12d3-a456-426614174002",
+    "note_type": "achievement",
+    "title": "Perfect Score on Essay",
+    "content": "Emily received a perfect score on her latest essay assignment. Her writing demonstrates excellent analytical skills and creative thinking.",
+    "created_at": "2025-01-15T16:20:00Z",
+    "is_private": false,
+    "tags": ["achievement", "writing", "excellence"]
+  },
+  {
+    "note_id": "note_5",
+    "student_id": "S0004",
+    "teacher_id": "789e0123-e89b-12d3-a456-426614174002",
+    "note_type": "behavior",
+    "title": "Classroom Distraction",
+    "content": "David was disruptive during today's class discussion. He was talking to classmates while others were presenting their work. Need to address this behavior.",
+    "created_at": "2025-01-14T13:10:00Z",
+    "is_private": true,
+    "tags": ["behavior", "disruption", "classroom-management"]
+  }
+] 

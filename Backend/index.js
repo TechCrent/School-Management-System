@@ -103,6 +103,99 @@ db.exec(`
     FOREIGN KEY (subject_id) REFERENCES subjects(subject_id),
     FOREIGN KEY (teacher_id) REFERENCES teachers(teacher_id)
   );
+  CREATE TABLE IF NOT EXISTS homework (
+    homework_id TEXT PRIMARY KEY,
+    title TEXT NOT NULL,
+    description TEXT,
+    due_date TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    status TEXT DEFAULT 'pending',
+    teacher_id TEXT NOT NULL,
+    class_id TEXT,
+    subject_id TEXT,
+    FOREIGN KEY (teacher_id) REFERENCES teachers(teacher_id),
+    FOREIGN KEY (class_id) REFERENCES classes(class_id),
+    FOREIGN KEY (subject_id) REFERENCES subjects(subject_id)
+  );
+  CREATE TABLE IF NOT EXISTS homework_submissions (
+    submission_id TEXT PRIMARY KEY,
+    homework_id TEXT NOT NULL,
+    student_id TEXT NOT NULL,
+    submitted_at TEXT NOT NULL,
+    content TEXT,
+    status TEXT DEFAULT 'submitted',
+    grade TEXT,
+    feedback TEXT,
+    graded_at TEXT,
+    graded_by TEXT,
+    FOREIGN KEY (homework_id) REFERENCES homework(homework_id),
+    FOREIGN KEY (student_id) REFERENCES students(student_id),
+    FOREIGN KEY (graded_by) REFERENCES teachers(teacher_id)
+  );
+  CREATE TABLE IF NOT EXISTS attendance (
+    attendance_id TEXT PRIMARY KEY,
+    class_id TEXT NOT NULL,
+    student_id TEXT NOT NULL,
+    date TEXT NOT NULL,
+    status TEXT NOT NULL,
+    notes TEXT,
+    FOREIGN KEY (class_id) REFERENCES classes(class_id),
+    FOREIGN KEY (student_id) REFERENCES students(student_id)
+  );
+  CREATE TABLE IF NOT EXISTS class_materials (
+    material_id TEXT PRIMARY KEY,
+    class_id TEXT NOT NULL,
+    title TEXT NOT NULL,
+    description TEXT,
+    file_type TEXT,
+    file_url TEXT,
+    uploaded_at TEXT NOT NULL,
+    uploaded_by TEXT NOT NULL,
+    file_size TEXT,
+    FOREIGN KEY (class_id) REFERENCES classes(class_id),
+    FOREIGN KEY (uploaded_by) REFERENCES teachers(teacher_id)
+  );
+  CREATE TABLE IF NOT EXISTS class_announcements (
+    announcement_id TEXT PRIMARY KEY,
+    class_id TEXT NOT NULL,
+    title TEXT NOT NULL,
+    content TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    created_by TEXT NOT NULL,
+    priority TEXT DEFAULT 'medium',
+    is_active INTEGER DEFAULT 1,
+    FOREIGN KEY (class_id) REFERENCES classes(class_id),
+    FOREIGN KEY (created_by) REFERENCES teachers(teacher_id)
+  );
+  CREATE TABLE IF NOT EXISTS student_notes (
+    note_id TEXT PRIMARY KEY,
+    student_id TEXT NOT NULL,
+    teacher_id TEXT NOT NULL,
+    note_type TEXT NOT NULL,
+    title TEXT NOT NULL,
+    content TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    is_private INTEGER DEFAULT 0,
+    tags TEXT,
+    FOREIGN KEY (student_id) REFERENCES students(student_id),
+    FOREIGN KEY (teacher_id) REFERENCES teachers(teacher_id)
+  );
+  CREATE TABLE IF NOT EXISTS student_performance (
+    performance_id TEXT PRIMARY KEY,
+    student_id TEXT NOT NULL,
+    class_id TEXT NOT NULL,
+    subject_id TEXT NOT NULL,
+    semester TEXT NOT NULL,
+    overall_grade TEXT,
+    gpa REAL,
+    attendance_rate REAL,
+    homework_completion_rate REAL,
+    participation_score REAL,
+    last_updated TEXT NOT NULL,
+    FOREIGN KEY (student_id) REFERENCES students(student_id),
+    FOREIGN KEY (class_id) REFERENCES classes(class_id),
+    FOREIGN KEY (subject_id) REFERENCES subjects(subject_id)
+  );
 `);
 
 // Insert demo users if not present
@@ -110,17 +203,111 @@ const demoUsers = [
   { user_id: '1', username: 'admin', password: 'admin123', role: 'admin' },
   { user_id: '2', username: 'teacher', password: 'teacher123', role: 'teacher' }
 ];
-demoUsers.forEach(async user => {
+
+// Use synchronous password hashing for demo users
+demoUsers.forEach(user => {
   const exists = db.prepare('SELECT * FROM users WHERE username = ?').get(user.username);
   if (!exists) {
-    // Hash password if not already hashed
-    let hashedPassword = user.password;
-    if (!user.password.startsWith('$2b$')) {
-      const salt = await bcrypt.genSalt(10);
-      hashedPassword = await bcrypt.hash(user.password, salt);
-    }
+    // For demo purposes, use a simple hash (in production, use proper async hashing)
+    const hashedPassword = bcrypt.hashSync(user.password, 10);
     db.prepare('INSERT INTO users (user_id, username, password, role) VALUES (?, ?, ?, ?)').run(
       user.user_id, user.username, hashedPassword, user.role
+    );
+  }
+});
+
+// Insert sample data for testing
+const sampleTeachers = [
+  { teacher_id: 'T001', full_name: 'John Smith', email: 'john.smith@school.edu', subject: 'Mathematics' },
+  { teacher_id: 'T002', full_name: 'Sarah Johnson', email: 'sarah.johnson@school.edu', subject: 'English' },
+  { teacher_id: 'T003', full_name: 'Michael Brown', email: 'michael.brown@school.edu', subject: 'Science' }
+];
+
+const sampleStudents = [
+  { student_id: 'S001', full_name: 'Alice Johnson', email: 'alice.johnson@student.edu', grade: '10th Grade' },
+  { student_id: 'S002', full_name: 'Bob Wilson', email: 'bob.wilson@student.edu', grade: '10th Grade' },
+  { student_id: 'S003', full_name: 'Carol Davis', email: 'carol.davis@student.edu', grade: '11th Grade' }
+];
+
+const sampleClasses = [
+  { class_id: 'C001', name: 'Advanced Mathematics', teacher_id: 'T001' },
+  { class_id: 'C002', name: 'English Literature', teacher_id: 'T002' },
+  { class_id: 'C003', name: 'Physics', teacher_id: 'T003' }
+];
+
+const sampleSubjects = [
+  { subject_id: 'SUB001', name: 'Mathematics', description: 'Advanced mathematical concepts' },
+  { subject_id: 'SUB002', name: 'English', description: 'Literature and composition' },
+  { subject_id: 'SUB003', name: 'Physics', description: 'Physical sciences' }
+];
+
+const sampleHomework = [
+  { 
+    homework_id: 'HW001', 
+    title: 'Algebra Practice', 
+    description: 'Complete problems 1-20 in Chapter 3', 
+    due_date: '2024-01-15', 
+    created_at: '2024-01-10', 
+    status: 'active', 
+    teacher_id: 'T001', 
+    class_id: 'C001', 
+    subject_id: 'SUB001' 
+  },
+  { 
+    homework_id: 'HW002', 
+    title: 'Essay Writing', 
+    description: 'Write a 500-word essay on Shakespeare', 
+    due_date: '2024-01-20', 
+    created_at: '2024-01-12', 
+    status: 'active', 
+    teacher_id: 'T002', 
+    class_id: 'C002', 
+    subject_id: 'SUB002' 
+  }
+];
+
+// Insert sample data if not exists
+sampleTeachers.forEach(teacher => {
+  const exists = db.prepare('SELECT * FROM teachers WHERE teacher_id = ?').get(teacher.teacher_id);
+  if (!exists) {
+    db.prepare('INSERT INTO teachers (teacher_id, full_name, email, subject) VALUES (?, ?, ?, ?)').run(
+      teacher.teacher_id, teacher.full_name, teacher.email, teacher.subject
+    );
+  }
+});
+
+sampleStudents.forEach(student => {
+  const exists = db.prepare('SELECT * FROM students WHERE student_id = ?').get(student.student_id);
+  if (!exists) {
+    db.prepare('INSERT INTO students (student_id, full_name, email, grade) VALUES (?, ?, ?, ?)').run(
+      student.student_id, student.full_name, student.email, student.grade
+    );
+  }
+});
+
+sampleClasses.forEach(cls => {
+  const exists = db.prepare('SELECT * FROM classes WHERE class_id = ?').get(cls.class_id);
+  if (!exists) {
+    db.prepare('INSERT INTO classes (class_id, name, teacher_id) VALUES (?, ?, ?)').run(
+      cls.class_id, cls.name, cls.teacher_id
+    );
+  }
+});
+
+sampleSubjects.forEach(subject => {
+  const exists = db.prepare('SELECT * FROM subjects WHERE subject_id = ?').get(subject.subject_id);
+  if (!exists) {
+    db.prepare('INSERT INTO subjects (subject_id, name, description) VALUES (?, ?, ?)').run(
+      subject.subject_id, subject.name, subject.description
+    );
+  }
+});
+
+sampleHomework.forEach(hw => {
+  const exists = db.prepare('SELECT * FROM homework WHERE homework_id = ?').get(hw.homework_id);
+  if (!exists) {
+    db.prepare('INSERT INTO homework (homework_id, title, description, due_date, created_at, status, teacher_id, class_id, subject_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)').run(
+      hw.homework_id, hw.title, hw.description, hw.due_date, hw.created_at, hw.status, hw.teacher_id, hw.class_id, hw.subject_id
     );
   }
 });
@@ -207,6 +394,89 @@ const classSubjectSchema = Joi.object({
   teacher_id: Joi.string().optional().allow(null, '')
 });
 
+const homeworkSchema = Joi.object({
+  homework_id: Joi.string(),
+  title: Joi.string().min(1).required(),
+  description: Joi.string().optional().allow(''),
+  due_date: Joi.string().required(),
+  created_at: Joi.string().optional(),
+  status: Joi.string().valid('pending', 'active', 'closed').default('pending'),
+  teacher_id: Joi.string().required(),
+  class_id: Joi.string().optional().allow(null, ''),
+  subject_id: Joi.string().optional().allow(null, '')
+});
+
+const homeworkSubmissionSchema = Joi.object({
+  submission_id: Joi.string(),
+  homework_id: Joi.string().required(),
+  student_id: Joi.string().required(),
+  submitted_at: Joi.string().optional(),
+  content: Joi.string().optional().allow(''),
+  status: Joi.string().valid('submitted', 'graded', 'late').default('submitted'),
+  grade: Joi.string().optional().allow(null, ''),
+  feedback: Joi.string().optional().allow(null, ''),
+  graded_at: Joi.string().optional().allow(null, ''),
+  graded_by: Joi.string().optional().allow(null, '')
+});
+
+const attendanceSchema = Joi.object({
+  attendance_id: Joi.string(),
+  class_id: Joi.string().required(),
+  student_id: Joi.string().required(),
+  date: Joi.string().required(),
+  status: Joi.string().valid('present', 'absent', 'late', 'excused').required(),
+  notes: Joi.string().optional().allow('')
+});
+
+const classMaterialSchema = Joi.object({
+  material_id: Joi.string(),
+  class_id: Joi.string().required(),
+  title: Joi.string().min(1).required(),
+  description: Joi.string().optional().allow(''),
+  file_type: Joi.string().optional().allow(''),
+  file_url: Joi.string().optional().allow(''),
+  uploaded_at: Joi.string().optional(),
+  uploaded_by: Joi.string().required(),
+  file_size: Joi.string().optional().allow('')
+});
+
+const classAnnouncementSchema = Joi.object({
+  announcement_id: Joi.string(),
+  class_id: Joi.string().required(),
+  title: Joi.string().min(1).required(),
+  content: Joi.string().min(1).required(),
+  created_at: Joi.string().optional(),
+  created_by: Joi.string().required(),
+  priority: Joi.string().valid('low', 'medium', 'high').default('medium'),
+  is_active: Joi.boolean().default(true)
+});
+
+const studentNoteSchema = Joi.object({
+  note_id: Joi.string(),
+  student_id: Joi.string().required(),
+  teacher_id: Joi.string().required(),
+  note_type: Joi.string().valid('observation', 'concern', 'improvement', 'achievement', 'behavior').required(),
+  title: Joi.string().min(1).required(),
+  content: Joi.string().min(1).required(),
+  created_at: Joi.string().optional(),
+  is_private: Joi.boolean().default(false),
+  tags: Joi.string().optional().allow('')
+});
+
+const studentPerformanceSchema = Joi.object({
+  performance_id: Joi.string(),
+  student_id: Joi.string().required(),
+  class_id: Joi.string().required(),
+  subject_id: Joi.string().required(),
+  semester: Joi.string().required(),
+  overall_grade: Joi.string().optional().allow(''),
+  gpa: Joi.number().min(0).max(4).optional(),
+  attendance_rate: Joi.number().min(0).max(100).optional(),
+  homework_completion_rate: Joi.number().min(0).max(100).optional(),
+  participation_score: Joi.number().min(0).max(100).optional(),
+  last_updated: Joi.string().optional()
+});
+
 // Valid roles
 const VALID_ROLES = ['admin', 'teacher', 'student', 'parent'];
 
@@ -217,6 +487,11 @@ const userSchema = Joi.object({
   password: Joi.string().min(6), // required on create, optional on update
   role: Joi.string().valid(...VALID_ROLES).required(),
   active: Joi.boolean().optional()
+});
+
+// Health check endpoint (unprotected)
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok' });
 });
 
 // Protect all routes below this middleware
@@ -237,7 +512,7 @@ app.get('/students', requireRole(['admin', 'teacher']), (req, res) => {
   const offset = (parseInt(page) - 1) * parseInt(pageSize);
   const searchQuery = `%${search}%`;
   try {
-    const students = db.prepare(`SELECT * FROM students WHERE (full_name LIKE ? OR email LIKE ?) AND (active IS NULL OR active = 1) LIMIT ? OFFSET ?`).all(searchQuery, searchQuery, pageSize, offset);
+    const students = db.prepare(`SELECT * FROM students WHERE (full_name LIKE ? OR email LIKE ?) LIMIT ? OFFSET ?`).all(searchQuery, searchQuery, pageSize, offset);
     res.json(apiSuccess(students));
   } catch (err) {
     res.status(500).json(apiError('Failed to fetch students'));
@@ -287,15 +562,15 @@ app.put('/students/:id', requireRole(['admin']), (req, res) => {
   }
 });
 
-// Soft delete: mark as inactive
+// Hard delete: remove from database
 app.delete('/students/:id', requireRole(['admin']), (req, res) => {
   const id = req.params.id;
   const student = db.prepare('SELECT * FROM students WHERE student_id = ?').get(id);
   if (!student) return res.status(404).json({ error: 'Student not found' });
   try {
-    db.prepare('UPDATE students SET active = 0 WHERE student_id = ?').run(id);
+    db.prepare('DELETE FROM students WHERE student_id = ?').run(id);
     logAudit('student_delete', { student_id: id });
-    res.json(apiSuccess({ ...student, active: 0 }));
+    res.json(apiSuccess({ message: 'Student deleted successfully' }));
   } catch (err) {
     res.status(400).json(apiError('Failed to delete student', err.message));
   }
@@ -307,7 +582,7 @@ app.get('/teachers', requireRole(['admin', 'teacher']), (req, res) => {
   const offset = (parseInt(page) - 1) * parseInt(pageSize);
   const searchQuery = `%${search}%`;
   try {
-    const teachers = db.prepare(`SELECT * FROM teachers WHERE (full_name LIKE ? OR email LIKE ?) AND (active IS NULL OR active = 1) LIMIT ? OFFSET ?`).all(searchQuery, searchQuery, pageSize, offset);
+    const teachers = db.prepare(`SELECT * FROM teachers WHERE (full_name LIKE ? OR email LIKE ?) LIMIT ? OFFSET ?`).all(searchQuery, searchQuery, pageSize, offset);
     res.json(apiSuccess(teachers));
   } catch (err) {
     res.status(500).json(apiError('Failed to fetch teachers'));
@@ -357,15 +632,15 @@ app.put('/teachers/:id', requireRole(['admin']), (req, res) => {
   }
 });
 
-// Soft delete: mark as inactive
+// Hard delete: remove from database
 app.delete('/teachers/:id', requireRole(['admin']), (req, res) => {
   const id = req.params.id;
   const teacher = db.prepare('SELECT * FROM teachers WHERE teacher_id = ?').get(id);
   if (!teacher) return res.status(404).json({ error: 'Teacher not found' });
   try {
-    db.prepare('UPDATE teachers SET active = 0 WHERE teacher_id = ?').run(id);
+    db.prepare('DELETE FROM teachers WHERE teacher_id = ?').run(id);
     logAudit('teacher_delete', { teacher_id: id });
-    res.json(apiSuccess({ ...teacher, active: 0 }));
+    res.json(apiSuccess({ message: 'Teacher deleted successfully' }));
   } catch (err) {
     res.status(400).json(apiError('Failed to delete teacher', err.message));
   }
@@ -494,6 +769,398 @@ app.delete('/subjects/:id', requireRole(['admin']), (req, res) => {
     res.json(apiSuccess(subject));
   } catch (err) {
     res.status(400).json(apiError('Failed to delete subject', err.message));
+  }
+});
+
+// Homework CRUD
+app.get('/homework', requireRole(['admin', 'teacher']), (req, res) => {
+  const { page = 1, pageSize = 20, search = '', teacher_id = '' } = req.query;
+  const offset = (parseInt(page) - 1) * parseInt(pageSize);
+  const searchQuery = `%${search}%`;
+  try {
+    let query = 'SELECT * FROM homework WHERE (title LIKE ? OR description LIKE ?)';
+    let params = [searchQuery, searchQuery];
+    
+    // Filter by teacher if specified
+    if (teacher_id) {
+      query += ' AND teacher_id = ?';
+      params.push(teacher_id);
+    }
+    
+    query += ' LIMIT ? OFFSET ?';
+    params.push(pageSize, offset);
+    
+    const homework = db.prepare(query).all(...params);
+    res.json(apiSuccess(homework));
+  } catch (err) {
+    res.status(500).json(apiError('Failed to fetch homework'));
+  }
+});
+
+app.post('/homework', requireRole(['admin', 'teacher']), (req, res) => {
+  const { error } = homeworkSchema.validate(req.body);
+  if (error) return res.status(400).json({ error: error.details[0].message });
+  const homework = { 
+    ...req.body, 
+    homework_id: req.body.homework_id || Date.now().toString(),
+    created_at: req.body.created_at || new Date().toISOString()
+  };
+  try {
+    db.prepare(`INSERT INTO homework (homework_id, title, description, due_date, created_at, status, teacher_id, class_id, subject_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`).run(
+      homework.homework_id,
+      homework.title,
+      homework.description || '',
+      homework.due_date,
+      homework.created_at,
+      homework.status || 'pending',
+      homework.teacher_id,
+      homework.class_id || null,
+      homework.subject_id || null
+    );
+    logAudit('homework_create', homework);
+    res.status(201).json(apiSuccess(homework));
+  } catch (err) {
+    res.status(400).json(apiError('Failed to add homework', err.message));
+  }
+});
+
+app.put('/homework/:id', requireRole(['admin', 'teacher']), (req, res) => {
+  const { error } = homeworkSchema.validate(req.body);
+  if (error) return res.status(400).json({ error: error.details[0].message });
+  const id = req.params.id;
+  const homework = db.prepare('SELECT * FROM homework WHERE homework_id = ?').get(id);
+  if (!homework) return res.status(404).json({ error: 'Homework not found' });
+  const updated = { ...homework, ...req.body };
+  try {
+    db.prepare(`UPDATE homework SET title = ?, description = ?, due_date = ?, status = ?, class_id = ?, subject_id = ? WHERE homework_id = ?`).run(
+      updated.title,
+      updated.description || '',
+      updated.due_date,
+      updated.status || 'pending',
+      updated.class_id || null,
+      updated.subject_id || null,
+      id
+    );
+    logAudit('homework_update', updated);
+    res.json(apiSuccess(updated));
+  } catch (err) {
+    res.status(400).json(apiError('Failed to update homework', err.message));
+  }
+});
+
+app.delete('/homework/:id', requireRole(['admin', 'teacher']), (req, res) => {
+  const id = req.params.id;
+  const homework = db.prepare('SELECT * FROM homework WHERE homework_id = ?').get(id);
+  if (!homework) return res.status(404).json({ error: 'Homework not found' });
+  try {
+    db.prepare('DELETE FROM homework WHERE homework_id = ?').run(id);
+    logAudit('homework_delete', { homework_id: id });
+    res.json(apiSuccess(homework));
+  } catch (err) {
+    res.status(400).json(apiError('Failed to delete homework', err.message));
+  }
+});
+
+// Homework Submissions
+app.get('/homework/:id/submissions', requireRole(['admin', 'teacher']), (req, res) => {
+  const homeworkId = req.params.id;
+  try {
+    const submissions = db.prepare('SELECT * FROM homework_submissions WHERE homework_id = ?').all(homeworkId);
+    res.json(apiSuccess(submissions));
+  } catch (err) {
+    res.status(500).json(apiError('Failed to fetch homework submissions'));
+  }
+});
+
+app.post('/homework/:id/submissions', requireRole(['student']), (req, res) => {
+  const { error } = homeworkSubmissionSchema.validate(req.body);
+  if (error) return res.status(400).json({ error: error.details[0].message });
+  const submission = { 
+    ...req.body, 
+    submission_id: req.body.submission_id || Date.now().toString(),
+    submitted_at: req.body.submitted_at || new Date().toISOString(),
+    homework_id: req.params.id
+  };
+  try {
+    db.prepare(`INSERT INTO homework_submissions (submission_id, homework_id, student_id, submitted_at, content, status) VALUES (?, ?, ?, ?, ?, ?)`).run(
+      submission.submission_id,
+      submission.homework_id,
+      submission.student_id,
+      submission.submitted_at,
+      submission.content || '',
+      submission.status || 'submitted'
+    );
+    logAudit('homework_submission_create', submission);
+    res.status(201).json(apiSuccess(submission));
+  } catch (err) {
+    res.status(400).json(apiError('Failed to submit homework', err.message));
+  }
+});
+
+app.put('/submissions/:id/grade', requireRole(['admin', 'teacher']), (req, res) => {
+  const { grade, feedback } = req.body;
+  const submissionId = req.params.id;
+  const submission = db.prepare('SELECT * FROM homework_submissions WHERE submission_id = ?').get(submissionId);
+  if (!submission) return res.status(404).json({ error: 'Submission not found' });
+  
+  try {
+    db.prepare(`UPDATE homework_submissions SET grade = ?, feedback = ?, status = 'graded', graded_at = ?, graded_by = ? WHERE submission_id = ?`).run(
+      grade || null,
+      feedback || null,
+      new Date().toISOString(),
+      req.user.username,
+      submissionId
+    );
+    logAudit('homework_submission_grade', { submission_id: submissionId, grade, feedback });
+    res.json(apiSuccess({ submission_id: submissionId, grade, feedback, status: 'graded' }));
+  } catch (err) {
+    res.status(400).json(apiError('Failed to grade submission', err.message));
+  }
+});
+
+// Teacher-specific endpoints
+app.get('/teacher/:id/dashboard', requireRole(['admin', 'teacher']), (req, res) => {
+  const teacherId = req.params.id;
+  try {
+    // Get teacher's classes
+    const classes = db.prepare('SELECT * FROM classes WHERE teacher_id = ?').all(teacherId);
+    
+    // Get teacher's homework
+    const homework = db.prepare('SELECT * FROM homework WHERE teacher_id = ?').all(teacherId);
+    
+    // Get pending submissions
+    const pendingSubmissions = db.prepare(`
+      SELECT COUNT(*) as count FROM homework_submissions hs 
+      JOIN homework h ON hs.homework_id = h.homework_id 
+      WHERE h.teacher_id = ? AND hs.status = 'submitted'
+    `).get(teacherId);
+    
+    // Get total students
+    const totalStudents = db.prepare(`
+      SELECT COUNT(DISTINCT sc.student_id) as count 
+      FROM student_classes sc 
+      JOIN classes c ON sc.class_id = c.class_id 
+      WHERE c.teacher_id = ?
+    `).get(teacherId);
+    
+    res.json(apiSuccess({
+      classes: classes.length,
+      homework: homework.length,
+      pendingSubmissions: pendingSubmissions.count,
+      totalStudents: totalStudents.count
+    }));
+  } catch (err) {
+    res.status(500).json(apiError('Failed to fetch teacher dashboard data'));
+  }
+});
+
+// Attendance management
+app.get('/classes/:id/attendance', requireRole(['admin', 'teacher']), (req, res) => {
+  const classId = req.params.id;
+  const { date } = req.query;
+  try {
+    let query = 'SELECT a.*, s.full_name as student_name FROM attendance a JOIN students s ON a.student_id = s.student_id WHERE a.class_id = ?';
+    let params = [classId];
+    
+    if (date) {
+      query += ' AND a.date = ?';
+      params.push(date);
+    }
+    
+    const attendance = db.prepare(query).all(...params);
+    res.json(apiSuccess(attendance));
+  } catch (err) {
+    res.status(500).json(apiError('Failed to fetch attendance'));
+  }
+});
+
+app.post('/classes/:id/attendance', requireRole(['admin', 'teacher']), (req, res) => {
+  const { error } = attendanceSchema.validate(req.body);
+  if (error) return res.status(400).json({ error: error.details[0].message });
+  const attendance = { 
+    ...req.body, 
+    attendance_id: req.body.attendance_id || Date.now().toString(),
+    class_id: req.params.id
+  };
+  try {
+    db.prepare(`INSERT INTO attendance (attendance_id, class_id, student_id, date, status, notes) VALUES (?, ?, ?, ?, ?, ?)`).run(
+      attendance.attendance_id,
+      attendance.class_id,
+      attendance.student_id,
+      attendance.date,
+      attendance.status,
+      attendance.notes || ''
+    );
+    logAudit('attendance_create', attendance);
+    res.status(201).json(apiSuccess(attendance));
+  } catch (err) {
+    res.status(400).json(apiError('Failed to mark attendance', err.message));
+  }
+});
+
+// Class materials
+app.get('/classes/:id/materials', requireRole(['admin', 'teacher']), (req, res) => {
+  const classId = req.params.id;
+  try {
+    const materials = db.prepare('SELECT * FROM class_materials WHERE class_id = ? ORDER BY uploaded_at DESC').all(classId);
+    res.json(apiSuccess(materials));
+  } catch (err) {
+    res.status(500).json(apiError('Failed to fetch class materials'));
+  }
+});
+
+app.post('/classes/:id/materials', requireRole(['admin', 'teacher']), (req, res) => {
+  const { error } = classMaterialSchema.validate(req.body);
+  if (error) return res.status(400).json({ error: error.details[0].message });
+  const material = { 
+    ...req.body, 
+    material_id: req.body.material_id || Date.now().toString(),
+    class_id: req.params.id,
+    uploaded_at: req.body.uploaded_at || new Date().toISOString()
+  };
+  try {
+    db.prepare(`INSERT INTO class_materials (material_id, class_id, title, description, file_type, file_url, uploaded_at, uploaded_by, file_size) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`).run(
+      material.material_id,
+      material.class_id,
+      material.title,
+      material.description || '',
+      material.file_type || '',
+      material.file_url || '',
+      material.uploaded_at,
+      material.uploaded_by,
+      material.file_size || ''
+    );
+    logAudit('class_material_create', material);
+    res.status(201).json(apiSuccess(material));
+  } catch (err) {
+    res.status(400).json(apiError('Failed to add class material', err.message));
+  }
+});
+
+// Class announcements
+app.get('/classes/:id/announcements', requireRole(['admin', 'teacher']), (req, res) => {
+  const classId = req.params.id;
+  try {
+    const announcements = db.prepare('SELECT * FROM class_announcements WHERE class_id = ? AND is_active = 1 ORDER BY created_at DESC').all(classId);
+    res.json(apiSuccess(announcements));
+  } catch (err) {
+    res.status(500).json(apiError('Failed to fetch class announcements'));
+  }
+});
+
+app.post('/classes/:id/announcements', requireRole(['admin', 'teacher']), (req, res) => {
+  const { error } = classAnnouncementSchema.validate(req.body);
+  if (error) return res.status(400).json({ error: error.details[0].message });
+  const announcement = { 
+    ...req.body, 
+    announcement_id: req.body.announcement_id || Date.now().toString(),
+    class_id: req.params.id,
+    created_at: req.body.created_at || new Date().toISOString()
+  };
+  try {
+    db.prepare(`INSERT INTO class_announcements (announcement_id, class_id, title, content, created_at, created_by, priority, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`).run(
+      announcement.announcement_id,
+      announcement.class_id,
+      announcement.title,
+      announcement.content,
+      announcement.created_at,
+      announcement.created_by,
+      announcement.priority || 'medium',
+      1
+    );
+    logAudit('class_announcement_create', announcement);
+    res.status(201).json(apiSuccess(announcement));
+  } catch (err) {
+    res.status(400).json(apiError('Failed to add class announcement', err.message));
+  }
+});
+
+// Student notes
+app.get('/students/:id/notes', requireRole(['admin', 'teacher']), (req, res) => {
+  const studentId = req.params.id;
+  try {
+    const notes = db.prepare('SELECT * FROM student_notes WHERE student_id = ? ORDER BY created_at DESC').all(studentId);
+    res.json(apiSuccess(notes));
+  } catch (err) {
+    res.status(500).json(apiError('Failed to fetch student notes'));
+  }
+});
+
+app.post('/students/:id/notes', requireRole(['admin', 'teacher']), (req, res) => {
+  const { error } = studentNoteSchema.validate(req.body);
+  if (error) return res.status(400).json({ error: error.details[0].message });
+  const note = { 
+    ...req.body, 
+    note_id: req.body.note_id || Date.now().toString(),
+    student_id: req.params.id,
+    created_at: req.body.created_at || new Date().toISOString()
+  };
+  try {
+    db.prepare(`INSERT INTO student_notes (note_id, student_id, teacher_id, note_type, title, content, created_at, is_private, tags) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`).run(
+      note.note_id,
+      note.student_id,
+      note.teacher_id,
+      note.note_type,
+      note.title,
+      note.content,
+      note.created_at,
+      note.is_private ? 1 : 0,
+      note.tags || ''
+    );
+    logAudit('student_note_create', note);
+    res.status(201).json(apiSuccess(note));
+  } catch (err) {
+    res.status(400).json(apiError('Failed to add student note', err.message));
+  }
+});
+
+// Student performance
+app.get('/students/:id/performance', requireRole(['admin', 'teacher']), (req, res) => {
+  const studentId = req.params.id;
+  const { class_id } = req.query;
+  try {
+    let query = 'SELECT * FROM student_performance WHERE student_id = ?';
+    let params = [studentId];
+    
+    if (class_id) {
+      query += ' AND class_id = ?';
+      params.push(class_id);
+    }
+    
+    const performance = db.prepare(query).all(...params);
+    res.json(apiSuccess(performance));
+  } catch (err) {
+    res.status(500).json(apiError('Failed to fetch student performance'));
+  }
+});
+
+app.post('/students/:id/performance', requireRole(['admin', 'teacher']), (req, res) => {
+  const { error } = studentPerformanceSchema.validate(req.body);
+  if (error) return res.status(400).json({ error: error.details[0].message });
+  const performance = { 
+    ...req.body, 
+    performance_id: req.body.performance_id || Date.now().toString(),
+    student_id: req.params.id,
+    last_updated: req.body.last_updated || new Date().toISOString()
+  };
+  try {
+    db.prepare(`INSERT INTO student_performance (performance_id, student_id, class_id, subject_id, semester, overall_grade, gpa, attendance_rate, homework_completion_rate, participation_score, last_updated) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`).run(
+      performance.performance_id,
+      performance.student_id,
+      performance.class_id,
+      performance.subject_id,
+      performance.semester,
+      performance.overall_grade || '',
+      performance.gpa || null,
+      performance.attendance_rate || null,
+      performance.homework_completion_rate || null,
+      performance.participation_score || null,
+      performance.last_updated
+    );
+    logAudit('student_performance_create', performance);
+    res.status(201).json(apiSuccess(performance));
+  } catch (err) {
+    res.status(400).json(apiError('Failed to add student performance', err.message));
   }
 });
 
@@ -658,11 +1325,6 @@ app.get('/subjects/:id/classes', requireRole(['admin', 'teacher']), (req, res) =
   } catch (err) {
     res.status(500).json(apiError('Failed to fetch classes for subject'));
   }
-});
-
-// Health check endpoint
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok' });
 });
 
 const swaggerDefinition = {

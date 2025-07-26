@@ -1,0 +1,202 @@
+[
+  {
+    "enrollment_id": "enroll_1",
+    "student_id": "S0001",
+    "class_id": "class_1",
+    "enrollment_date": "2024-09-01",
+    "status": "active",
+    "grade_level": "8"
+  },
+  {
+    "enrollment_id": "enroll_2",
+    "student_id": "S0002",
+    "class_id": "class_1",
+    "enrollment_date": "2024-09-01",
+    "status": "active",
+    "grade_level": "8"
+  },
+  {
+    "enrollment_id": "enroll_3",
+    "student_id": "S0003",
+    "class_id": "class_1",
+    "enrollment_date": "2024-09-01",
+    "status": "active",
+    "grade_level": "8"
+  },
+  {
+    "enrollment_id": "enroll_4",
+    "student_id": "S0004",
+    "class_id": "class_2",
+    "enrollment_date": "2024-09-01",
+    "status": "active",
+    "grade_level": "8"
+  },
+  {
+    "enrollment_id": "enroll_5",
+    "student_id": "S0005",
+    "class_id": "class_2",
+    "enrollment_date": "2024-09-01",
+    "status": "active",
+    "grade_level": "8"
+  },
+  {
+    "enrollment_id": "enroll_6",
+    "student_id": "S0006",
+    "class_id": "class_1",
+    "enrollment_date": "2024-09-01",
+    "status": "active",
+    "grade_level": "8"
+  },
+  {
+    "enrollment_id": "enroll_7",
+    "student_id": "S0007",
+    "class_id": "class_1",
+    "enrollment_date": "2024-09-01",
+    "status": "active",
+    "grade_level": "8"
+  },
+  {
+    "enrollment_id": "enroll_8",
+    "student_id": "S0008",
+    "class_id": "class_2",
+    "enrollment_date": "2024-09-01",
+    "status": "active",
+    "grade_level": "8"
+  },
+  {
+    "enrollment_id": "enroll_9",
+    "student_id": "S0009",
+    "class_id": "class_2",
+    "enrollment_date": "2024-09-01",
+    "status": "active",
+    "grade_level": "8"
+  },
+  {
+    "enrollment_id": "enroll_10",
+    "student_id": "S0010",
+    "class_id": "class_1",
+    "enrollment_date": "2024-09-01",
+    "status": "active",
+    "grade_level": "8"
+  },
+  {
+    "enrollment_id": "enroll_11",
+    "student_id": "S0011",
+    "class_id": "class_1",
+    "enrollment_date": "2024-09-01",
+    "status": "active",
+    "grade_level": "8"
+  },
+  {
+    "enrollment_id": "enroll_12",
+    "student_id": "S0012",
+    "class_id": "class_2",
+    "enrollment_date": "2024-09-01",
+    "status": "active",
+    "grade_level": "8"
+  },
+  {
+    "enrollment_id": "enroll_13",
+    "student_id": "S0013",
+    "class_id": "class_1",
+    "enrollment_date": "2024-09-01",
+    "status": "active",
+    "grade_level": "8"
+  },
+  {
+    "enrollment_id": "enroll_14",
+    "student_id": "S0014",
+    "class_id": "class_2",
+    "enrollment_date": "2024-09-01",
+    "status": "active",
+    "grade_level": "8"
+  },
+  {
+    "enrollment_id": "enroll_15",
+    "student_id": "S0015",
+    "class_id": "class_1",
+    "enrollment_date": "2024-09-01",
+    "status": "active",
+    "grade_level": "8"
+  },
+  {
+    "enrollment_id": "enroll_16",
+    "student_id": "S0016",
+    "class_id": "class_2",
+    "enrollment_date": "2024-09-01",
+    "status": "active",
+    "grade_level": "8"
+  },
+  {
+    "enrollment_id": "enroll_17",
+    "student_id": "S0017",
+    "class_id": "class_1",
+    "enrollment_date": "2024-09-01",
+    "status": "active",
+    "grade_level": "8"
+  },
+  {
+    "enrollment_id": "enroll_18",
+    "student_id": "S0018",
+    "class_id": "class_2",
+    "enrollment_date": "2024-09-01",
+    "status": "active",
+    "grade_level": "8"
+  },
+  {
+    "enrollment_id": "enroll_19",
+    "student_id": "S0019",
+    "class_id": "class_1",
+    "enrollment_date": "2024-09-01",
+    "status": "active",
+    "grade_level": "8"
+  },
+  {
+    "enrollment_id": "enroll_20",
+    "student_id": "S0020",
+    "class_id": "class_2",
+    "enrollment_date": "2024-09-01",
+    "status": "active",
+    "grade_level": "8"
+  },
+  {
+    "enrollment_id": "enroll_21",
+    "student_id": "S0021",
+    "class_id": "class_1",
+    "enrollment_date": "2024-09-01",
+    "status": "active",
+    "grade_level": "8"
+  },
+  {
+    "enrollment_id": "enroll_22",
+    "student_id": "S0022",
+    "class_id": "class_2",
+    "enrollment_date": "2024-09-01",
+    "status": "active",
+    "grade_level": "8"
+  },
+  {
+    "enrollment_id": "enroll_23",
+    "student_id": "S0023",
+    "class_id": "class_1",
+    "enrollment_date": "2024-09-01",
+    "status": "active",
+    "grade_level": "8"
+  },
+  {
+    "enrollment_id": "enroll_24",
+    "student_id": "S0024",
+    "class_id": "class_2",
+    "enrollment_date": "2024-09-01",
+    "status": "active",
+    "grade_level": "8"
+  },
+  {
+    "enrollment_id": "enroll_25",
+    "student_id": "S0025",
+    "class_id": "class_1",
+    "enrollment_date": "2024-09-01",
+    "status": "active",
+    "grade_level": "8"
+  }
+] 
