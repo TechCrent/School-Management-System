@@ -1,12 +1,16 @@
 import { useEffect, useState } from 'react';
-import { getClasses, getStudents, ApiResponse } from '../api/edulite';
+import { getClasses, getStudents } from '../api/edulite';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Users, Calendar, BookOpen } from 'lucide-react';
-import { Loading } from '@/components/ui/loading';
-import { Breadcrumbs } from '@/components/ui/breadcrumb';
-import studentEnrollments from '../data/studentEnrollments.json';
+import { 
+  Calendar, 
+  Users, 
+  BookOpen, 
+  ExternalLink,
+  Clock,
+  MapPin
+} from 'lucide-react';
 
 interface Class {
   class_id: string;
@@ -27,25 +31,24 @@ interface Student {
 
 const TeacherClasses = () => {
   const [classes, setClasses] = useState<Class[]>([]);
-  const [loading, setLoading] = useState(true);
   const [selectedClass, setSelectedClass] = useState<Class | null>(null);
   const [students, setStudents] = useState<Student[]>([]);
-  
-  // For mock data testing, use a default teacher ID if none is set
-  const storedUser = localStorage.getItem('user');
-  const teacherId = storedUser ? JSON.parse(storedUser).teacher_id : 't-1';
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadClasses();
-  }, [teacherId]);
+  }, []);
 
   const loadClasses = async () => {
     try {
-      const res: ApiResponse<Class[]> = await getClasses();
-      if (res.status === 'success' && res.data) {
-        const teacherClasses = res.data.filter((cls: Class) => cls.teacher_id === teacherId);
-        setClasses(teacherClasses);
-      }
+      const response = await getClasses();
+      const allClasses = response.data || [];
+      
+      // Get current teacher from localStorage
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      const teacherClasses = allClasses.filter((cls: Class) => cls.teacher_id === user.teacher_id);
+      
+      setClasses(teacherClasses);
       setLoading(false);
     } catch (error) {
       console.error('Error loading classes:', error);
@@ -55,22 +58,11 @@ const TeacherClasses = () => {
 
   const openClassDetails = async (cls: Class) => {
     setSelectedClass(cls);
-    
     try {
-      const studentsRes: ApiResponse<Student[]> = await getStudents();
-      if (studentsRes.status === 'success' && studentsRes.data) {
-        // Get students enrolled in this class using studentEnrollments
-        const classEnrollments = studentEnrollments.filter(
-          enrollment => enrollment.class_id === cls.class_id && enrollment.status === 'active'
-        );
-        
-        const enrolledStudentIds = classEnrollments.map(enrollment => enrollment.student_id);
-        const classStudents = studentsRes.data.filter(student => 
-          enrolledStudentIds.includes(student.student_id)
-        );
-        
-        setStudents(classStudents);
-      }
+      const response = await getStudents();
+      const allStudents = response.data || [];
+      const classStudents = allStudents.filter((student: Student) => student.class_id === cls.class_id);
+      setStudents(classStudents);
     } catch (error) {
       console.error('Error loading students:', error);
     }
@@ -81,91 +73,78 @@ const TeacherClasses = () => {
     setStudents([]);
   };
 
-  if (loading) return <Loading size="lg" text="Loading classes..." />;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading your classes...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
-      <Breadcrumbs items={[{ label: 'Dashboard', href: '/' }, { label: 'My Classes' }]} />
-      
+      {/* Header */}
       <div className="flex flex-col space-y-2">
         <h2 className="text-3xl font-bold tracking-tight text-foreground">My Classes</h2>
-        <p className="text-muted-foreground">Manage your classes, track attendance, and share materials</p>
+        <p className="text-muted-foreground">Manage and view your assigned classes and student rosters</p>
       </div>
 
-      {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="shadow-card">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Classes</CardTitle>
-            <BookOpen className="h-4 w-4 text-primary" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-foreground">{classes.length}</div>
-            <p className="text-xs text-muted-foreground">Active classes this semester</p>
-          </CardContent>
-        </Card>
-
-        <Card className="shadow-card">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Students</CardTitle>
-            <Users className="h-4 w-4 text-secondary" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-foreground">
-              {classes.reduce((total, cls) => total + cls.student_count, 0)}
-            </div>
-            <p className="text-xs text-muted-foreground">Students across all classes</p>
-          </CardContent>
-        </Card>
-
-        <Card className="shadow-card">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Today's Classes</CardTitle>
-            <Calendar className="h-4 w-4 text-accent" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-foreground">
-              {classes.filter(cls => cls.schedule.toLowerCase().includes(new Date().toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase())).length}
-            </div>
-            <p className="text-xs text-muted-foreground">Classes scheduled for today</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Classes List */}
-      <Card className="shadow-card">
+      {/* Classes Grid */}
+      <Card>
         <CardHeader>
-          <CardTitle>Class Directory</CardTitle>
-          <CardDescription>Click on a class to view details and manage</CardDescription>
+          <CardTitle className="flex items-center gap-2">
+            <Calendar className="h-5 w-5" />
+            Your Classes ({classes.length})
+          </CardTitle>
+          <CardDescription>
+            Click on a class to view details and student roster
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4">
-            {classes.map(cls => (
-              <div key={cls.class_id} className="border rounded-lg p-4 hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => openClassDetails(cls)}>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="font-semibold text-lg">{cls.name}</h3>
-                    <p className="text-sm text-muted-foreground">{cls.schedule}</p>
-                    <div className="flex items-center gap-4 mt-2">
-                      <Badge variant="outline">
-                        <Users className="h-3 w-3 mr-1" />
-                        {cls.student_count} students
-                      </Badge>
-                      {cls.zoom_link && (
-                        <Badge variant="secondary">
-                          <Calendar className="h-3 w-3 mr-1" />
-                          Online
+          {classes.length === 0 ? (
+            <div className="text-center py-12">
+              <Calendar className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+              <h3 className="text-lg font-semibold mb-2">No Classes Assigned</h3>
+              <p className="text-muted-foreground">
+                You haven't been assigned to any classes yet. Contact your administrator.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {classes.map((cls) => (
+                <div
+                  key={cls.class_id}
+                  className="border rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
+                  onClick={() => openClassDetails(cls)}
+                >
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <h3 className="font-semibold text-lg">{cls.name}</h3>
+                      <p className="text-sm text-muted-foreground">{cls.schedule}</p>
+                      <div className="flex items-center gap-4 mt-2">
+                        <Badge variant="outline">
+                          <Users className="h-3 w-3 mr-1" />
+                          {cls.student_count} students
                         </Badge>
-                      )}
+                        {cls.zoom_link && (
+                          <Badge variant="secondary">
+                            <Calendar className="h-3 w-3 mr-1" />
+                            Online
+                          </Badge>
+                        )}
+                      </div>
                     </div>
+                    <Button variant="ghost" size="sm">
+                      View Details
+                    </Button>
                   </div>
-                  <Button variant="ghost" size="sm">
-                    View Details
-                  </Button>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
 

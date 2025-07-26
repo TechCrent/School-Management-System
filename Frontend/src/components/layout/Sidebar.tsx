@@ -46,8 +46,8 @@ const navigationItems = [
 
 const teacherNavigationItems = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
-  { title: "My Classes", url: "/teacher/classes", icon: Calendar },
-  { title: "My Homework", url: "/teacher/homework", icon: BookOpen },
+  { title: "My Classes", url: "/classes", icon: Calendar },
+  { title: "My Homework", url: "/homework", icon: BookOpen },
   { title: "My Students", url: "/teacher/students", icon: Users },
   { title: "Report Cards", url: "/report-cards", icon: FileText },
   { title: "Profile", url: "/profile", icon: User },

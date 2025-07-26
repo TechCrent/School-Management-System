@@ -7,7 +7,6 @@ import { Layout } from "./components/layout/Layout";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { Login } from "./pages/Login";
-import { Dashboard } from "./pages/Dashboard";
 import { Students } from "./pages/Students";
 import { Profile } from "./pages/Profile";
 import { Settings } from "./pages/Settings";
@@ -32,7 +31,9 @@ import Teachers from "./pages/Teachers";
 import TeacherClasses from "./pages/TeacherClasses";
 import TeacherHomework from "./pages/TeacherHomework";
 import TeacherStudents from "./pages/TeacherStudents";
+import { TeacherDashboard } from "./pages/TeacherDashboard";
 import { AuthProvider } from './components/layout/AuthContext';
+import { StudentDashboard } from "./pages/StudentDashboard";
 
 const queryClient = new QueryClient();
 
@@ -53,10 +54,10 @@ const App = () => (
                   <ProtectedRoute allowedRoles={['admin', 'teacher', 'student', 'parent']}>
                     <Layout>
                       {localStorage.getItem('role') === 'admin' ? <AdminDashboard /> :
-                       localStorage.getItem('role') === 'teacher' ? <Dashboard /> :
-                       localStorage.getItem('role') === 'student' ? <Dashboard /> :
+                       localStorage.getItem('role') === 'teacher' ? <TeacherDashboard /> :
+                       localStorage.getItem('role') === 'student' ? <StudentDashboard /> :
                        localStorage.getItem('role') === 'parent' ? <ParentDashboard /> :
-                       <Dashboard />}
+                       <div className="p-8 text-center text-muted-foreground">No dashboard available for your role.</div>}
                     </Layout>
                   </ProtectedRoute>
                 } />
@@ -95,7 +96,11 @@ const App = () => (
                 <Route path="/classes" element={
                   <ProtectedRoute allowedRoles={['admin', 'teacher', 'student', 'parent']}>
                     <Layout>
-                      <ClassesPage />
+                      {localStorage.getItem('role') === 'teacher' ? <TeacherClasses /> :
+                       localStorage.getItem('role') === 'admin' ? <ClassesPage /> :
+                       localStorage.getItem('role') === 'student' ? <ClassesPage /> :
+                       localStorage.getItem('role') === 'parent' ? <ClassesPage /> :
+                       <ClassesPage />}
                     </Layout>
                   </ProtectedRoute>
                 } />
